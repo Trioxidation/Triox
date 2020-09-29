@@ -1,0 +1,17 @@
+[server]
+url = "127.0.0.1"
+listen = "127.0.0.1"
+port = 8080
+
+[database]
+type = "mysql"
+user = "triox"
+password = "triox"
+address = "localhost"
+name = "triox"
+
+[SSL]
+enable = false
+
+[JWT]
+secret = "secret"
