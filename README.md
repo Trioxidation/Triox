@@ -4,7 +4,7 @@ Triox is an open source cloud server that focuses on speed, reliability and secu
 Currently we want to implement the following features before moving on with more ambitious plans:
 
 - [x] JWT authentication
-- [ ] File up- and download
+- [x] File up- and download
 - [ ] Frontend
 
 # Rest API
