@@ -38,8 +38,11 @@ jsonwebtoken = "7"
 
 # actix
 actix-rt = "1"
+actix-files = "0.3"
+actix-multipart = "0.3"
 actix-web = { version = "3", features = ["openssl"] }
 openssl = { version = "0.10", features = ["v110"] }
 
 # futures
 futures = "*"
+tokio = { version = "0.2", features = ["fs"] }

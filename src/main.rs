@@ -8,6 +8,7 @@ extern crate diesel;
 extern crate log;
 
 mod app_conf;
+mod apps;
 mod auth;
 mod database;
 mod hash;
@@ -84,6 +85,9 @@ async fn main() -> std::io::Result<()> {
             .route("/user_info", web::get().to(auth::user_info))
             .route("/sign_up", web::post().to(auth::sign_up))
             .route("/sign_in", web::post().to(auth::sign_in))
+            .service(apps::files::get::get)
+            .service(apps::files::list::list)
+            .service(apps::files::list::list_root)
     });
 
     let listen_address = config.server.listen_address();
