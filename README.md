@@ -7,6 +7,9 @@ Currently we want to implement the following features before moving on with more
 - [ ] File up- and download
 - [ ] Frontend
 
+# Rest API
+
+See `API.md`
 
 # Dev Setup
 
