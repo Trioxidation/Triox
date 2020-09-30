@@ -10,8 +10,8 @@ password = "triox"
 address = "localhost"
 name = "triox"
 
-[SSL]
-enable = false
+[ssl]
+enabled = false
 
-[JWT]
+[jwt]
 secret = "secret"
