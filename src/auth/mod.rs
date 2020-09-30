@@ -4,6 +4,7 @@ use jsonwebtoken::{encode, EncodingKey, Header};
 use actix_web::error::BlockingError;
 use actix_web::error::{ErrorBadRequest, ErrorInternalServerError, ErrorUnauthorized};
 use actix_web::{web, Error, HttpResponse};
+use tokio::fs;
 
 use std::time::{SystemTime, UNIX_EPOCH};
 
@@ -74,7 +75,7 @@ pub async fn sign_up(
     app_state: web::Data<AppState>,
     form: web::Json<SignUpForm>,
 ) -> Result<HttpResponse, Error> {
-    let _user = web::block(move || database::users::add_user(&form, app_state.clone()))
+    let user = web::block(move || database::users::add_user(&form, app_state.clone()))
         .await
         .map_err(|outer_err| match outer_err {
             BlockingError::Error(err) => match err.err_type {
@@ -84,6 +85,13 @@ pub async fn sign_up(
             },
             BlockingError::Canceled => ErrorInternalServerError("database request canceled"),
         })?;
+
+    // generate storage path for user
+    let path: std::path::PathBuf = [".", "data", "users", &user.id.to_string(), "files"]
+        .iter()
+        .collect();
+
+    fs::create_dir_all(path).await?;
 
     Ok(HttpResponse::Ok().body("user created"))
 }
