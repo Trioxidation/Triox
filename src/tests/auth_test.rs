@@ -104,7 +104,7 @@ mod sign_in {
 #[cfg(test)]
 mod sign_up {
     use crate::{auth, AppState};
-    use actix_web::{web, http};
+    use actix_web::{http, web};
 
     #[actix_rt::test]
     async fn sign_up_and_sign_in() {
@@ -117,9 +117,8 @@ mod sign_up {
         });
 
         let resp = auth::sign_up(app_state.clone(), form).await.unwrap();
-        
-        assert_eq!(resp.status(), http::StatusCode::OK);
 
+        assert_eq!(resp.status(), http::StatusCode::OK);
 
         let form = web::Json(auth::SignInForm {
             user_name: "test user".to_owned(),
@@ -129,7 +128,6 @@ mod sign_up {
         let resp = auth::sign_in(app_state, form)
             .await
             .expect("request should not throw an error");
-            
 
         assert_eq!(resp.status(), http::StatusCode::OK);
     }

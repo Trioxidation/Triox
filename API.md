@@ -28,7 +28,7 @@ Body: JSON
 ```json
 {
   "user_name": "test_user",
-  "password": "test_password"
+  "password": "test_password",
   "email": "test@triox.com"
 }
 ```

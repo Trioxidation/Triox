@@ -17,20 +17,15 @@ pub async fn list(
     claims: jwt::Claims,
     web::Path(path): web::Path<String>,
 ) -> Result<HttpResponse, Error> {
-  list_files(claims, path).await
+    list_files(claims, path).await
 }
 
 #[get("/app/files/list")]
-pub async fn list_root(
-    claims: jwt::Claims,
-) -> Result<HttpResponse, Error> {
-  list_files(claims, "".to_owned()).await
+pub async fn list_root(claims: jwt::Claims) -> Result<HttpResponse, Error> {
+    list_files(claims, "".to_owned()).await
 }
 
-async fn list_files(
-    claims: jwt::Claims,
-    path: String,
-) -> Result<HttpResponse, Error> {
+async fn list_files(claims: jwt::Claims, path: String) -> Result<HttpResponse, Error> {
     let path: std::path::PathBuf = [".", "data", "users", &claims.id.to_string(), "files", &path]
         .iter()
         .collect();

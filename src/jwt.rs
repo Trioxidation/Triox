@@ -28,7 +28,7 @@ impl FromRequest for Claims {
             };
 
             let token = token.trim();
-    
+
             match decode::<Claims>(
                 token,
                 &DecodingKey::from_secret("secret".as_ref()),
