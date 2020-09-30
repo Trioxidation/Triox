@@ -1,7 +1,7 @@
 ## Headers
 ### JWT Auth
 Name: `Triox-JWT`  
-Value: JWT (see Auth -> Sign in)
+Value: JWT (see Auth -> Sign in)  
 Example:  
 `Triox-JWT: eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJodHRwX3Rlc3RlciIsImlkIjoxOTEzMjkyNzI5LCJyb2xlIjowLCJleHAiOjE2MDE0NzgwNTR9.fXdzLaq_UwpwJ6BCqCA7lfPWuBw0Cfi2f485Ptr9t5g`
 
