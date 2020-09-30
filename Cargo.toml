@@ -7,9 +7,6 @@ edition = "2018"
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
 [dependencies]
-# validate and check email address
-check-if-email-exists = "0.8"
-
 # config
 config = "*"
 
@@ -46,4 +43,3 @@ openssl = { version = "0.10", features = ["v110"] }
 
 # futures
 futures = "*"
-tokio = "0.2"

@@ -1,6 +1,4 @@
 use super::{DbError, DbErrorType};
-use check_if_email_exists::{check_email, CheckEmailInput, Reachable};
-use tokio::runtime::Runtime;
 
 pub fn validate_credentials(user_name: &str, password: &str) -> Result<(), DbError> {
     // Check whether username and password have a reasonable length
@@ -41,25 +39,18 @@ pub fn validate_email(email: &str) -> Result<(), DbError> {
             err_type: DbErrorType::BadRequest,
             cause: "email address too short".to_owned(),
         })
+    // Expected patter: semething@something.something
+    } else if !email.contains('@')
+        || !email.contains('.')
+        || email.contains("..")
+        || email.find('@') != email.rfind('@')
+        || email.find('@').unwrap() > email.rfind('.').unwrap()
+    {
+        Err(DbError {
+            err_type: DbErrorType::BadRequest,
+            cause: "badly formatted email address".to_owned(),
+        })
     } else {
-        let input = CheckEmailInput::new(vec![email.into()]);
-
-        // Create a tokio runtime to run async block
-        let mut rt = Runtime::new().expect("Couln't create tokio Runtime");
-
-        // Verify email address
-        let result = rt.block_on(async { check_email(&input).await });
-        let result = &result[0];
-
-        // Email address should be at leat risky to be accepted.
-        // Risky is ok because users need to verify themselves via
-        // email anyway
-        match result.is_reachable {
-            Reachable::Safe | Reachable::Risky | Reachable::Unknown => Ok(()),
-            _ => Err(DbError {
-                err_type: DbErrorType::BadRequest,
-                cause: "Couldn't verify email reachability".to_owned(),
-            }),
-        }
+        Ok(())
     }
 }
