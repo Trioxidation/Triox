@@ -2,7 +2,7 @@
 
 ## Why Triox?
 
-☘️ **Open source** - We strongly believe in collaboration and transparency.
+☘️ **Open Source** - We strongly believe in collaboration and transparency.
 
 ⚡ **Speed** - Get the most out of your hardware! Triox runs fast, even on less powerful setups.
 
@@ -18,8 +18,8 @@
 
 Currently we want to implement the following features before moving on with more ambitious plans:
 
-- [x] JWT basic authentication
-- [x] File up- and download
+- [x] Basic authentication with JWT
+- [x] File upload and download
 - [ ] WebAssebly based front-end
 
 # Setup
@@ -65,7 +65,7 @@ diesel migration run
 
 ## SSL setup
 
-### Generating SSL key and certificate for HTTPS
+### Generating SSL key and certificate
 
 ```bash
 cd ssl
@@ -73,7 +73,11 @@ openssl req -x509 -nodes -newkey rsa:4096 -keyout key.pem -out cert.pem -days 36
 cd ..
 ```
 
-
+Then update `config/local.toml`:
+```toml
+[ssl]
+enabled = true
+```
 # API Dokumentation
 
 The API is documented in [`API.md`](https://github.com/AaronErhardt/Triox/blob/master/API.md).
