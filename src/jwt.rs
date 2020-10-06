@@ -1,10 +1,9 @@
-//use crate::config::{Config, IConfig};
-//use crate::models::user::Claims;
 use actix_web::error::ErrorUnauthorized;
 use actix_web::{dev, Error, FromRequest, HttpRequest};
 use futures::future::{err, ok, Ready};
 use jsonwebtoken::{decode, errors, Algorithm, DecodingKey, Validation};
 
+/// JWT claims.
 #[derive(Debug, serde::Serialize, serde::Deserialize)]
 pub struct Claims {
     pub sub: String,
@@ -13,6 +12,11 @@ pub struct Claims {
     pub exp: usize,
 }
 
+/// Extractor for JWT claims.
+///
+/// Can be used by accessing claims in service parameters.
+///
+/// Automatically returns an error if claims are missing or invalid.
 impl FromRequest for Claims {
     type Error = Error;
     type Future = Ready<Result<Claims, Error>>;

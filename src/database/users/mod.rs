@@ -1,3 +1,4 @@
+/// Utility functions for password and email validation
 pub mod util;
 
 use crate::AppState;
@@ -10,6 +11,7 @@ use diesel::prelude::*;
 use crate::auth::{SignInForm, SignUpForm};
 use crate::hash;
 
+/// Storing user information. Can be serialized by diesel from a database query.
 #[derive(diesel::Queryable, serde::Serialize, Clone)]
 pub struct User {
     pub id: u32,
@@ -30,15 +32,18 @@ pub enum DbErrorType {
 
 /* I'd prefer to use the actix::Error type instead.
  * But sadly actix::Error doesn't implement std::marker::Sync
- * so I can't use it in a thread pool any more.
- * Therefore I created this *ugly* additional Error type
- * and need to use .map_err all the time...*/
+ * so I can't use it in a thread pool (for executing blocking functions).
+ * Therefore I created this *ugly* Error type
+ * and have to use .map_err all the time...*/
+
+/// Database error information.
 #[derive(Debug)]
 pub struct DbError {
     pub err_type: DbErrorType,
     pub cause: String,
 }
 
+/// Validate sign in information and return user information.
 pub fn authenticate_user(
     data: &SignInForm,
     app_state: web::Data<AppState>,
@@ -88,6 +93,7 @@ pub fn authenticate_user(
     Ok(user)
 }
 
+/// Add a new user to the database.
 pub fn add_user(data: &SignUpForm, app_state: web::Data<AppState>) -> Result<User, DbError> {
     let db_conn = app_state.db_pool.get().map_err(|_| DbError {
         err_type: DbErrorType::InternalServerError,

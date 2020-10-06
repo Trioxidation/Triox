@@ -6,12 +6,14 @@ use tokio::fs::{DirEntry, ReadDir};
 
 use crate::jwt;
 
+/// File list returned by the `list` and `list_root` services as JSON
 #[derive(serde::Serialize)]
 struct Response {
     files: Vec<String>,
     dirs: Vec<String>,
 }
 
+/// Service for listing files via an API
 #[get("/app/files/list/{path}")]
 pub async fn list(
     claims: jwt::Claims,
@@ -20,11 +22,13 @@ pub async fn list(
     list_files(claims, path).await
 }
 
+/// Service for listing files of the root directory via an API
 #[get("/app/files/list")]
 pub async fn list_root(claims: jwt::Claims) -> Result<HttpResponse, Error> {
     list_files(claims, "".to_owned()).await
 }
 
+/// Helper function for the `list` and `list_root` services
 async fn list_files(claims: jwt::Claims, path: String) -> Result<HttpResponse, Error> {
     let path: std::path::PathBuf = [".", "data", "users", &claims.id.to_string(), "files", &path]
         .iter()

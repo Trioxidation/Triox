@@ -1,6 +1,7 @@
 use argon2::{self, Config};
 use rand::prelude::*;
 
+/// Generate hash value from password.
 pub fn from_password(password: &str) -> Result<String, &str> {
     // generate random salt value for the hash function
     // the salt value will be stored inside the hash string
@@ -12,6 +13,7 @@ pub fn from_password(password: &str) -> Result<String, &str> {
     argon2::hash_encoded(password.as_bytes(), &salt, &config).map_err(|_| "Failed to create hash")
 }
 
+/// Compares password with password hash. Used for authentication on sign in.
 pub fn compare_passwords<'a>(password: &[u8], hash: &'a str) -> Result<bool, &'a str> {
     argon2::verify_encoded(hash, password).map_err(|_| "Failed to verify password")
 }

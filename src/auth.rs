@@ -12,12 +12,14 @@ use crate::database::users::DbErrorType;
 
 use crate::{database, AppState};
 
+/// Information required for sign in.
 #[derive(serde::Deserialize)]
 pub struct SignInForm {
     pub user_name: String,
     pub password: String,
 }
 
+/// Information required for sign up.
 #[derive(serde::Deserialize)]
 pub struct SignUpForm {
     pub user_name: String,
@@ -25,10 +27,12 @@ pub struct SignUpForm {
     pub email: String, //TODO: captcha: Vec<u8>
 }
 
+/// Return user information stored inside the JWT.
 pub async fn user_info(claims: jwt::Claims) -> HttpResponse {
     HttpResponse::Ok().json(claims)
 }
 
+/// Sign in user and return JWT on success.
 pub async fn sign_in(
     app_state: web::Data<AppState>,
     form: web::Json<SignInForm>,
@@ -71,6 +75,7 @@ pub async fn sign_in(
     }
 }
 
+/// Sign up user by creating files and database entries.
 pub async fn sign_up(
     app_state: web::Data<AppState>,
     form: web::Json<SignUpForm>,

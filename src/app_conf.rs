@@ -1,10 +1,19 @@
+//!
+//! Using the config crate, the configuration is first loaded from `config/default.toml` and
+//! then overwritten by the values in `config/local.toml`.
+//!
+//! The values are then converted into an `AppConfig` struct that allows faster access
+//! and also enforced the type system.
+
 use config::Config;
 
+/// Stores a database type (currently only MySQL).
 #[derive(Debug, Clone, Copy)]
 pub enum DbServerType {
     Mysql,
 }
 
+/// Configurations for the http server.
 #[derive(Debug, Clone, Copy)]
 pub struct ServerConfig<'a> {
     pub url: &'a str,
@@ -12,6 +21,7 @@ pub struct ServerConfig<'a> {
     pub port: u32,
 }
 
+/// Configurations for the database connector.
 #[derive(Debug, Clone, Copy)]
 pub struct DatabaseConfig<'a> {
     pub server_type: DbServerType,
@@ -21,16 +31,19 @@ pub struct DatabaseConfig<'a> {
     pub name: &'a str,
 }
 
+/// Configurations for SSL.
 #[derive(Debug, Clone, Copy)]
 pub struct SslConfig {
     pub enabled: bool,
 }
 
+/// Configurations for JWT authentification.
 #[derive(Debug, Clone, Copy)]
 pub struct JwtConfig<'a> {
     pub secret: &'a str,
 }
 
+/// Collection of all partial configurations.
 #[derive(Debug, Clone, Copy)]
 pub struct AppConfig<'a> {
     pub server: ServerConfig<'a>,
@@ -39,6 +52,7 @@ pub struct AppConfig<'a> {
     pub jwt: JwtConfig<'a>,
 }
 
+/// Converts config HashMap into `AppConfig` struct.
 pub fn load_config(config: &Config) -> AppConfig<'static> {
     AppConfig {
         server: ServerConfig {
@@ -63,6 +77,7 @@ pub fn load_config(config: &Config) -> AppConfig<'static> {
 }
 
 impl<'a> ServerConfig<'a> {
+    /// Builds sever address from config parameters.
     pub fn listen_address(&self) -> String {
         let mut url: String = String::new();
 
@@ -75,6 +90,7 @@ impl<'a> ServerConfig<'a> {
 }
 
 impl<'a> DatabaseConfig<'a> {
+    /// Builds database url from config parameters.
     pub fn url(&self) -> String {
         let mut url: String = String::new();
 

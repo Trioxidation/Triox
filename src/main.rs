@@ -1,19 +1,49 @@
 // this is required to fix an issue with Rust 1.46...
 #![type_length_limit = "100000000"]
 
+//! # Triox - a cloud server for the next generation
+//!
+//!☘️ **Open Source** - We strongly believe in collaboration and transparency.
+//!
+//!⚡ **Speed** - Get the most out of your hardware! Triox runs fast, even on less powerful setups.
+//!
+//!🔒 **Security** - We're using the Argon2 algorithm to protect your passwords.
+//!
+//!⛓️ **Reliability** - Built on top of the strong guarantees of the
+//![Rust programming language](https://rust-lang.org).
+//!
+//!🛫 **Easy Setup** - Triox comes with batteries included and is easy to configure.
+//!
+//!🔬 **Modern Technologies** - No cookies but authentication with [JWT](https://jwt.io)
+//! and a front-end based on [WebAssembly](https://webassembly.org).
+
 #[macro_use]
 extern crate diesel;
 
 #[macro_use]
 extern crate log;
 
-mod app_conf;
+/// The API is split into apps that take care of certain features.
 mod apps;
+
+/// Global configuration struct for Triox.
+mod app_conf;
+
+/// API for authentification. Including sign in, sign out and user information.
 mod auth;
+
+/// Database structures and helper functions for loading, setting and updating the database.
 mod database;
+
+/// Helper functions for hashing and comparing passwords.
 mod hash;
+
+/// Structures and Extrators for JWT authentification.
 mod jwt;
+
+/// Tests.
 mod tests;
+
 
 use actix_web::{middleware, web, App, HttpRequest, HttpResponse, HttpServer};
 use env_logger::Env;
@@ -27,12 +57,15 @@ pub type DbPool = r2d2::Pool<ConnectionManager<MysqlConnection>>;
 
 use openssl::ssl::{SslAcceptor, SslFiletype, SslMethod};
 
+/// Index page
 async fn index(_req: HttpRequest) -> HttpResponse {
     HttpResponse::Ok()
         .content_type("text/html")
         .body("<h1>INDEX PAGE</h1>")
 }
 
+/// Storing the state of the application
+/// Can be accessed using the AppData extractor.
 #[derive(Clone)]
 pub struct AppState {
     db_pool: DbPool,

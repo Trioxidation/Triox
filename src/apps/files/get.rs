@@ -4,6 +4,7 @@ use actix_web::{get, web, Error};
 
 use crate::jwt;
 
+/// Service for downloading files via an API
 #[get("/app/files/get/{path}")]
 pub async fn get(
     claims: jwt::Claims,
