@@ -1,24 +1,35 @@
-# About
-Triox is an open source cloud server that focuses on speed, reliability and security.
+# Triox - a cloud server for the next generation
+
+## Why Triox?
+
+☘️ **Open source** - We strongly believe in collaboration and transparency.
+
+⚡ **Speed** - Get the most out of your hardware! Triox runs fast, even on less powerful setups.
+
+🔒 **Security** - We're using the Argon2 algorithm to protect your passwords.
+
+⛓️ **Reliability** - Built on top of the strong guarantees of the [Rust programming language](https://rust-lang.org).
+
+🛫 **Easy Setup** - Triox comes with batteries included and is easy to configure.
+
+🔬 **Modern Technologies** - No cookies but authentication with [JWT](https://jwt.io) and a front-end based on [WebAssembly](https://webassembly.org).
+
+## Freatures
 
 Currently we want to implement the following features before moving on with more ambitious plans:
 
-- [x] JWT authentication
+- [x] JWT basic authentication
 - [x] File up- and download
-- [ ] Frontend
+- [ ] WebAssebly based front-end
 
-# Rest API
+# Setup
 
-See `API.md`
-
-# Dev Setup
-
-+ Clone this repository
 + Install Rust using [rustup](https://rustup.rs).
 + Install a MySQL-server such as mariadb (`sudo apt install mariadb-server`)
 + Setup database (more below)
 + [optional] setup SSL certificate for HTTPS
-+ Compile with `cargo run`
+
+Now you should be ready to go! Use `cargo run` to compile and start the server.
 
 ## Database setup
 
@@ -63,4 +74,6 @@ cd ..
 ```
 
 
+# API Dokumentation
 
+The API is documented in [`API.md`](https://github.com/AaronErhardt/Triox/blob/master/API.md).
