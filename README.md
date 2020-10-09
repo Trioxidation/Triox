@@ -20,7 +20,7 @@ Currently we want to implement the following features before moving on with more
 
 - [x] Basic authentication with JWT
 - [x] File upload and download
-- [ ] WebAssebly based front-end
+- [ ] WebAssembly based front-end
 
 # Setup
 
