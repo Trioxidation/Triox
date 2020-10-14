@@ -59,9 +59,11 @@ use openssl::ssl::{SslAcceptor, SslFiletype, SslMethod};
 
 /// Index page
 async fn index(_req: HttpRequest) -> HttpResponse {
-    HttpResponse::Ok()
-        .content_type("text/html")
-        .body("<h1>INDEX PAGE</h1>")
+    HttpResponse::Ok().content_type("text/html").body(
+        "<h1>INDEX PAGE</h1>
+Test sign_in: <a href=\"/sign_in\">SIGN IN PAGE</a><br>
+Test sign_up: <a href=\"/sign_up\">SIGN UP PAGE</a>",
+    )
 }
 
 /// Storing the state of the application
