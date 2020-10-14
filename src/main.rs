@@ -59,9 +59,11 @@ use openssl::ssl::{SslAcceptor, SslFiletype, SslMethod};
 
 /// Index page
 async fn index(_req: HttpRequest) -> HttpResponse {
-    HttpResponse::Ok()
-        .content_type("text/html")
-        .body("<h1>INDEX PAGE</h1>")
+    HttpResponse::Ok().content_type("text/html").body(
+        "<h1>INDEX PAGE</h1>
+Test sign_in: <a href=\"/sign_in\">SIGN IN PAGE</a><br>
+Test sign_up: <a href=\"/sign_up\">SIGN UP PAGE</a>",
+    )
 }
 
 /// Storing the state of the application
@@ -116,7 +118,9 @@ async fn main() -> std::io::Result<()> {
             .wrap(middleware::Logger::default())
             .route("/", web::get().to(index))
             .route("/user_info", web::get().to(auth::user_info))
+            .route("/sign_up", web::get().to(auth::sign_up_page))
             .route("/sign_up", web::post().to(auth::sign_up))
+            .route("/sign_in", web::get().to(auth::sign_in_page))
             .route("/sign_in", web::post().to(auth::sign_in))
             .service(apps::files::get::get)
             .service(apps::files::list::list)
