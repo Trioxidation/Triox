@@ -14,74 +14,112 @@ pub enum DbServerType {
 }
 
 /// Configurations for the http server.
-#[derive(Debug, Clone, Copy)]
-pub struct ServerConfig<'a> {
-    pub url: &'a str,
-    pub listen: &'a str,
+#[derive(Debug, Clone)]
+pub struct ServerConfig {
+    pub url: Box<str>,
+    pub listen: Box<str>,
     pub port: u32,
 }
 
 /// Configurations for the database connector.
-#[derive(Debug, Clone, Copy)]
-pub struct DatabaseConfig<'a> {
+#[derive(Debug, Clone)]
+pub struct DatabaseConfig {
     pub server_type: DbServerType,
-    pub user: &'a str,
-    pub password: &'a str,
-    pub address: &'a str,
-    pub name: &'a str,
+    pub user: Box<str>,
+    pub password: Box<str>,
+    pub address: Box<str>,
+    pub name: Box<str>,
 }
 
 /// Configurations for SSL.
-#[derive(Debug, Clone, Copy)]
+#[derive(Debug, Clone)]
 pub struct SslConfig {
     pub enabled: bool,
 }
 
 /// Configurations for JWT authentification.
-#[derive(Debug, Clone, Copy)]
-pub struct JwtConfig<'a> {
-    pub secret: &'a str,
+#[derive(Debug, Clone)]
+pub struct JwtConfig {
+    pub secret: Box<str>,
 }
 
 /// Collection of all partial configurations.
-#[derive(Debug, Clone, Copy)]
-pub struct AppConfig<'a> {
-    pub server: ServerConfig<'a>,
-    pub database: DatabaseConfig<'a>,
+#[derive(Debug, Clone)]
+pub struct AppConfig {
+    pub server: ServerConfig,
+    pub database: DatabaseConfig,
     pub ssl: SslConfig,
-    pub jwt: JwtConfig<'a>,
+    pub jwt: JwtConfig,
+}
+
+/// Helper struct to allow easier extraction of config values
+struct ConfWrapper<'a>(&'a Config);
+
+impl<'a> ConfWrapper<'a> {
+    /// Get `Box<T>` from the config or use default value.
+    /// The user is notified if a default value is used.
+    fn get<'b, T: serde::Deserialize<'b> + std::fmt::Display>(
+        &self,
+        key: &str,
+        default_val: T,
+    ) -> T {
+        self.0.get::<T>(key).unwrap_or_else(|_| {
+            println!(
+                "CONFIG: Couldn't find field '{}', falling back to default value '{}'",
+                key, default_val
+            );
+            default_val
+        })
+    }
+
+    /// Get `Box<str>` from the config or use default value.
+    /// The user is notified if a default value is used.
+    fn get_str(&self, key: &str, default_val: &str) -> Box<str> {
+        self.0
+            .get_str(key)
+            .unwrap_or_else(|_| {
+                println!(
+                "CONFIG: Couldn't find field '{}', falling back to default value '{}'",
+                    key, default_val
+                );
+                default_val.to_string()
+            })
+            .into_boxed_str()
+    }
 }
 
 /// Converts config HashMap into `AppConfig` struct.
-pub fn load_config(config: &Config) -> AppConfig<'static> {
+pub fn load_config(config: &Config) -> AppConfig {
+    // wrap config into helper struct
+    let conf = ConfWrapper(config);
     AppConfig {
         server: ServerConfig {
-            url: config.get("server.url").unwrap_or("127.0.0.1"),
-            listen: config.get("server.listen").unwrap_or("127.0.0.1"),
-            port: config.get("server.port").unwrap_or(443),
+            url: conf.get_str("server.url", "127.0.0.1"),
+            listen: conf.get_str("server.listen", "127.0.0.1"),
+            port: conf.get("server.port", 8080),
         },
         database: DatabaseConfig {
             server_type: DbServerType::Mysql,
-            user: config.get("database.user").unwrap_or("triox"),
-            password: config.get("database.password").unwrap_or("triox"),
-            address: config.get("database.address").unwrap_or("localhost"),
-            name: config.get("database.name").unwrap_or("triox"),
+            user: conf.get_str("database.user", "triox"),
+            password: conf.get_str("database.password", "triox"),
+            address: conf.get_str("database.address", "localhost"),
+            name: conf.get_str("database.name", "triox"),
         },
         ssl: SslConfig {
-            enabled: config.get("ssl.enabled").unwrap_or(true),
+            enabled: conf.get("ssl.enabled", true),
         },
         jwt: JwtConfig {
-            secret: config.get("jwt.secret").unwrap_or("secret"),
+            secret: conf.get_str("jwt.secret", "secret"),
         },
     }
 }
 
-impl<'a> ServerConfig<'a> {
+impl ServerConfig {
     /// Builds sever address from config parameters.
     pub fn listen_address(&self) -> String {
         let mut url: String = String::new();
 
-        url += self.listen;
+        url += &self.listen;
         url += ":";
         url += &self.port.to_string();
 
@@ -89,7 +127,7 @@ impl<'a> ServerConfig<'a> {
     }
 }
 
-impl<'a> DatabaseConfig<'a> {
+impl DatabaseConfig {
     /// Builds database url from config parameters.
     pub fn url(&self) -> String {
         let mut url: String = String::new();
@@ -99,13 +137,13 @@ impl<'a> DatabaseConfig<'a> {
         };
 
         url += "://";
-        url += self.user;
+        url += &self.user;
         url += ":";
-        url += self.password;
+        url += &self.password;
         url += "@";
-        url += self.address;
+        url += &self.address;
         url += "/";
-        url += self.name;
+        url += &self.name;
 
         url
     }

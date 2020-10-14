@@ -44,7 +44,6 @@ mod jwt;
 /// Tests.
 mod tests;
 
-
 use actix_web::{middleware, web, App, HttpRequest, HttpResponse, HttpServer};
 use env_logger::Env;
 
@@ -71,7 +70,7 @@ Test sign_up: <a href=\"/sign_up\">SIGN UP PAGE</a>",
 #[derive(Clone)]
 pub struct AppState {
     db_pool: DbPool,
-    config: app_conf::AppConfig<'static>,
+    config: app_conf::AppConfig,
     login_count: DashMap<u32, u8>,
 }
 
@@ -106,12 +105,16 @@ async fn main() -> std::io::Result<()> {
     // setup logger
     env_logger::from_env(Env::default().default_filter_or("info")).init();
 
+    // Clone config before it is moved into the closure
+    let server_conf = config.server.clone();
+    let ssl_conf = config.ssl.clone();
+
     // setup HTTP server
     let mut server = HttpServer::new(move || {
         App::new()
             // setup application state extractor
             .data(AppState {
-                config,
+                config: config.clone(),
                 login_count: DashMap::new(),
                 db_pool: db_pool.clone(),
             })
@@ -127,9 +130,9 @@ async fn main() -> std::io::Result<()> {
             .service(apps::files::list::list_root)
     });
 
-    let listen_address = config.server.listen_address();
+    let listen_address = server_conf.listen_address();
 
-    server = if config.ssl.enabled {
+    server = if ssl_conf.enabled {
         // enable HTTPS
         let mut ssl_acceptor_builder = SslAcceptor::mozilla_intermediate(SslMethod::tls())
             .expect("Couldn't create SslAcceptor");
@@ -146,7 +149,7 @@ async fn main() -> std::io::Result<()> {
     };
 
     server
-        .server_hostname(config.server.url)
+        .server_hostname(server_conf.url)
         .workers(4)
         .run()
         .await
