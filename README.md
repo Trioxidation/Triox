@@ -6,7 +6,7 @@
 
 ⚡ **Speed** - Get the most out of your hardware! Triox runs fast, even on less powerful setups.
 
-🔒 **Security** - We're using the Argon2 algorithm to protect your passwords.
+🔒 **Security** - We're using state-of-the-art algorithms and authentication methods to protect your data.
 
 ⛓️ **Reliability** - Built on top of the strong guarantees of the [Rust programming language](https://rust-lang.org).
 
