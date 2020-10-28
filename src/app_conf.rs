@@ -3,7 +3,7 @@
 //! then overwritten by the values in `config/local.toml`.
 //!
 //! The values are then converted into an `AppConfig` struct that allows faster access
-//! and also enforced the type system.
+//! and also enforces the type system.
 
 use config::Config;
 
