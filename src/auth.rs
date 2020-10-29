@@ -28,8 +28,12 @@ pub struct SignUpForm {
 }
 
 /// Return user information stored inside the JWT.
-pub async fn user_info(claims: jwt::Claims) -> HttpResponse {
-    HttpResponse::Ok().json(claims)
+pub async fn user_info(
+    app_state: web::Data<AppState>,
+    jwt: jwt::JWT,
+) -> Result<HttpResponse, Error> {
+    let claims = jwt::extract_claims(&jwt.0, &app_state.config.jwt.secret).await?;
+    Ok(HttpResponse::Ok().json(claims))
 }
 
 /// Give user sign in page
@@ -104,13 +108,14 @@ pub async fn sign_up_page(_req: HttpRequest) -> HttpResponse {
         ")
 }
 
-
 /// Sign in user and return JWT on success.
 pub async fn sign_in(
     app_state: web::Data<AppState>,
     form: web::Json<SignInForm>,
 ) -> Result<HttpResponse, Error> {
-    let user = web::block(move || database::users::authenticate_user(&form, app_state.clone()))
+    let closure_app_state = app_state.clone();
+
+    let user = web::block(move || database::users::authenticate_user(&form, closure_app_state))
         .await
         .map_err(|outer_err| match outer_err {
             BlockingError::Error(err) => match err.err_type {
@@ -139,7 +144,7 @@ pub async fn sign_in(
     let token = encode(
         &Header::default(),
         &claims,
-        &EncodingKey::from_secret("secret".as_ref()),
+        &EncodingKey::from_secret(&app_state.config.jwt.secret),
     );
 
     match token {

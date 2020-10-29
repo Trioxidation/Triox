@@ -12,20 +12,37 @@ pub struct Claims {
     pub exp: usize,
 }
 
-/// Extractor for JWT claims.
+pub struct JWT(pub String);
+
+/// Helper function for extracting claims from JWT string
+pub fn extract_claims(jwt: &str, secret: &[u8]) -> Ready<Result<Claims, Error>> {
+    match decode::<Claims>(
+        jwt,
+        &DecodingKey::from_secret(secret),
+        &Validation::new(Algorithm::HS256),
+    ) {
+        Ok(token) => ok(token.claims),
+        Err(e) => match e.kind() {
+            errors::ErrorKind::ExpiredSignature => err(ErrorUnauthorized("expired token!")),
+            _ => err(ErrorUnauthorized("invalid token!")),
+        },
+    }
+}
+
+/// Extractor for JWT header as String.
 ///
-/// Can be used by accessing claims in service parameters.
-///
-/// Automatically returns an error if claims are missing or invalid.
-impl FromRequest for Claims {
+/// Returns an error if header is missing can't be converted to string.
+impl FromRequest for JWT {
     type Error = Error;
-    type Future = Ready<Result<Claims, Error>>;
+    type Future = Ready<Result<JWT, Error>>;
     type Config = ();
 
     fn from_request(req: &HttpRequest, _payload: &mut dev::Payload) -> Self::Future {
+        // Extract token from header
         let jwt_header = req.headers().get("Triox-JWT");
 
         if let Some(jwt) = jwt_header {
+            // Extract string from token
             let token: &str = match jwt.to_str() {
                 Ok(str) => str,
                 Err(_) => return err(ErrorUnauthorized("invalid token!")),
@@ -33,17 +50,7 @@ impl FromRequest for Claims {
 
             let token = token.trim();
 
-            match decode::<Claims>(
-                token,
-                &DecodingKey::from_secret("secret".as_ref()),
-                &Validation::new(Algorithm::HS256),
-            ) {
-                Ok(token) => ok(token.claims),
-                Err(e) => match e.kind() {
-                    errors::ErrorKind::ExpiredSignature => err(ErrorUnauthorized("expired token!")),
-                    _ => err(ErrorUnauthorized("invalid token!")),
-                },
-            }
+            ok(JWT(token.to_string()))
         } else {
             err(ErrorUnauthorized("no token!"))
         }

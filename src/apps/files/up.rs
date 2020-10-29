@@ -7,6 +7,7 @@ use actix_web::error::{ErrorBadRequest, ErrorInternalServerError};
 use actix_web::{post, web, Error, HttpResponse};
 
 use crate::jwt;
+use crate::AppState;
 
 #[derive(serde::Serialize)]
 struct Response {
@@ -17,10 +18,13 @@ struct Response {
 
 #[post("/app/files/up/{path}")]
 pub async fn up(
-    claims: jwt::Claims,
+    app_state: web::Data<AppState>,
+    jwt: jwt::JWT,
     web::Path(path): web::Path<String>,
     mut payload: Multipart,
 ) -> Result<HttpResponse, Error> {
+    let claims = jwt::extract_claims(&jwt.0, &app_state.config.jwt.secret).await?;
+
     let base_path: std::path::PathBuf =
         [".", "data", "users", &claims.id.to_string(), "files", &path]
             .iter()

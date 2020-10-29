@@ -5,6 +5,7 @@ use tokio::fs;
 use tokio::fs::{DirEntry, ReadDir};
 
 use crate::jwt;
+use crate::AppState;
 
 /// File list returned by the `list` and `list_root` services as JSON
 #[derive(serde::Serialize)]
@@ -16,20 +17,30 @@ struct Response {
 /// Service for listing files via an API
 #[get("/app/files/list/{path}")]
 pub async fn list(
-    claims: jwt::Claims,
+    app_state: web::Data<AppState>,
+    jwt: jwt::JWT,
     web::Path(path): web::Path<String>,
 ) -> Result<HttpResponse, Error> {
-    list_files(claims, path).await
+    list_files(&app_state, jwt, path).await
 }
 
 /// Service for listing files of the root directory via an API
 #[get("/app/files/list")]
-pub async fn list_root(claims: jwt::Claims) -> Result<HttpResponse, Error> {
-    list_files(claims, "".to_owned()).await
+pub async fn list_root(
+    app_state: web::Data<AppState>,
+    jwt: jwt::JWT,
+) -> Result<HttpResponse, Error> {
+    list_files(&app_state, jwt, "".to_owned()).await
 }
 
 /// Helper function for the `list` and `list_root` services
-async fn list_files(claims: jwt::Claims, path: String) -> Result<HttpResponse, Error> {
+async fn list_files(
+    app_state: &AppState,
+    jwt: jwt::JWT,
+    path: String,
+) -> Result<HttpResponse, Error> {
+    let claims = jwt::extract_claims(&jwt.0, &app_state.config.jwt.secret).await?;
+
     let path: std::path::PathBuf = [".", "data", "users", &claims.id.to_string(), "files", &path]
         .iter()
         .collect();
