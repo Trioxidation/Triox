@@ -6,9 +6,14 @@
 //! and also enforces the type system.
 
 use config::Config;
+use rand::distributions::Standard;
+use rand::{thread_rng, Rng};
+use std::fs::File;
+use std::io::Read;
+use log::{warn, info};
 
 /// Stores a database type (currently only MySQL).
-#[derive(Debug, Clone, Copy)]
+#[derive(Debug, Clone)]
 pub enum DbServerType {
     Mysql,
 }
@@ -40,7 +45,7 @@ pub struct SslConfig {
 /// Configurations for JWT authentification.
 #[derive(Debug, Clone)]
 pub struct JwtConfig {
-    pub secret: Box<str>,
+    pub secret: Box<[u8]>,
 }
 
 /// Collection of all partial configurations.
@@ -64,8 +69,8 @@ impl<'a> ConfWrapper<'a> {
         default_val: T,
     ) -> T {
         self.0.get::<T>(key).unwrap_or_else(|_| {
-            println!(
-                "CONFIG: Couldn't find field '{}', falling back to default value '{}'",
+            warn!(
+                "config: Couldn't find entry '{}', falling back to default value '{}'",
                 key, default_val
             );
             default_val
@@ -78,13 +83,51 @@ impl<'a> ConfWrapper<'a> {
         self.0
             .get_str(key)
             .unwrap_or_else(|_| {
-                println!(
-                "CONFIG: Couldn't find field '{}', falling back to default value '{}'",
+                warn!(
+                    "config: Couldn't find entry '{}', falling back to default value '{}'",
                     key, default_val
                 );
                 default_val.to_string()
             })
             .into_boxed_str()
+    }
+    /// Get `Box<u8>` from the configured path or use default value.
+    /// The user is notified if a default value is used.
+    fn get_bytes_from_path(&self, key: &str, default_key_length: usize) -> Box<[u8]> {
+        let res_path = self.0.get_str(key);
+
+        // Try to open file and read bytes - otherwise generate random bytes
+        if let Ok(str_path) = res_path {
+            if let Ok(mut file) = File::open(&str_path) {
+                let mut bytes: Vec<u8> = Vec::new();
+                if file.read_to_end(&mut bytes).is_ok() {
+                    // Returns bytes on success
+                    return bytes.into_boxed_slice();
+                } else {
+                    warn!(
+                        "config: Read bytes from file at path '{}' specified in '{}', generating random secret instead",
+                        &str_path, key
+                    );
+                }
+            } else {
+                warn!(
+                    "config: Couldn't open file at path '{}' specified in '{}', generating random secret instead",
+                    &str_path, key
+                );
+            }
+        } else {
+            info!(
+                "config: Entry '{}' is empty, generating random secret instead",
+                key
+            );
+        }
+
+        // generate random bytes with specified length
+        thread_rng()
+            .sample_iter(Standard)
+            .take(default_key_length)
+            .collect::<Vec<u8>>()
+            .into_boxed_slice()
     }
 }
 
@@ -92,6 +135,7 @@ impl<'a> ConfWrapper<'a> {
 pub fn load_config(config: &Config) -> AppConfig {
     // wrap config into helper struct
     let conf = ConfWrapper(config);
+
     AppConfig {
         server: ServerConfig {
             url: conf.get_str("server.url", "127.0.0.1"),
@@ -109,7 +153,7 @@ pub fn load_config(config: &Config) -> AppConfig {
             enabled: conf.get("ssl.enabled", true),
         },
         jwt: JwtConfig {
-            secret: conf.get_str("jwt.secret", "secret"),
+            secret: conf.get_bytes_from_path("jwt.secret", 2048),
         },
     }
 }
