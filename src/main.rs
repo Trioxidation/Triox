@@ -149,11 +149,8 @@ async fn main() -> std::io::Result<()> {
     };
 
     if server_conf.workers != 0 {
-            server = server.workers(server_conf.workers);
+        server = server.workers(server_conf.workers);
     }
 
-    server
-        .server_hostname(server_conf.url)
-        .run()
-        .await
+    server.server_hostname(server_conf.url).run().await
 }
