@@ -25,7 +25,7 @@ dashmap = "3"
 
 # log
 log = "0.4"
-env_logger = "0.7"
+env_logger = "0.8"
 
 # templates
 #yarte = "0.10"
