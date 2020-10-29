@@ -76,6 +76,9 @@ pub struct AppState {
 
 #[actix_web::main]
 async fn main() -> std::io::Result<()> {
+    // setup logger
+    env_logger::Builder::from_env(Env::default().default_filter_or("info")).init();
+
     // Load configurations
     let mut config = Config::default();
 
@@ -101,9 +104,6 @@ async fn main() -> std::io::Result<()> {
     // create database pool
     let db_pool =
         database::connect(&config.database.url()).expect("Failed to create database pool.");
-
-    // setup logger
-    env_logger::from_env(Env::default().default_filter_or("info")).init();
 
     // Clone config before it is moved into the closure
     let server_conf = config.server.clone();
