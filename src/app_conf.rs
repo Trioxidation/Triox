@@ -6,11 +6,11 @@
 //! and also enforces the type system.
 
 use config::Config;
+use log::{info, warn};
 use rand::distributions::Standard;
 use rand::{thread_rng, Rng};
 use std::fs::File;
 use std::io::Read;
-use log::{warn, info};
 
 /// Stores a database type (currently only MySQL).
 #[derive(Debug, Clone)]

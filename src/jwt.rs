@@ -23,7 +23,9 @@ pub fn extract_claims(jwt: &str, secret: &[u8]) -> Ready<Result<Claims, Error>> 
     ) {
         Ok(token) => ok(token.claims),
         Err(e) => match e.kind() {
-            errors::ErrorKind::ExpiredSignature => err(ErrorUnauthorized("expired token!")),
+            errors::ErrorKind::ExpiredSignature => {
+                err(ErrorUnauthorized("expired token!"))
+            }
             _ => err(ErrorUnauthorized("invalid token!")),
         },
     }

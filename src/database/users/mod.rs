@@ -78,12 +78,12 @@ pub fn authenticate_user(
     };
 
     // Check passworrd
-    if !crate::hash::compare_passwords(&data.password.as_bytes(), &user.password_hash).map_err(
-        |err| DbError {
+    if !crate::hash::compare_passwords(&data.password.as_bytes(), &user.password_hash)
+        .map_err(|err| DbError {
             err_type: DbErrorType::InternalServerError,
             cause: err.to_owned(),
-        },
-    )? {
+        })?
+    {
         return Err(DbError {
             err_type: DbErrorType::Unauthorized,
             cause: "wrong password".to_owned(),
@@ -94,7 +94,10 @@ pub fn authenticate_user(
 }
 
 /// Add a new user to the database.
-pub fn add_user(data: &SignUpForm, app_state: web::Data<AppState>) -> Result<User, DbError> {
+pub fn add_user(
+    data: &SignUpForm,
+    app_state: web::Data<AppState>,
+) -> Result<User, DbError> {
     let db_conn = app_state.db_pool.get().map_err(|_| DbError {
         err_type: DbErrorType::InternalServerError,
         cause: "couldn't connect to database".to_owned(),

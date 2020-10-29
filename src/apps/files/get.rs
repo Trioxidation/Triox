@@ -14,9 +14,10 @@ pub async fn get(
 ) -> Result<NamedFile, Error> {
     let claims = jwt::extract_claims(&jwt.0, &app_state.config.jwt.secret).await?;
 
-    let path: std::path::PathBuf = [".", "data", "users", &claims.id.to_string(), "files", &path]
-        .iter()
-        .collect();
+    let path: std::path::PathBuf =
+        [".", "data", "users", &claims.id.to_string(), "files", &path]
+            .iter()
+            .collect();
 
     Ok(NamedFile::open(path).map_err(ErrorInternalServerError)?)
 }

@@ -102,8 +102,8 @@ async fn main() -> std::io::Result<()> {
     let config = app_conf::load_config(&config);
 
     // create database pool
-    let db_pool =
-        database::connect(&config.database.url()).expect("Failed to create database pool.");
+    let db_pool = database::connect(&config.database.url())
+        .expect("Failed to create database pool.");
 
     // Clone config before it is moved into the closure
     let server_conf = config.server.clone();
@@ -134,8 +134,9 @@ async fn main() -> std::io::Result<()> {
 
     server = if ssl_conf.enabled {
         // enable HTTPS
-        let mut ssl_acceptor_builder = SslAcceptor::mozilla_intermediate(SslMethod::tls())
-            .expect("Couldn't create SslAcceptor");
+        let mut ssl_acceptor_builder =
+            SslAcceptor::mozilla_intermediate(SslMethod::tls())
+                .expect("Couldn't create SslAcceptor");
         ssl_acceptor_builder
             .set_private_key_file("ssl/key.pem", SslFiletype::PEM)
             .expect("Couldn't set private key");

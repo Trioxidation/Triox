@@ -10,8 +10,8 @@ fn default_app_state() -> AppState {
     let config = app_conf::load_config(&config);
 
     // create database pool
-    let db_pool =
-        database::connect(&config.database.url()).expect("Failed to create database pool.");
+    let db_pool = database::connect(&config.database.url())
+        .expect("Failed to create database pool.");
 
     AppState {
         config,

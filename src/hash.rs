@@ -10,7 +10,8 @@ pub fn from_password(password: &str) -> Result<String, &str> {
     // use default config
     let config = Config::default();
 
-    argon2::hash_encoded(password.as_bytes(), &salt, &config).map_err(|_| "Failed to create hash")
+    argon2::hash_encoded(password.as_bytes(), &salt, &config)
+        .map_err(|_| "Failed to create hash")
 }
 
 /// Compares password with password hash. Used for authentication on sign in.

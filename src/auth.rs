@@ -115,16 +115,21 @@ pub async fn sign_in(
 ) -> Result<HttpResponse, Error> {
     let closure_app_state = app_state.clone();
 
-    let user = web::block(move || database::users::authenticate_user(&form, closure_app_state))
-        .await
-        .map_err(|outer_err| match outer_err {
-            BlockingError::Error(err) => match err.err_type {
-                DbErrorType::InternalServerError => ErrorInternalServerError(err.cause),
-                DbErrorType::BadRequest => ErrorBadRequest(err.cause),
-                DbErrorType::Unauthorized => ErrorUnauthorized(err.cause),
-            },
-            BlockingError::Canceled => ErrorInternalServerError("database request canceled"),
-        })?;
+    let user =
+        web::block(move || database::users::authenticate_user(&form, closure_app_state))
+            .await
+            .map_err(|outer_err| match outer_err {
+                BlockingError::Error(err) => match err.err_type {
+                    DbErrorType::InternalServerError => {
+                        ErrorInternalServerError(err.cause)
+                    }
+                    DbErrorType::BadRequest => ErrorBadRequest(err.cause),
+                    DbErrorType::Unauthorized => ErrorUnauthorized(err.cause),
+                },
+                BlockingError::Canceled => {
+                    ErrorInternalServerError("database request canceled")
+                }
+            })?;
 
     // Get unix time stamp
     let time_now = SystemTime::now();
@@ -166,7 +171,9 @@ pub async fn sign_up(
                 DbErrorType::BadRequest => ErrorBadRequest(err.cause),
                 DbErrorType::Unauthorized => ErrorUnauthorized(err.cause),
             },
-            BlockingError::Canceled => ErrorInternalServerError("database request canceled"),
+            BlockingError::Canceled => {
+                ErrorInternalServerError("database request canceled")
+            }
         })?;
 
     // generate storage path for user

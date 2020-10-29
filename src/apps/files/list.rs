@@ -41,9 +41,10 @@ async fn list_files(
 ) -> Result<HttpResponse, Error> {
     let claims = jwt::extract_claims(&jwt.0, &app_state.config.jwt.secret).await?;
 
-    let path: std::path::PathBuf = [".", "data", "users", &claims.id.to_string(), "files", &path]
-        .iter()
-        .collect();
+    let path: std::path::PathBuf =
+        [".", "data", "users", &claims.id.to_string(), "files", &path]
+            .iter()
+            .collect();
 
     let mut dir: ReadDir = fs::read_dir(&path)
         .await
