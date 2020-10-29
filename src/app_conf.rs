@@ -24,6 +24,7 @@ pub struct ServerConfig {
     pub url: Box<str>,
     pub listen: Box<str>,
     pub port: u32,
+    pub workers: usize,
 }
 
 /// Configurations for the database connector.
@@ -91,6 +92,7 @@ impl<'a> ConfWrapper<'a> {
             })
             .into_boxed_str()
     }
+
     /// Get `Box<u8>` from the configured path or use default value.
     /// The user is notified if a default value is used.
     fn get_bytes_from_path(&self, key: &str, default_key_length: usize) -> Box<[u8]> {
@@ -141,6 +143,7 @@ pub fn load_config(config: &Config) -> AppConfig {
             url: conf.get_str("server.url", "127.0.0.1"),
             listen: conf.get_str("server.listen", "127.0.0.1"),
             port: conf.get("server.port", 8080),
+            workers: conf.get("server.workers", 1),
         },
         database: DatabaseConfig {
             server_type: DbServerType::Mysql,

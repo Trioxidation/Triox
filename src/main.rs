@@ -148,9 +148,12 @@ async fn main() -> std::io::Result<()> {
         server.bind(listen_address)?
     };
 
+    if server_conf.workers != 0 {
+            server = server.workers(server_conf.workers);
+    }
+
     server
         .server_hostname(server_conf.url)
-        .workers(4)
         .run()
         .await
 }
