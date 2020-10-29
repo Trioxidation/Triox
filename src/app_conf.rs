@@ -164,34 +164,23 @@ pub fn load_config(config: &Config) -> AppConfig {
 impl ServerConfig {
     /// Builds sever address from config parameters.
     pub fn listen_address(&self) -> String {
-        let mut url: String = String::new();
-
-        url += &self.listen;
-        url += ":";
-        url += &self.port.to_string();
-
-        url
+        format!("{}:{}", self.listen, self.port).to_string()
     }
 }
 
 impl DatabaseConfig {
     /// Builds database url from config parameters.
     pub fn url(&self) -> String {
-        let mut url: String = String::new();
-
-        url += match self.server_type {
-            DbServerType::Mysql => "mysql",
-        };
-
-        url += "://";
-        url += &self.user;
-        url += ":";
-        url += &self.password;
-        url += "@";
-        url += &self.address;
-        url += "/";
-        url += &self.name;
-
-        url
+        format!(
+            "{}://{}:{}@{}/{}",
+            match self.server_type {
+                DbServerType::Mysql => "mysql",
+            },
+            self.user,
+            self.password,
+            self.address,
+            self.name
+        )
+        .to_string()
     }
 }
