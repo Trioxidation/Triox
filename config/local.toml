@@ -1,17 +1,48 @@
 [server]
+
+# Server host name
 url = "127.0.0.1"
+
+# Socket address to bind
 listen = "127.0.0.1"
+
+# Port that should be listened on
 port = 8080
 
+# Amount of worker threads
+# If set to zero Triox will use one worker per physical CPU core
+workers = 0
+
+
 [database]
+# Database type (currently only MySQL is available)
 type = "mysql"
+
+# Username of the database user
 user = "triox"
+
+# Password of the database user
 password = "triox"
+
+# Database address
 address = "localhost"
+
+# Name of the database
 name = "triox"
 
+
 [ssl]
+
+# Enable/disbale SSL
 enabled = false
 
+
 [jwt]
-secret = "secret"
+
+# Path to JWT secret file.
+# In not specified a set of random numbers is generated instead.
+# This is secure but will break JWTs on server restarts
+# To avoid this behavior, set the path to a file containing a randomly generated secret.
+# On Unix systems you can generate this secret file using:
+# dd if=/dev/random of=path/to/file count=4 bs=1024
+# secret = "path/to/file"
