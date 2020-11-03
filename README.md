@@ -78,6 +78,6 @@ Then update `config/local.toml`:
 [ssl]
 enabled = true
 ```
-# API Dokumentation
+# API Documentation
 
 The API is documented in [`API.md`](https://github.com/AaronErhardt/Triox/blob/master/API.md).
