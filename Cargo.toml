@@ -3,6 +3,10 @@ name = "triox"
 version = "0.1.0"
 authors = ["Aaron Erhardt <aaron.erhardt@t-online.de>"]
 edition = "2018"
+description = "An open source cloud server that focuses on speed, reliability and security"
+repository = "https://github.com/AaronErhardt/Triox"
+readme = "README.md"
+license = "GPL-3.0-or-later"
 
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
