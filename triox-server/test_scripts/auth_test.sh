@@ -2,9 +2,9 @@
 
 ADDR="http://127.0.0.1:8080"
 DEFAULT_HEADERS="Content-Type: application/json"
-USER_NAME="http_tester"
+USER_NAME="http_tester3"
 PASSWORD="http_tester"
-EMAIL="tester@http.com"
+EMAIL="tester3@http.com"
 
 
 # Try signing up a new user

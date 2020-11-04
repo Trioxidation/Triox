@@ -1,0 +1,52 @@
+[package]
+name = "triox-server"
+version = "0.1.0"
+authors = ["Aaron Erhardt <aaron.erhardt@t-online.de>"]
+edition = "2018"
+description = "An open source cloud server that focuses on speed, reliability and security"
+repository = "https://github.com/AaronErhardt/Triox"
+readme = "README.md"
+license = "GPL-3.0-or-later"
+
+# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+
+[dependencies]
+# config
+config = "*"
+
+# database
+diesel = { version = "1", features = ["mysql", "r2d2"] }
+r2d2 = "0.8"
+
+# hash
+rust-argon2 = "*"
+
+# random
+rand = "*"
+
+# concurrent map
+dashmap = "3"
+
+# log
+log = "0.4"
+env_logger = "0.8"
+
+# templates
+#yarte = "0.10"
+
+# serde
+serde = { version = "1", features = ["derive"] }
+
+# JWT
+jsonwebtoken = "7"
+
+# actix
+actix-rt = "1"
+actix-files = "0.4"
+actix-multipart = "0.3"
+actix-web = { version = "3", features = ["openssl"] }
+openssl = { version = "0.10", features = ["v110"] }
+
+# futures
+futures = "*"
+tokio = { version = "0.2", features = ["fs"] }
