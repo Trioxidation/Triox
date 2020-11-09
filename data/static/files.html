@@ -6,16 +6,58 @@
   <script src="/static/JS/main.js"></script>
 </head>
 <body>
-  <h1>SIGN UP PAGE</h1>
+  <h1>FILES</h1>
   <p id="path">/</p>
+  <h3>Upload</h3>
   <form id="theForm" action="/app/files/up/" method="post" enctype="multipart/form-data">
-    <input type="file" name="filetoupload"><br>
-    <input type="button" onclick="upload_files_ev()">
+    <input type="file" name="filetoupload" onchange="upload_files_ev()"><br>
   </form>
+  <br>
+  <h3>List</h3>
+  <div id="file_list">
+  </div>
+  <input type="button" onclick="load_files()">
   <script type='text/javascript'>
-function upload_files_ev(ev) {
+function new_list_entry(prefix, name) {
+   const new_p = document.createElement("P");
+   const new_prefix = document.createElement("span");
+   const new_name = document.createElement("span");
+
+   new_prefix.innerText = prefix;
+   new_name.innerText = name;
+
+   new_p.appendChild(new_prefix);
+   new_p.appendChild(new_name);
+
+   return new_p;
+}
+function upload_files_ev() {
     const files = document.getElementById("theForm");
-    upload_files_old("", files);
+    upload_files("", files);
+}
+function load_files() {
+    const list = document.getElementById("file_list");
+
+    list_files().then((result) => {
+        console.table(result);
+
+        list.innerHTML = '';
+
+        for (let file of result.files) {
+            const new_entry = new_list_entry("F: ", file);
+            new_entry.lastChild.addEventListener("click", download_file_ev);
+            list.appendChild(new_entry);
+        }
+
+        for (let dir of result.dirs) {
+           const new_entry = new_list_entry("D: ", dir);
+            list.appendChild(new_entry);
+        }
+    });
+}
+function download_file_ev(ev)
+{
+    download_file(ev.target.innerText);
 }
   </script>
 </body>

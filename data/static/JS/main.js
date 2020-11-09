@@ -30,23 +30,9 @@ function get_jwt() {
         .then(data => console.log(data));
 }
 
-function list_files(path = "") {
-    const jwt = localStorage.getItem('triox-jwt');
-
-    fetch(`/app/files/list/${path}`, {
-            method: 'GET',
-            headers: {
-                'x-triox-jwt': jwt
-            },
-        })
-        .then(response => response.json())
-        .then(data => console.log(data));
-}
-
-function upload_files_old(path = "", form) {
+function upload_files(path = "", form) {
     const jwt = localStorage.getItem('triox-jwt');
     const formData = new FormData(form);
-
     fetch(`/app/files/up/${path}`, {
         method: "POST",
         headers: {
@@ -56,108 +42,37 @@ function upload_files_old(path = "", form) {
     });
 }
 
-// Because we want to access DOM nodes,
-// we initialize our script at page load.
-/*window.addEventListener( 'load', function () {
-    const file = {
-        dom: document.getElementById( "theFile" ),
-        binary: null
-    };
+async function list_files(path = "") {
+    const jwt = localStorage.getItem('triox-jwt');
 
-    // Use the FileReader API to access file content
-    const reader = new FileReader();
-
-    // Because FileReader is asynchronous, store its
-    // result when it finishes to read the file
-    reader.addEventListener("load", function() {
-        file.binary = reader.result;
+    const response = await fetch(`/app/files/list/${path}`, {
+        method: 'GET',
+        headers: {
+            'x-triox-jwt': jwt
+        },
     });
 
-    // At page load, if a file is already selected, read it.
-    if (file.dom.files[0]) {
-        reader.readAsBinaryString(file.dom.files[0]);
-    }
+    const result = response.json();
 
-    // If not, read the file once the user selects it.
-    file.dom.addEventListener("change", function() {
-        if (reader.readyState === FileReader.LOADING) {
-            reader.abort();
-        }
+    return result;
+}
 
-        reader.readAsBinaryString(file.dom.files[0]);
-    });
+function download_file(path) {
+    const jwt = localStorage.getItem('triox-jwt');
 
-    // sendData is our main function
-    function sendData() {
-        // If there is a selected file, wait it is read
-        // If there is not, delay the execution of the function
-        if (!file.binary && file.dom.files.length > 0) {
-            setTimeout(sendData, 10);
-            return;
-        }
-
-        // To construct our multipart form data request,
-        // We need an XMLHttpRequest instance
-        const XHR = new XMLHttpRequest();
-
-        // We need a separator to define each part of the request
-        const boundary = "blob";
-
-        // Store our body request in a string.
-        let data = "";
-
-        // So, if the user has selected a file
-        if (file.dom.files[0]) {
-            // Start a new part in our body's request
-            data += "--" + boundary + "\r\n";
-
-            // Describe it as form data
-            data += 'content-disposition: form-data; '
-                // Define the name of the form data
-                +
-                'name="' + file.dom.name + '"; '
-                // Provide the real name of the file
-                +
-                'filename="' + file.dom.files[0].name + '"\r\n';
-            // And the MIME type of the file
-            data += 'Content-Type: ' + file.dom.files[0].type + '\r\n';
-
-            // There's a blank line between the metadata and the data
-            data += '\r\n';
-
-            // Append the binary data to our body's request
-            data += file.binary + '\r\n';
-
-            // Once we are done, "close" the body's request
-            data += "--" + boundary + "--";
-        }
-
-        // Define what happens on successful data submission
-        XHR.addEventListener('load', function(event) {
-            alert('Yeah! Data sent and response loaded.');
-        });
-
-        // Define what happens in case of error
-        XHR.addEventListener('error', function(event) {
-            alert('Oops! Something went wrong.');
-        });
-
-        // Set up our request
-        XHR.open('POST', '/app/files/up/');
-        XHR.setRequestHeader("x-triox-jwt", localStorage.getItem('triox-jwt'))
-
-        // Add the required HTTP header to handle a multipart form data POST request
-        XHR.setRequestHeader('Content-Type', 'multipart/form-data; boundary=' + boundary);
-
-        // And finally, send our data.
-        XHR.send(data);
-    }
-    // Access our form...
-    const form = document.getElementById("theForm");
-
-    // ...to take over the submit event
-    form.addEventListener('submit', function(event) {
-        event.preventDefault();
-        sendData();
-    });
-});*/
+    fetch(`/app/files/get/${path}`, {
+            method: "GET",
+            headers: {
+                'x-triox-jwt': jwt,
+            },
+        }).then(response => response.blob())
+        .then(blob => {
+            var url = window.URL.createObjectURL(blob);
+            var a = document.createElement('a');
+            a.href = url;
+            a.download = path;
+            document.body.appendChild(a); // we need to append the element to the dom -> otherwise it will not work in firefox
+            a.click();
+            a.remove(); //afterwards we remove the element again
+        });;
+}
