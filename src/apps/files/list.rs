@@ -25,7 +25,7 @@ pub async fn list(
 }
 
 /// Service for listing files of the root directory via an API
-#[get("/app/files/list")]
+#[get("/app/files/list/")]
 pub async fn list_root(
     app_state: web::Data<AppState>,
     jwt: jwt::JWT,

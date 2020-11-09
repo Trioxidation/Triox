@@ -128,6 +128,8 @@ async fn main() -> std::io::Result<()> {
             .service(apps::files::get::get)
             .service(apps::files::list::list)
             .service(apps::files::list::list_root)
+            .service(apps::files::up::up)
+            .service(apps::files::up::up_root)
     });
 
     let listen_address = server_conf.listen_address();

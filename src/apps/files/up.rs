@@ -21,6 +21,25 @@ pub async fn up(
     app_state: web::Data<AppState>,
     jwt: jwt::JWT,
     web::Path(path): web::Path<String>,
+    payload: Multipart,
+) -> Result<HttpResponse, Error> {
+    upload(app_state, jwt, path, payload).await
+}
+
+#[post("/app/files/up/")]
+pub async fn up_root(
+    app_state: web::Data<AppState>,
+    jwt: jwt::JWT,
+    payload: Multipart,
+) -> Result<HttpResponse, Error> {
+    upload(app_state, jwt, String::new(), payload).await
+}
+
+/// Service for listing files of the root directory via an API
+pub async fn upload(
+    app_state: web::Data<AppState>,
+    jwt: jwt::JWT,
+    path: String,
     mut payload: Multipart,
 ) -> Result<HttpResponse, Error> {
     let claims = jwt::extract_claims(&jwt.0, &app_state.config.jwt.secret).await?;
@@ -37,7 +56,7 @@ pub async fn up(
             .ok_or_else(|| ErrorBadRequest("Unknown content type"))?;
         let filename = content_type
             .get_filename()
-            .ok_or_else(|| ErrorBadRequest("Unknows file name"))?;
+            .ok_or_else(|| ErrorBadRequest("Unknown file name"))?;
 
         let mut file_path = base_path.clone();
         file_path.push(filename);
