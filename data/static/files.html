@@ -13,28 +13,30 @@
     <input type="file" name="filetoupload" onchange="upload_files_ev()"><br>
   </form>
   <br>
-  <h3>List</h3>
+  <h3>File list (click on files to download)</h3>
   <div id="file_list">
   </div>
-  <input type="button" onclick="load_files()">
+  <input type="button" value="Update file list" onclick="load_files()">
   <script type='text/javascript'>
 function new_list_entry(prefix, name) {
-   const new_p = document.createElement("P");
-   const new_prefix = document.createElement("span");
-   const new_name = document.createElement("span");
+    const new_p = document.createElement("P");
+    const new_prefix = document.createElement("span");
+    const new_name = document.createElement("span");
 
-   new_prefix.innerText = prefix;
-   new_name.innerText = name;
+    new_prefix.innerText = prefix;
+    new_name.innerText = name;
 
-   new_p.appendChild(new_prefix);
-   new_p.appendChild(new_name);
+    new_p.appendChild(new_prefix);
+    new_p.appendChild(new_name);
 
-   return new_p;
+    return new_p;
 }
+
 function upload_files_ev() {
     const files = document.getElementById("theForm");
     upload_files("", files);
 }
+
 function load_files() {
     const list = document.getElementById("file_list");
 
@@ -50,15 +52,16 @@ function load_files() {
         }
 
         for (let dir of result.dirs) {
-           const new_entry = new_list_entry("D: ", dir);
+            const new_entry = new_list_entry("D: ", dir);
             list.appendChild(new_entry);
         }
     });
 }
-function download_file_ev(ev)
-{
+
+function download_file_ev(ev) {
     download_file(ev.target.innerText);
 }
+window.addEventListener('load', load_files);
   </script>
 </body>
 </html>
