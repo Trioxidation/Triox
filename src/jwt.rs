@@ -41,7 +41,7 @@ impl FromRequest for JWT {
 
     fn from_request(req: &HttpRequest, _payload: &mut dev::Payload) -> Self::Future {
         // Extract token from header
-        let jwt_header = req.headers().get("Triox-JWT");
+        let jwt_header = req.headers().get("x-triox-jwt");
 
         if let Some(jwt) = jwt_header {
             // Extract string from token
