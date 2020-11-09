@@ -44,7 +44,8 @@ mod jwt;
 /// Tests.
 mod tests;
 
-use actix_web::{middleware, web, App, HttpRequest, HttpResponse, HttpServer};
+use actix_web::{middleware, web, App, HttpRequest, HttpServer};
+use actix_files::NamedFile;
 use env_logger::Env;
 
 use config::Config;
@@ -57,12 +58,8 @@ pub type DbPool = r2d2::Pool<ConnectionManager<MysqlConnection>>;
 use openssl::ssl::{SslAcceptor, SslFiletype, SslMethod};
 
 /// Index page
-async fn index(_req: HttpRequest) -> HttpResponse {
-    HttpResponse::Ok().content_type("text/html").body(
-        "<h1>INDEX PAGE</h1>
-Test sign_in: <a href=\"/sign_in\">SIGN IN PAGE</a><br>
-Test sign_up: <a href=\"/sign_up\">SIGN UP PAGE</a>",
-    )
+async fn index(_req: HttpRequest) -> actix_web::Result<NamedFile> {
+    Ok(NamedFile::open("data/static/index.html")?.set_content_type(mime::TEXT_HTML_UTF_8))
 }
 
 /// Storing the state of the application
@@ -130,6 +127,9 @@ async fn main() -> std::io::Result<()> {
             .service(apps::files::list::list_root)
             .service(apps::files::up::up)
             .service(apps::files::up::up_root)
+
+            // Serve static files from data/static to /static
+            .service(actix_files::Files::new("/static", "data/static"))
     });
 
     let listen_address = server_conf.listen_address();

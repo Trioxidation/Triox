@@ -1,6 +1,7 @@
 use crate::jwt;
 use jsonwebtoken::{encode, EncodingKey, Header};
 
+use actix_files::NamedFile;
 use actix_web::error::BlockingError;
 use actix_web::error::{ErrorBadRequest, ErrorInternalServerError, ErrorUnauthorized};
 use actix_web::{web, Error, HttpRequest, HttpResponse};
@@ -37,75 +38,15 @@ pub async fn user_info(
 }
 
 /// Give user sign in page
-pub async fn sign_in_page(_req: HttpRequest) -> HttpResponse {
-    HttpResponse::Ok()
-        .content_type("text/html")
-        .body("<h1>SIGN IN PAGE</h1>
-		<form>
-			<label for='username'>Username:</label><br>
-			<input type='text' id='user_name' name='user_name'><br>
-			<label for='password'>Password:</label><br>
-			<input type='password' id='password' name='password'><br><br>
-			<input type='button' value='Submit' onclick='submitform()'><span style='padding-left: 50px;'><input type='button' onclick='location.href=\"/sign_up\"' value='or sign up' /></span>
-		</form>
-
-		<script type='text/javascript'>
-    	function submitform(){
-			data = JSON.stringify({
-				'user_name': document.getElementsByTagName('input')[0].value,
-				'password': document.getElementsByTagName('input')[1].value
-			})
-			console.log(data);
-	        var xhr = new XMLHttpRequest();
-	        xhr.open('post', '/sign_in', true);
-	        xhr.setRequestHeader('Content-Type', 'application/json');
-			xhr.onreadystatechange = function() {
-				if (xhr.readyState === 4 && xhr.status === 200) {
-					console.log(xhr.responseText);
-				}
-			}
-        	xhr.send(data);
-		}
-		</script>
-		")
+pub async fn sign_in_page(_req: HttpRequest) -> actix_web::Result<NamedFile> {
+    Ok(NamedFile::open("data/static/sign_in.html")?
+        .set_content_type(mime::TEXT_HTML_UTF_8))
 }
 
 /// Give user sign up page
-pub async fn sign_up_page(_req: HttpRequest) -> HttpResponse {
-    HttpResponse::Ok()
-        .content_type("text/html")
-        .body("<h1>SIGN UP PAGE</h1>
-        <form>
-            <label for='username'>Username:</label><br>
-            <input type='text' id='user_name' name='user_name'><br>
-            <label for='password'>Password:</label><br>
-            <input type='password' id='password' name='password'><br>
-            <label for='email'>Email:</label><br>
-            <input type='text' id='email' name='email'><br><br>
-            <input type='button' value='Submit' onclick='submitform()'><span style='padding-left: 50px;'><input type='button' onclick='location.href=\"/sign_in\"' value='or sign in' /></span>
-        </form>
-
-		<script type='text/javascript'>
-        function submitform(){
-            data = JSON.stringify({
-                'user_name': document.getElementsByTagName('input')[0].value,
-                'password': document.getElementsByTagName('input')[1].value,
-                'email': document.getElementsByTagName('input')[2].value,
-            })
-            console.log(data);
-            var xhr = new XMLHttpRequest();
-            xhr.open('post', '/sign_up', true);
-            xhr.setRequestHeader('Content-Type', 'application/json');
-            xhr.onreadystatechange = function() {
-                if (xhr.readyState === 4 && xhr.status === 200) {
-					console.log(xhr.responseText);
-                }
-            }
-            xhr.send(data);
-        }
-        </script>
-
-        ")
+pub async fn sign_up_page(_req: HttpRequest) -> actix_web::Result<NamedFile> {
+    Ok(NamedFile::open("data/static/sign_up.html")?
+        .set_content_type(mime::TEXT_HTML_UTF_8))
 }
 
 /// Sign in user and return JWT on success.

@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>Title of the document</title>
+  <link rel="stylesheet" type="text/css" href="main.css">
+  <script src="/static/JS/main.js"></script>
+</head>
+<body>
+  <h1>SIGN IN PAGE</h1>
+  <form>
+    <label for='user_name'>Username:</label><br>
+    <input type='text' id='user_name' name='user_name'><br>
+    <label for='password'>Password:</label><br>
+    <input type='password' id='password' name='password'><br>
+    <br>
+    <input type='button' value='Submit' onclick=
+    'submitform()'><span style='padding-left: 50px;'><input type=
+    'button' onclick='location.href="/sign_up"' value=
+    'or sign up'></span>
+  </form>
+  <script type='text/javascript'>
+function submitform() {
+    data = JSON.stringify({
+        'user_name': document.getElementsByTagName('input')[0].value,
+        'password': document.getElementsByTagName('input')[1].value
+    });
+    console.log(data);
+    send_json(data, '/sign_in', (text) => {
+        alert(text);
+        localStorage.setItem('triox-jwt', text);
+    });
+}
+  </script>
+</body>
+</html>

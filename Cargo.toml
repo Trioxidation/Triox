@@ -41,6 +41,7 @@ serde = { version = "1", features = ["derive"] }
 jsonwebtoken = "7"
 
 # actix
+mime = "*"
 actix-rt = "1"
 actix-files = "0.4"
 actix-multipart = "0.3"

@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>Title of the document</title>
+  <script src="/static/JS/main.js"></script>
+</head>
+<body>
+  <h1>SIGN UP PAGE</h1>
+  <p id="path">/</p>
+  <form id="theForm" action="/app/files/up/" method="post" enctype="multipart/form-data">
+    <input type="file" name="filetoupload"><br>
+    <input type="button" onclick="upload_files_ev()">
+  </form>
+  <script type='text/javascript'>
+function upload_files_ev(ev) {
+    const files = document.getElementById("theForm");
+    upload_files_old("", files);
+}
+  </script>
+</body>
+</html>
