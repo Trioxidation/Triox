@@ -164,7 +164,7 @@ pub fn load_config(config: &Config) -> AppConfig {
 impl ServerConfig {
     /// Builds sever address from config parameters.
     pub fn listen_address(&self) -> String {
-        format!("{}:{}", self.listen, self.port).to_string()
+        format!("{}:{}", self.listen, self.port)
     }
 }
 
@@ -181,6 +181,5 @@ impl DatabaseConfig {
             self.address,
             self.name
         )
-        .to_string()
     }
 }
