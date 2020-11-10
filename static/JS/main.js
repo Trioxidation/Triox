@@ -30,15 +30,20 @@ function get_jwt() {
         .then(data => console.log(data));
 }
 
-function upload_files(path = "", form) {
+function upload_files(path = "", form, success_fn) {
     const jwt = localStorage.getItem('triox-jwt');
     const formData = new FormData(form);
+
     fetch(`/app/files/up/${path}`, {
         method: "POST",
         headers: {
             'x-triox-jwt': jwt,
         },
         body: formData
+    }).then(() => {
+        if (success_fn) {
+            success_fn();
+        }
     });
 }
 
