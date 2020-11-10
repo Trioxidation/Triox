@@ -34,7 +34,7 @@ function new_list_entry(prefix, name) {
 
 function upload_files_ev() {
     const files = document.getElementById("theForm");
-    upload_files("", files);
+    upload_files("", files, () => load_files());
 }
 
 function load_files() {

@@ -59,7 +59,7 @@ use openssl::ssl::{SslAcceptor, SslFiletype, SslMethod};
 
 /// Index page
 async fn index(_req: HttpRequest) -> actix_web::Result<NamedFile> {
-    Ok(NamedFile::open("data/static/index.html")?.set_content_type(mime::TEXT_HTML_UTF_8))
+    Ok(NamedFile::open("static/index.html")?.set_content_type(mime::TEXT_HTML_UTF_8))
 }
 
 /// Storing the state of the application
@@ -128,8 +128,8 @@ async fn main() -> std::io::Result<()> {
             .service(apps::files::up::up)
             .service(apps::files::up::up_root)
 
-            // Serve static files from data/static to /static
-            .service(actix_files::Files::new("/static", "data/static"))
+            // Serve static files from ./static/ to /static/
+            .service(actix_files::Files::new("/static", "static"))
     });
 
     let listen_address = server_conf.listen_address();

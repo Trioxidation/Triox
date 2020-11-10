@@ -39,13 +39,13 @@ pub async fn user_info(
 
 /// Give user sign in page
 pub async fn sign_in_page(_req: HttpRequest) -> actix_web::Result<NamedFile> {
-    Ok(NamedFile::open("data/static/sign_in.html")?
+    Ok(NamedFile::open("static/sign_in.html")?
         .set_content_type(mime::TEXT_HTML_UTF_8))
 }
 
 /// Give user sign up page
 pub async fn sign_up_page(_req: HttpRequest) -> actix_web::Result<NamedFile> {
-    Ok(NamedFile::open("data/static/sign_up.html")?
+    Ok(NamedFile::open("static/sign_up.html")?
         .set_content_type(mime::TEXT_HTML_UTF_8))
 }
 
