@@ -4,7 +4,7 @@ use jsonwebtoken::{encode, EncodingKey, Header};
 use actix_files::NamedFile;
 use actix_web::error::BlockingError;
 use actix_web::error::{ErrorBadRequest, ErrorInternalServerError, ErrorUnauthorized};
-use actix_web::{web, Error, HttpRequest, HttpResponse};
+use actix_web::{http, web, Error, HttpRequest, HttpResponse};
 use tokio::fs;
 
 use std::time::{SystemTime, UNIX_EPOCH};
@@ -18,6 +18,7 @@ use crate::{database, AppState};
 pub struct SignInForm {
     pub user_name: String,
     pub password: String,
+    pub cookie: Option<bool>,
 }
 
 /// Information required for sign up.
@@ -39,14 +40,12 @@ pub async fn user_info(
 
 /// Give user sign in page
 pub async fn sign_in_page(_req: HttpRequest) -> actix_web::Result<NamedFile> {
-    Ok(NamedFile::open("static/sign_in.html")?
-        .set_content_type(mime::TEXT_HTML_UTF_8))
+    Ok(NamedFile::open("static/sign_in.html")?.set_content_type(mime::TEXT_HTML_UTF_8))
 }
 
 /// Give user sign up page
 pub async fn sign_up_page(_req: HttpRequest) -> actix_web::Result<NamedFile> {
-    Ok(NamedFile::open("static/sign_up.html")?
-        .set_content_type(mime::TEXT_HTML_UTF_8))
+    Ok(NamedFile::open("static/sign_up.html")?.set_content_type(mime::TEXT_HTML_UTF_8))
 }
 
 /// Sign in user and return JWT on success.
@@ -55,6 +54,7 @@ pub async fn sign_in(
     form: web::Json<SignInForm>,
 ) -> Result<HttpResponse, Error> {
     let closure_app_state = app_state.clone();
+    let use_cookies = form.cookie == Some(true);
 
     let user =
         web::block(move || database::users::authenticate_user(&form, closure_app_state))
@@ -87,15 +87,29 @@ pub async fn sign_in(
         exp: timestamp + 7200, // now + two hours
     };
 
-    let token = encode(
+    let res_token = encode(
         &Header::default(),
         &claims,
         &EncodingKey::from_secret(&app_state.config.jwt.secret),
     );
 
-    match token {
-        Ok(token) => Ok(HttpResponse::Ok().body(token)),
-        Err(_) => Err(ErrorInternalServerError("JWTs generation failed")),
+    if let Ok(token) = res_token {
+        if use_cookies {
+            Ok(HttpResponse::Ok()
+                .cookie(
+                    http::Cookie::build("triox_jwt", token)
+                        .domain(app_state.config.server.url.to_string())
+                        .path("/")
+                        .secure(true)
+                        .http_only(true)
+                        .finish(),
+                )
+                .body("Success: Cookie is set"))
+        } else {
+            Ok(HttpResponse::Ok().body(token))
+        }
+    } else {
+        Err(ErrorInternalServerError("JWTs generation failed"))
     }
 }
 

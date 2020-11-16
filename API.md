@@ -24,11 +24,17 @@ Body: JSON
 ```json
 {
   "user_name": "test_user",
-  "password": "test_password"
+  "password": "test_password",
+  "cookie": false
 }
 ```
 
-Success Response: JWT as text/plain
+Success Response:
+ 
++ "cookie": true -> JWT inside set-cookie header
++ otherwise -> JWT as text/plain
+
+> Note: The "cookie" attribute is optional and can be omitted (default value is false).
 
 ### Sign up
 Path: `/sign_up`  
