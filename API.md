@@ -1,9 +1,19 @@
-## Headers
-### JWT Auth
-Name: `x-triox-jwt`  
-Value: JWT (see Auth -> Sign in)  
+## Authorization
+The authorization process requires the client to send a JWT (JSON Web Token) to the server. This can be done in two ways: Either by using the authorization header or by using a cookie. The authorization header is the preferred authorization method, the cookie header exist primarily for comparability with browsers and some HTTP-client implementations.
+
+### Authorization header
+Name: `authorization`  
+Type: `Bearer`  
+Value: Encoded JWT (see Auth -> Sign in)  
 Example:  
-`x-triox-jwt: eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJodHRwX3Rlc3RlciIsImlkIjoxOTEzMjkyNzI5LCJyb2xlIjowLCJleHAiOjE2MDE0NzgwNTR9.fXdzLaq_UwpwJ6BCqCA7lfPWuBw0Cfi2f485Ptr9t5g`
+`authorization: Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJodHRwX3Rlc3RlciIsImlkIjoxOTEzMjkyNzI5LCJyb2xlIjowLCJleHAiOjE2MDE0NzgwNTR9.fXdzLaq_UwpwJ6BCqCA7lfPWuBw0Cfi2f485Ptr9t5g`
+
+### Cookie header
+Name: `cookie`  
+Cookie-name: `triox_jwt`  
+Value: Encoded JWT (see Auth -> Sign in)  
+Example:  
+`cookie:  triox_jwt=eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJodHRwX3Rlc3RlciIsImlkIjoxOTEzMjkyNzI5LCJyb2xlIjowLCJleHAiOjE2MDE0NzgwNTR9.fXdzLaq_UwpwJ6BCqCA7lfPWuBw0Cfi2f485Ptr9t5g`
 
 ## Auth
 ### Sign in

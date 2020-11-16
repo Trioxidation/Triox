@@ -37,7 +37,7 @@ function upload_files(path = "", form, success_fn) {
     fetch(`/app/files/up/${path}`, {
         method: "POST",
         headers: {
-            'x-triox-jwt': jwt,
+            'Authorization': "Bearer " + jwt,
         },
         body: formData
     }).then(() => {
@@ -53,7 +53,7 @@ async function list_files(path = "") {
     const response = await fetch(`/app/files/list/${path}`, {
         method: 'GET',
         headers: {
-            'x-triox-jwt': jwt
+            'Authorization': "Bearer " + jwt,
         },
     });
 
@@ -68,7 +68,7 @@ function download_file(path) {
     fetch(`/app/files/get/${path}`, {
             method: "GET",
             headers: {
-                'x-triox-jwt': jwt,
+                'Authorization': "Bearer " + jwt,
             },
         }).then(response => response.blob())
         .then(blob => {

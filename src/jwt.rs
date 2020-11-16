@@ -41,18 +41,66 @@ impl FromRequest for JWT {
 
     fn from_request(req: &HttpRequest, _payload: &mut dev::Payload) -> Self::Future {
         // Extract token from header
-        let jwt_header = req.headers().get("x-triox-jwt");
 
-        if let Some(jwt) = jwt_header {
-            // Extract string from token
-            let token: &str = match jwt.to_str() {
+        if let Some(jwt) = req.headers().get("authorization") {
+            // Extract string from header
+            // The header should look like this:
+            // Bearer ENOCODED_JWT
+            let auth_str: &str = match jwt.to_str() {
                 Ok(str) => str,
-                Err(_) => return err(ErrorUnauthorized("invalid token!")),
+                Err(_) => {
+                    return err(ErrorUnauthorized("invalid authorization header!"))
+                }
             };
 
-            let token = token.trim();
+            // We expect the header to authorization type "Bearer"
+            let opt_bearer_pos = auth_str.find("Bearer");
 
-            ok(JWT(token.to_string()))
+            if let Some(bearer_pos) = opt_bearer_pos {
+                // Remove the "Bearer" string and extract the JWT itself
+                // This returns an Option because we don't know whether the string is long enough
+                let opt_jwt_str = &auth_str.get("Bearer".len() + bearer_pos..);
+                if let Some(jwt_str) = opt_jwt_str {
+                    let jwt_str = jwt_str.trim();
+
+                    ok(JWT(jwt_str.to_string()))
+                } else {
+                    err(ErrorUnauthorized("invalid token!"))
+                }
+            } else {
+                err(ErrorUnauthorized("invalid authorization type!"))
+            }
+        }
+        // Optionally the authorization can use cookies to send the JWT
+        else if let Some(cookies) = req.headers().get("cookie") {
+            // Extract string from token
+            let cookie_str: &str = match cookies.to_str() {
+                Ok(str) => str,
+                Err(_) => return err(ErrorUnauthorized("invalid cookie header!")),
+            };
+
+            // Cookies are divided by spaces, let's split them up!
+            let cookies: Vec<&str> = cookie_str.split(' ').collect();
+
+            // Can we find a "triox_jwt" cookie?
+            let mut opt_jwt_cookie: Option<&str> = None;
+            for cookie in cookies.iter() {
+                if cookie.contains("triox_jwt=") {
+                    opt_jwt_cookie = Some(cookie);
+                    break;
+                }
+            }
+
+            if let Some(jwt_cookie) = opt_jwt_cookie {
+                let jwt_cookie = jwt_cookie.trim();
+
+                // Remove the "triox_jwt=" part from the cookie to extract the JWT
+                let jwt_str = &jwt_cookie["triox_jwt=".len()..];
+
+                ok(JWT(jwt_str.to_string()))
+            } else {
+                err(ErrorUnauthorized("no token in cookie header!"))
+            }
         } else {
             err(ErrorUnauthorized("no token!"))
         }
