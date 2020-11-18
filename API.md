@@ -95,4 +95,46 @@ Method: POST
 Auth: JWT  
 Body: multipart data
 
-Success Response: "upload finished" as text/plain
+Success Response: "upload finished!" as text/plain
+
+### Create directory
+Path: `/app/files/create_dir/{path}`  
+Method: GET  
+Auth: JWT  
+
+Success Response: "directory successfully created!" as text/plain
+
+### Remove
+Path: `/app/files/remove/{path}`  
+Method: GET  
+Auth: JWT  
+
+Success Response:  "directory successfully deleted!" or "file successfully deleted!" as text/plain
+
+### Copy
+Path: `/app/files/copy`  
+Method: POST  
+Auth: JWT  
+Body: JSON
+```json
+{
+    from: "path/to/source",
+    to: "path/to/destination"
+}
+```
+
+Success Response:  "directory successfully copied!" or "file successfully copied!" as text/plain
+
+### Move
+Path: `/app/files/move`  
+Method: POST  
+Auth: JWT  
+Body: JSON
+```json
+{
+    from: "path/to/source",
+    to: "path/to/destination"
+}
+```
+
+Success Response:  "directory successfully moved!" or "file successfully moved!" as text/plain

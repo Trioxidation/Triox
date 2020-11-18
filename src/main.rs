@@ -127,7 +127,10 @@ async fn main() -> std::io::Result<()> {
             .service(apps::files::list::list_root)
             .service(apps::files::up::up)
             .service(apps::files::up::up_root)
-
+            .service(apps::files::copy::copy)
+            .service(apps::files::r#move::r#move)
+            .service(apps::files::remove::remove)
+            .service(apps::files::create_dir::create_dir)
             // Serve static files from ./static/ to /static/
             .service(actix_files::Files::new("/static", "static"))
     });
