@@ -16,12 +16,22 @@ function send_json(json, url, success_fn) {
     xhr.send(json);
 }
 
+function get_jwt_header() {
+    const jwt = localStorage.getItem('triox-jwt');
+
+    if (jwt) {
+        return {
+            'Authorization': "Bearer " + jwt,
+        };
+    } else {
+        return {};
+    }
+}
+
 function get_jwt() {
     fetch('/login', {
             method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-            },
+            headers: get_jwt_header(),
             redirect: 'follow',
             referrerPolicy: 'no-referrer',
             body: JSON.stringify(data)
@@ -31,14 +41,12 @@ function get_jwt() {
 }
 
 function upload_files(path = "", form, success_fn) {
-    const jwt = localStorage.getItem('triox-jwt');
+
     const formData = new FormData(form);
 
     fetch(`/app/files/up/${path}`, {
         method: "POST",
-        headers: {
-            'Authorization': "Bearer " + jwt,
-        },
+        headers: get_jwt_header(),
         body: formData
     }).then(() => {
         if (success_fn) {
@@ -48,13 +56,11 @@ function upload_files(path = "", form, success_fn) {
 }
 
 async function list_files(path = "") {
-    const jwt = localStorage.getItem('triox-jwt');
+
 
     const response = await fetch(`/app/files/list/${path}`, {
         method: 'GET',
-        headers: {
-            'Authorization': "Bearer " + jwt,
-        },
+        headers: get_jwt_header(),
     });
 
     const result = response.json();
@@ -63,13 +69,11 @@ async function list_files(path = "") {
 }
 
 function download_file(path) {
-    const jwt = localStorage.getItem('triox-jwt');
+
 
     fetch(`/app/files/get/${path}`, {
             method: "GET",
-            headers: {
-                'Authorization': "Bearer " + jwt,
-            },
+            headers: get_jwt_header(),
         }).then(response => response.blob())
         .then(blob => {
             var url = window.URL.createObjectURL(blob);

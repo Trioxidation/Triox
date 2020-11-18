@@ -23,7 +23,8 @@
 function submitform() {
     data = JSON.stringify({
         'user_name': document.getElementsByTagName('input')[0].value,
-        'password': document.getElementsByTagName('input')[1].value
+        'password': document.getElementsByTagName('input')[1].value,
+        'cookie': true
     });
     console.log(data);
     send_json(data, '/sign_in', (text) => {
