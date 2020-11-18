@@ -44,8 +44,8 @@ mod jwt;
 /// Tests.
 mod tests;
 
-use actix_web::{middleware, web, App, HttpRequest, HttpServer};
 use actix_files::NamedFile;
+use actix_web::{middleware, web, App, HttpRequest, HttpServer};
 use env_logger::Env;
 
 use config::Config;
@@ -119,9 +119,11 @@ async fn main() -> std::io::Result<()> {
             .route("/", web::get().to(index))
             .route("/user_info", web::get().to(auth::user_info))
             .route("/sign_up", web::get().to(auth::sign_up_page))
-            .route("/sign_up", web::post().to(auth::sign_up))
             .route("/sign_in", web::get().to(auth::sign_in_page))
+            // Authentification API
             .route("/sign_in", web::post().to(auth::sign_in))
+            .route("/sign_up", web::post().to(auth::sign_up))
+            // File app API
             .service(apps::files::get::get)
             .service(apps::files::list::list)
             .service(apps::files::list::list_root)

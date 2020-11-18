@@ -74,5 +74,5 @@ pub async fn upload(
                 .map_err(ErrorInternalServerError)?;
         }
     }
-    Ok(HttpResponse::Ok().body("upload finished"))
+    Ok(HttpResponse::Ok().body("upload finished!"))
 }

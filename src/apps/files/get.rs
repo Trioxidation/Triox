@@ -19,5 +19,5 @@ pub async fn get(
             .iter()
             .collect();
 
-    Ok(NamedFile::open(path).map_err(ErrorInternalServerError)?)
+    Ok(NamedFile::open(&path).map_err(ErrorInternalServerError)?)
 }
