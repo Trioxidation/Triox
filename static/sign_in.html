@@ -43,15 +43,20 @@
   </div>
   <script type='text/javascript'>
   function submitform() {
+    const use_cookie = true;
+
     data = JSON.stringify({
         'user_name': document.getElementsByTagName('input')[0].value,
         'password': document.getElementsByTagName('input')[1].value,
-        'cookie': true
+        'cookie': use_cookie
     });
     console.log(data);
     send_json(data, '/sign_in', (text) => {
         alert(text);
-        localStorage.setItem('triox-jwt', text);
+        if (!use_cookie) {
+            localStorage.setItem('triox-jwt', text);
+            console.log("updated JWT in local storage!");
+        }
     });
   }
   </script>
