@@ -89,8 +89,8 @@ Success Response: JSON
 }
 ```
 
-### Up (Upload)
-Path: `/app/files/up/{path}`  
+### Upload
+Path: `/app/files/upload/{path}`  
 Method: POST  
 Auth: JWT  
 Body: multipart data

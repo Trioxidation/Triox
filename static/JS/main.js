@@ -44,7 +44,7 @@ function upload_files(path = "", form, success_fn) {
 
     const formData = new FormData(form);
 
-    fetch(`/app/files/up/${path}`, {
+    fetch(`/app/files/upload/${path}`, {
         method: "POST",
         headers: get_jwt_header(),
         body: formData

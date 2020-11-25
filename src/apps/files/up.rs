@@ -16,7 +16,7 @@ struct Response {
     dirs: Vec<String>,
 }
 
-#[post("/app/files/up/{path}")]
+#[post("/app/files/upload/{path}")]
 pub async fn up(
     app_state: web::Data<AppState>,
     jwt: jwt::JWT,
@@ -26,7 +26,7 @@ pub async fn up(
     upload(app_state, jwt, path, payload).await
 }
 
-#[post("/app/files/up/")]
+#[post("/app/files/upload/")]
 pub async fn up_root(
     app_state: web::Data<AppState>,
     jwt: jwt::JWT,
