@@ -1,10 +1,12 @@
 # Triox - a cloud server for the next generation
 
+**A free file hosting server that focuses on speed, reliability and security.**
+
 ## Why Triox?
 
 ☘️ **Open Source** - We strongly believe in collaboration and transparency.
 
-⚡ **Speed** - Get the most out of your hardware! Triox runs fast, even on less powerful setups.
+⚡ **Speed** - Get the most out of your hardware! Triox runs fast, even on weak hardware.
 
 🔒 **Security** - We're using state-of-the-art algorithms and authentication methods to protect your data.
 
@@ -12,15 +14,21 @@
 
 🛫 **Easy Setup** - Triox comes with batteries included and is easy to configure.
 
-🔬 **Modern Technologies** - No cookies but authentication with [JWT](https://jwt.io) and a front-end based on [WebAssembly](https://webassembly.org).
+🔬 **Modern Technologies** - Authentication with [JWT](https://jwt.io) and a front-end based on [WebAssembly](https://webassembly.org).
 
-## Freatures
+## Features
 
-Currently we want to implement the following features before moving on with more ambitious plans:
+Triox is still in an early stage but already supports most important features. Before releasing the first beta version we want to implement the following features:
 
-- [x] Basic authentication with JWT
-- [x] File upload and download
+- [x] Authentication
+- [x] File API
 - [ ] WebAssembly based front-end
+
+## Contributing
+
+Everyone is welcome to contribute to Triox. We are always open for new ideas, features and improvements.
+
+The easiest way to contribute changes is to fork Triox, and then create a pull request to ask us to pull your changes into our repository. You can find a list of good first issues [here](https://github.com/aaronerhardt/triox/labels/good%20first%20issue).
 
 # Setup
 
