@@ -1,16 +1,15 @@
 <!DOCTYPE html>
 <html>
+
 <head>
-  <meta name="generator" content=
-  "HTML Tidy for HTML5 for Linux version 5.6.0">
+  <meta name="generator" content="HTML Tidy for HTML5 for Linux version 5.6.0">
   <meta charset="UTF-8">
   <title>Title of the document</title>
-  <link rel="stylesheet" type="text/css" href=
-  "static/CSS/main.css">
+  <link rel="stylesheet" type="text/css" href="/static/CSS/main.css">
   <script src="/static/JS/main.js"></script>
-  <link rel="stylesheet" href=
-  "https://cdn.jsdelivr.net/gh/AaronErhardt/Triox-Theme@0.1.0/css/triox-theme.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/AaronErhardt/Triox-Theme@0.1.0/css/triox-theme.css">
 </head>
+
 <body>
   <div class="columns is-centered fullscreen-form">
     <div class="column is-narrow">
@@ -20,45 +19,41 @@
           <div class="field">
             <label class="label" for='username'>Username</label>
             <div class="control">
-              <input class="input" type='text' id='username' name=
-              'user_name' required="required" minlength="8">
+              <input class="input" type='text' id='username' name='user_name' required="required" minlength="8">
             </div>
           </div>
           <div class="field">
             <label class="label" for='password'>Password</label>
             <div class="control">
-              <input class="input" type='password' id='password'
-              name='password' required="required" minlength="8">
+              <input class="input" type='password' id='password' name='password' required="required" minlength="8">
             </div>
           </div>
           <div class="is-flex is-justify-content-space-between">
-            <input class="button is-primary" type='button' value=
-            'Submit' onclick='submitform()'> <input class=
-            "button is-link" type='button' onclick=
-            'location.href="/sign_up"' value='Sign up'>
+            <input class="button is-primary" type='button' value='Submit' onclick='submitform()'> <input class="button is-link" type='button' onclick='location.href="/sign_up"' value='Sign up'>
           </div>
         </form>
       </div>
     </div>
   </div>
   <script type='text/javascript'>
-  function submitform() {
-    const use_cookie = true;
+    function submitform() {
+      const use_cookie = true;
 
-    data = JSON.stringify({
+      data = JSON.stringify({
         'user_name': document.getElementsByTagName('input')[0].value,
         'password': document.getElementsByTagName('input')[1].value,
         'cookie': use_cookie
-    });
-    console.log(data);
-    send_json(data, '/sign_in', (text) => {
+      });
+      console.log(data);
+      send_json(data, '/sign_in', (text) => {
         alert(text);
         if (!use_cookie) {
-            localStorage.setItem('triox-jwt', text);
-            console.log("updated JWT in local storage!");
+          localStorage.setItem('triox-jwt', text);
+          console.log("updated JWT in local storage!");
         }
-    });
-  }
+      });
+    }
   </script>
 </body>
+
 </html>
