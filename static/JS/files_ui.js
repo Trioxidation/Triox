@@ -3,77 +3,77 @@
 let current_path = [];
 
 function get_dir_string(path = [], secondary_path = []) {
-     if (path.length === 0 && secondary_path.length === 0) {
+    if (path.length === 0 && secondary_path.length === 0) {
         return "";
-     }
+    }
 
-     let dir_string = "";
+    let dir_string = "";
 
-     for (const entry of current_path) {
-         dir_string += entry + "/";
-     }
+    for (const entry of current_path) {
+        dir_string += entry + "/";
+    }
 
-     for (const entry of secondary_path) {
-         dir_string += entry + "/";
-     }
+    for (const entry of secondary_path) {
+        dir_string += entry + "/";
+    }
 
-     return dir_string.slice(0, -1);
+    return dir_string.slice(0, -1);
 }
 
 function update_dir() {
-     const path_list = document.getElementById("path-list");
+    const path_list = document.getElementById("path-list");
 
-     path_list.innerHTML = "";
+    path_list.innerHTML = "";
 
-     const li = document.createElement("LI");
-     const a = document.createElement("A");
+    const li = document.createElement("LI");
+    const a = document.createElement("A");
 
-     a.innerText = "Home";
-     li.appendChild(a);
-     path_list.appendChild(li);
+    a.innerText = "Home";
+    li.appendChild(a);
+    path_list.appendChild(li);
 
-     for (const entry of current_path) {
-         const li = document.createElement("LI");
-         const a = document.createElement("A");
+    for (const entry of current_path) {
+        const li = document.createElement("LI");
+        const a = document.createElement("A");
 
-         a.innerText = entry;
-         li.appendChild(a);
+        a.innerText = entry;
+        li.appendChild(a);
 
-         path_list.appendChild(li);
-     }
+        path_list.appendChild(li);
+    }
 
-     const children = path_list.children;
-     let z = children.length;
+    const children = path_list.children;
+    let z = children.length;
 
-     for (const child of children) {
-         z--;
-         if (child != path_list.lastChild) {
-             let i = z;
-             child.addEventListener("click", function () {
-                 current_path = current_path.slice(0, -i);
-                 update_dir();
-             });
-         }
-     }
+    for (const child of children) {
+        z--;
+        if (child != path_list.lastChild) {
+            let i = z;
+            child.addEventListener("click", function() {
+                current_path = current_path.slice(0, -i);
+                update_dir();
+            });
+        }
+    }
 
-     path_list.lastChild.className = "is-active";
+    path_list.lastChild.className = "is-active";
 
-     load_files();
+    load_files();
 }
 
 function load_dir(dir) {
-     current_path = dir;
-     update_dir();
+    current_path = dir;
+    update_dir();
 }
 
 function open_dir(dir) {
-     current_path.push(dir);
-     update_dir();
+    current_path.push(dir);
+    update_dir();
 }
 
 function leave_dir() {
-     current_path.pop();
-     update_dir();
+    current_path.pop();
+    update_dir();
 }
 
 function new_list_entry(name, type, date = "never") {
