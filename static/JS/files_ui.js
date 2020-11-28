@@ -157,6 +157,14 @@ function rename_dialoque(name) {
     }
 }
 
+function move_dialoque(name) {
+    const new_name = prompt(`Move file ${name} to`, name);
+
+    if (new_name) {
+        move_file(get_dir_string(current_path, [name]), get_dir_string(current_path, [new_name]));
+    }
+}
+
 function copy_dialoque(name) {
     const new_name = prompt(`Name of copied file`, name);
 
@@ -182,17 +190,21 @@ function create_folder() {
 function toggle_dropdown(ev) {
     ev.currentTarget.classList.toggle("is-active");
 
+    // extract name
+    const file_name = ev.currentTarget.parentElement.parentElement.children[1].innerText;
+
     switch (ev.target.innerText.trim()) {
         case "Rename":
-            // extract name
-            rename_dialoque(ev.currentTarget.parentElement.parentElement.children[1].innerText);
+            rename_dialoque(file_name);
             break;
         case "Copy":
-            // extract name
-            copy_dialoque(ev.currentTarget.parentElement.parentElement.children[1].innerText);
+            copy_dialoque(file_name);
+            break;
+        case "Move":
+            move_dialoque(file_name);
             break;
         case "Delete":
-            delete_dialoque(ev.currentTarget.parentElement.parentElement.children[1].innerText);
+            delete_dialoque(file_name);
             break;
     }
 }
@@ -206,7 +218,6 @@ function load_files() {
     const list = document.getElementById("file-list");
 
     list_files(get_dir_string(current_path)).then((result) => {
-        console.table(result);
 
         list.innerHTML = '';
 
