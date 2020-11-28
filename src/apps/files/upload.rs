@@ -26,7 +26,7 @@ pub async fn upload(
 ) -> Result<HttpResponse, Error> {
     let claims = jwt::extract_claims(&jwt.0, &app_state.config.jwt.secret).await?;
 
-    let base_path = super::resolve_path(claims.id, &query_path.path);
+    let base_path = super::resolve_path(claims.id, &query_path.path)?;
 
     // iterate over multipart stream
     while let Ok(Some(mut field)) = payload.try_next().await {
@@ -36,6 +36,12 @@ pub async fn upload(
         let filename = content_type
             .get_filename()
             .ok_or_else(|| ErrorBadRequest("Unknown file name"))?;
+
+        if filename.contains("..") {
+            return Err(actix_web::error::ErrorBadRequest(
+                "Moving up directories is not allowed!",
+            ));
+        }
 
         let mut file_path = base_path.clone();
         file_path.push(filename);

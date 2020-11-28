@@ -12,15 +12,8 @@ pub async fn copy(
 ) -> Result<HttpResponse, Error> {
     let claims = jwt::extract_claims(&jwt.0, &app_state.config.jwt.secret).await?;
 
-    let mut source_path: std::path::PathBuf =
-        [".", "data", "users", &claims.id.to_string(), "files"]
-            .iter()
-            .collect();
-
-    let mut destination_path = source_path.clone();
-
-    source_path.push(&params.from);
-    destination_path.push(&params.to);
+    let source_path = super::resolve_path(claims.id, &params.from)?;
+    let destination_path = super::resolve_path(claims.id, &params.to)?;
 
     let metadata = tokio::fs::metadata(&source_path).await?;
 

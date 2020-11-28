@@ -12,7 +12,7 @@ pub async fn create_dir(
 ) -> Result<HttpResponse, Error> {
     let claims = jwt::extract_claims(&jwt.0, &app_state.config.jwt.secret).await?;
 
-    let full_path = super::resolve_path(claims.id, &query_path.path);
+    let full_path = super::resolve_path(claims.id, &query_path.path)?;
 
     tokio::fs::create_dir_all(&full_path).await?;
 

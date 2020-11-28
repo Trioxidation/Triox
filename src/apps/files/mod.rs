@@ -20,8 +20,21 @@ pub mod r#move;
 /// Copy files and directories
 pub mod copy;
 
-pub fn resolve_path(user_id: u32, query_path: &str) -> std::path::PathBuf {
-    std::path::PathBuf::from(format!("data/users/{}/files/{}", user_id, query_path))
+/// Helper function to translate paths from requests into absolute path
+pub fn resolve_path(
+    user_id: u32,
+    query_path: &str,
+) -> Result<std::path::PathBuf, actix_web::Error> {
+    if query_path.contains("..") {
+        Err(actix_web::error::ErrorBadRequest(
+            "Moving up directories is not allowed!",
+        ))
+    } else {
+        Ok(std::path::PathBuf::from(format!(
+            "data/users/{}/files/{}",
+            user_id, query_path
+        )))
+    }
 }
 
 /// Shared struct for extracting paths

@@ -14,7 +14,7 @@ pub async fn get(
 ) -> Result<NamedFile, Error> {
     let claims = jwt::extract_claims(&jwt.0, &app_state.config.jwt.secret).await?;
 
-    let full_path = super::resolve_path(claims.id, &query_path.path);
+    let full_path = super::resolve_path(claims.id, &query_path.path)?;
 
     Ok(NamedFile::open(&full_path).map_err(ErrorInternalServerError)?)
 }
