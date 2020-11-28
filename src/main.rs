@@ -126,9 +126,7 @@ async fn main() -> std::io::Result<()> {
             // File app API
             .service(apps::files::get::get)
             .service(apps::files::list::list)
-            .service(apps::files::list::list_root)
-            .service(apps::files::up::up)
-            .service(apps::files::up::up_root)
+            .service(apps::files::upload::upload)
             .service(apps::files::copy::copy)
             .service(apps::files::r#move::r#move)
             .service(apps::files::remove::remove)

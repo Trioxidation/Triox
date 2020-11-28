@@ -16,38 +16,17 @@ struct Response {
     dirs: Vec<String>,
 }
 
-#[post("/app/files/upload/{path}")]
-pub async fn up(
-    app_state: web::Data<AppState>,
-    jwt: jwt::JWT,
-    web::Path(path): web::Path<String>,
-    payload: Multipart,
-) -> Result<HttpResponse, Error> {
-    upload(app_state, jwt, path, payload).await
-}
-
-#[post("/app/files/upload/")]
-pub async fn up_root(
-    app_state: web::Data<AppState>,
-    jwt: jwt::JWT,
-    payload: Multipart,
-) -> Result<HttpResponse, Error> {
-    upload(app_state, jwt, String::new(), payload).await
-}
-
-/// Service for listing files of the root directory via an API
+/// Service for listing files
+#[post("/app/files/upload")]
 pub async fn upload(
     app_state: web::Data<AppState>,
     jwt: jwt::JWT,
-    path: String,
+    web::Query(query_path): web::Query<super::QueryPath>,
     mut payload: Multipart,
 ) -> Result<HttpResponse, Error> {
     let claims = jwt::extract_claims(&jwt.0, &app_state.config.jwt.secret).await?;
 
-    let base_path: std::path::PathBuf =
-        [".", "data", "users", &claims.id.to_string(), "files", &path]
-            .iter()
-            .collect();
+    let base_path = super::resolve_path(claims.id, &query_path.path);
 
     // iterate over multipart stream
     while let Ok(Some(mut field)) = payload.try_next().await {

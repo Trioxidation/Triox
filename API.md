@@ -70,14 +70,14 @@ Success Response: JSON
 
 ## Files
 ### Get (Download)
-Path: `/app/files/get/{path}`  
+Path: `/app/files/get?path=path/to/file`  
 Method: GET  
 Auth: JWT  
 
 Success Response: File
 
 ### List
-Path: `/app/files/list/{path}`  
+Path: `/app/files/list?path=path/to/file`  
 Method: GET  
 Auth: JWT  
 
@@ -90,7 +90,7 @@ Success Response: JSON
 ```
 
 ### Upload
-Path: `/app/files/upload/{path}`  
+Path: `/app/files/upload?path=path/to/file`  
 Method: POST  
 Auth: JWT  
 Body: multipart data
@@ -98,14 +98,14 @@ Body: multipart data
 Success Response: "upload finished!" as text/plain
 
 ### Create directory
-Path: `/app/files/create_dir/{path}`  
+Path: `/app/files/create_dir?path=path/to/file`  
 Method: GET  
 Auth: JWT  
 
 Success Response: "directory successfully created!" as text/plain
 
 ### Remove
-Path: `/app/files/remove/{path}`  
+Path: `/app/files/remove?path=path/to/file`  
 Method: GET  
 Auth: JWT  
 
