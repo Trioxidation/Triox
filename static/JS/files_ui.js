@@ -120,7 +120,7 @@ function new_list_entry(name, type, date = "never") {
     const drop_down_html = `
 <div class="dropdown" onclick="toggle_dropdown(event)">
   <div class="dropdown-trigger">
-    <span class="icon">
+    <span class="icon has-background-link-light">
       <img src="/static/icons/keyboard_arrow_down.svg"></img>
     </span>
   </div>
