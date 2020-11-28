@@ -27,7 +27,6 @@ function move_file(old_path, new_path) {
                 to: new_path
             }),
         }).then(response => response.body)
-        .then(response => console.table(response))
         .then(response => load_files());
 }
 
@@ -43,7 +42,6 @@ function copy_file(old_path, new_path) {
                 to: new_path
             }),
         }).then(response => response.body)
-        .then(response => console.table(response))
         .then(response => load_files());
 }
 
@@ -52,7 +50,6 @@ function delete_file(path) {
     fetch(`/app/files/remove?path=${path}`, {
             method: "GET",
         }).then(response => response.body)
-        .then(response => console.table(response))
         .then(response => load_files());
 }
 
@@ -61,7 +58,6 @@ function create_dir(path) {
     fetch(`/app/files/create_dir?path=${path}`, {
             method: "GET",
         }).then(response => response.body)
-        .then(response => console.table(response))
         .then(response => load_files());
 }
 

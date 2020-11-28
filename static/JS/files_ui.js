@@ -50,11 +50,8 @@ function update_dir() {
          if (child != path_list.lastChild) {
              let i = z;
              child.addEventListener("click", function () {
-                 console.log(i);
-                 console.table(current_path);
                  current_path = current_path.slice(0, -i);
                  update_dir();
-                 console.table(current_path);
              });
          }
      }
