@@ -1,5 +1,84 @@
 'use strict';
 
+let current_path = [];
+
+function get_dir_string(path = [], secondary_path = []) {
+     if (path.length === 0 && secondary_path.length === 0) {
+        return "";
+     }
+
+     let dir_string = "";
+
+     for (const entry of current_path) {
+         dir_string += entry + "/";
+     }
+
+     for (const entry of secondary_path) {
+         dir_string += entry + "/";
+     }
+
+     return dir_string.slice(0, -1);
+}
+
+function update_dir() {
+     const path_list = document.getElementById("path-list");
+
+     path_list.innerHTML = "";
+
+     const li = document.createElement("LI");
+     const a = document.createElement("A");
+
+     a.innerText = "Home";
+     li.appendChild(a);
+     path_list.appendChild(li);
+
+     for (const entry of current_path) {
+         const li = document.createElement("LI");
+         const a = document.createElement("A");
+
+         a.innerText = entry;
+         li.appendChild(a);
+
+         path_list.appendChild(li);
+     }
+
+     const children = path_list.children;
+     let z = children.length;
+
+     for (const child of children) {
+         z--;
+         if (child != path_list.lastChild) {
+             let i = z;
+             child.addEventListener("click", function () {
+                 console.log(i);
+                 console.table(current_path);
+                 current_path = current_path.slice(0, -i);
+                 update_dir();
+                 console.table(current_path);
+             });
+         }
+     }
+
+     path_list.lastChild.className = "is-active";
+
+     load_files();
+}
+
+function load_dir(dir) {
+     current_path = dir;
+     update_dir();
+}
+
+function open_dir(dir) {
+     current_path.push(dir);
+     update_dir();
+}
+
+function leave_dir() {
+     current_path.pop();
+     update_dir();
+}
+
 function new_list_entry(name, type, date = "never") {
     const row = document.createElement("tr");
 
@@ -17,12 +96,12 @@ function new_list_entry(name, type, date = "never") {
 
     if (type == "File") {
         name_td.innerHTML = `
-<a href="/app/files/get/${name}" download>
+<a href="/app/files/get?path=${get_dir_string(current_path, [name])}" download>
   ${name}
 </a>`
     } else {
         name_td.innerHTML = `
-<a href="/app/files/get/${name}" download>
+<a onclick="open_dir('${name}')">
   ${name}
 </a>`
     }
@@ -73,14 +152,11 @@ function new_list_entry(name, type, date = "never") {
     return row;
 }
 
-
-window.addEventListener('load', load_files);
-
 function rename_dialoque(name) {
     const new_name = prompt(`Rename file ${name}`, name);
 
     if (new_name) {
-        move_file(name, new_name);
+        move_file(get_dir_string(current_path, [name]), get_dir_string(current_path, [new_name]));
     }
 }
 
@@ -88,13 +164,13 @@ function copy_dialoque(name) {
     const new_name = prompt(`Name of copied file`, name);
 
     if (new_name) {
-        copy_file(name, new_name);
+        copy_file(get_dir_string(current_path, [name]), get_dir_string(current_path, [new_name]));
     }
 }
 
 function delete_dialoque(name) {
     if (confirm(`Delete ${name}?`)) {
-        delete_file(name);
+        delete_file(get_dir_string(current_path, [name]));
     }
 }
 
@@ -102,7 +178,7 @@ function create_folder() {
     const path = prompt(`Name of new folder`);
 
     if (path) {
-        create_dir(path);
+        create_dir(get_dir_string(current_path, [path]));
     }
 }
 
@@ -126,13 +202,13 @@ function toggle_dropdown(ev) {
 
 function upload_files_ev() {
     const files = document.getElementById("theForm");
-    upload_files("", files, () => load_files());
+    upload_files(get_dir_string(current_path), files, () => load_files());
 }
 
 function load_files() {
     const list = document.getElementById("file-list");
 
-    list_files().then((result) => {
+    list_files(get_dir_string(current_path)).then((result) => {
         console.table(result);
 
         list.innerHTML = '';
@@ -153,3 +229,5 @@ function load_files() {
 function download_file_ev(ev) {
     download_file(ev.target.innerText);
 }
+
+window.addEventListener('load', load_files);

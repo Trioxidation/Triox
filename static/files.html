@@ -15,7 +15,11 @@
   <section class="section">
     <div class="container">
       <h1 class="title">FILES</h1>
-      <p class="block" id="path">PATH: /</p>
+      <nav class="breadcrumb" aria-label="breadcrumbs">
+        <ul id="path-list">
+         <li class="is-active"><a>Home</a></li>
+        </ul>
+      </nav>
       <div class="block">
         <form id="theForm" action="/app/files/upload/" method="post" enctype="multipart/form-data" name="theForm">
           <div class="file">

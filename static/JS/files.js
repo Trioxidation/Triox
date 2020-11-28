@@ -1,5 +1,20 @@
 'use strict';
 
+function upload_files(path = "", form, success_fn) {
+
+    const formData = new FormData(form);
+
+    fetch(`/app/files/upload?path=${path}`, {
+        method: "POST",
+        headers: get_jwt_header(),
+        body: formData
+    }).then(() => {
+        if (success_fn) {
+            success_fn();
+        }
+    });
+}
+
 function move_file(old_path, new_path) {
 
     fetch(`/app/files/move`, {
@@ -34,7 +49,7 @@ function copy_file(old_path, new_path) {
 
 function delete_file(path) {
 
-    fetch(`/app/files/remove/${path}`, {
+    fetch(`/app/files/remove?path=${path}`, {
             method: "GET",
         }).then(response => response.body)
         .then(response => console.table(response))
@@ -43,17 +58,16 @@ function delete_file(path) {
 
 function create_dir(path) {
 
-    fetch(`/app/files/create_dir/${path}`, {
+    fetch(`/app/files/create_dir?path=${path}`, {
             method: "GET",
         }).then(response => response.body)
         .then(response => console.table(response))
         .then(response => load_files());
 }
 
-async function list_files(path = "") {
+async function list_files(path = "/") {
 
-
-    const response = await fetch(`/app/files/list/${path}`, {
+    const response = await fetch(`/app/files/list?path=${path}`, {
         method: 'GET',
         headers: get_jwt_header(),
     });

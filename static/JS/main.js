@@ -39,18 +39,3 @@ function get_jwt() {
         .then(response => response.json())
         .then(data => console.log(data));
 }
-
-function upload_files(path = "", form, success_fn) {
-
-    const formData = new FormData(form);
-
-    fetch(`/app/files/upload/${path}`, {
-        method: "POST",
-        headers: get_jwt_header(),
-        body: formData
-    }).then(() => {
-        if (success_fn) {
-            success_fn();
-        }
-    });
-}
