@@ -5,17 +5,15 @@
 //!
 //!☘️ **Open Source** - We strongly believe in collaboration and transparency.
 //!
-//!⚡ **Speed** - Get the most out of your hardware! Triox runs fast, even on less powerful setups.
+//!⚡ **Speed** - Get the most out of your hardware! Triox runs fast, even on weak hardware.
 //!
-//!🔒 **Security** - We're using the Argon2 algorithm to protect your passwords.
+//!🔒 **Security** - We're using state-of-the-art algorithms and authentication methods to protect your data.
 //!
-//!⛓️ **Reliability** - Built on top of the strong guarantees of the
-//![Rust programming language](https://rust-lang.org).
+//!⛓️ **Reliability** - Built on top of the strong guarantees of the [Rust programming language](https://rust-lang.org).
 //!
 //!🛫 **Easy Setup** - Triox comes with batteries included and is easy to configure.
 //!
-//!🔬 **Modern Technologies** - No cookies but authentication with [JWT](https://jwt.io)
-//! and a front-end based on [WebAssembly](https://webassembly.org).
+//!🔬 **Modern Technologies** - Authentication with [JWT](https://jwt.io) and a front-end based on [WebAssembly](https://webassembly.org).
 
 #[macro_use]
 extern crate diesel;
