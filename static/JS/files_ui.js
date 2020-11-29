@@ -87,8 +87,7 @@ function new_list_entry(name, type, date = "never") {
 </label>`;
 
     row.appendChild(checkbox_td);
-    document.getElementById(a);
-
+    
     const name_td = document.createElement("td");
 
     if (type == "File") {
