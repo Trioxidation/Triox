@@ -45,7 +45,7 @@ impl FromRequest for JWT {
         if let Some(jwt) = req.headers().get("authorization") {
             // Extract string from header
             // The header should look like this:
-            // Bearer ENOCODED_JWT
+            // Bearer ENCODED_JWT
             let auth_str: &str = match jwt.to_str() {
                 Ok(str) => str,
                 Err(_) => {

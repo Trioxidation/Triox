@@ -2,7 +2,7 @@ use crate::DbPool;
 use diesel::r2d2::ConnectionManager;
 use diesel::MysqlConnection;
 
-/// Diesel generated shemas
+/// Diesel generated schemas
 pub mod schema;
 
 /// Database functions for handling users

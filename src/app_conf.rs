@@ -43,7 +43,7 @@ pub struct SslConfig {
     pub enabled: bool,
 }
 
-/// Configurations for JWT authentification.
+/// Configurations for JWT authentication.
 #[derive(Debug, Clone)]
 pub struct JwtConfig {
     pub secret: Box<[u8]>,

@@ -77,7 +77,7 @@ pub fn authenticate_user(
         }
     };
 
-    // Check passworrd
+    // Check password
     if !crate::hash::compare_passwords(&data.password.as_bytes(), &user.password_hash)
         .map_err(|err| DbError {
             err_type: DbErrorType::InternalServerError,

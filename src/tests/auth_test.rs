@@ -6,7 +6,7 @@ fn default_app_state() -> AppState {
     // Load configurations
     let config = Config::default();
 
-    // gerate struct from config HashMap
+    // generate struct from config HashMap
     let config = app_conf::load_config(&config);
 
     // create database pool

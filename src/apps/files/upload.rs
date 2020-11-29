@@ -46,14 +46,14 @@ pub async fn upload(
         let mut file_path = base_path.clone();
         file_path.push(filename);
 
-        // File::create is blocking operation, use threadpool
+        // File::create is blocking operation, use thread pool
         let mut f = web::block(|| std::fs::File::create(file_path))
             .await
             .map_err(ErrorInternalServerError)?;
         // Field in turn is stream of *Bytes* object
         while let Some(chunk) = field.next().await {
             let data = chunk.map_err(ErrorInternalServerError)?;
-            // filesystem operations are blocking, we have to use threadpool
+            // filesystem operations are blocking, we have to use thread pool
             f = web::block(move || f.write_all(&data).map(|_| f))
                 .await
                 .map_err(ErrorInternalServerError)?;
