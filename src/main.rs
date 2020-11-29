@@ -1,6 +1,3 @@
-// this is required to fix an issue with Rust 1.46...
-#![type_length_limit = "100000000"]
-
 //! # Triox - a cloud server for the next generation
 //!
 //!☘️ **Open Source** - We strongly believe in collaboration and transparency.
