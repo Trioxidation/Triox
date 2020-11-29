@@ -33,7 +33,7 @@ pub fn extract_claims(jwt: &str, secret: &[u8]) -> Ready<Result<Claims, Error>> 
 
 /// Extractor for JWT header as String.
 ///
-/// Returns an error if header is missing can't be converted to string.
+/// Returns an error if header is missing or can't be converted to string.
 impl FromRequest for JWT {
     type Error = Error;
     type Future = Ready<Result<JWT, Error>>;

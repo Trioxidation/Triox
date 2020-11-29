@@ -38,12 +38,12 @@ pub async fn user_info(
     Ok(HttpResponse::Ok().json(claims))
 }
 
-/// Give user sign in page
+/// Give user sign in page.
 pub async fn sign_in_page(_req: HttpRequest) -> actix_web::Result<NamedFile> {
     Ok(NamedFile::open("static/sign_in.html")?.set_content_type(mime::TEXT_HTML_UTF_8))
 }
 
-/// Give user sign up page
+/// Give user sign up page.
 pub async fn sign_up_page(_req: HttpRequest) -> actix_web::Result<NamedFile> {
     Ok(NamedFile::open("static/sign_up.html")?.set_content_type(mime::TEXT_HTML_UTF_8))
 }
@@ -72,7 +72,7 @@ pub async fn sign_in(
                 }
             })?;
 
-    // Get unix time stamp
+    // get unix time stamp
     let time_now = SystemTime::now();
     let timestamp = time_now
         .duration_since(UNIX_EPOCH)

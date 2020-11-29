@@ -87,7 +87,7 @@ function new_list_entry(name, type, date = "never") {
 </label>`;
 
     row.appendChild(checkbox_td);
-
+    document.getElementById(a);
 
     const name_td = document.createElement("td");
 
@@ -149,7 +149,7 @@ function new_list_entry(name, type, date = "never") {
     return row;
 }
 
-function rename_dialoque(name) {
+function rename_dialogue(name) {
     const new_name = prompt(`Rename file ${name}`, name);
 
     if (new_name) {
@@ -157,7 +157,7 @@ function rename_dialoque(name) {
     }
 }
 
-function move_dialoque(name) {
+function move_dialogue(name) {
     const new_name = prompt(`Move file ${name} to`, name);
 
     if (new_name) {
@@ -165,7 +165,7 @@ function move_dialoque(name) {
     }
 }
 
-function copy_dialoque(name) {
+function copy_dialogue(name) {
     const new_name = prompt(`Name of copied file`, name);
 
     if (new_name) {
@@ -173,7 +173,7 @@ function copy_dialoque(name) {
     }
 }
 
-function delete_dialoque(name) {
+function delete_dialogue(name) {
     if (confirm(`Delete ${name}?`)) {
         delete_file(get_dir_string(current_path, [name]));
     }
@@ -195,16 +195,16 @@ function toggle_dropdown(ev) {
 
     switch (ev.target.innerText.trim()) {
         case "Rename":
-            rename_dialoque(file_name);
+            rename_dialogue(file_name);
             break;
         case "Copy":
-            copy_dialoque(file_name);
+            copy_dialogue(file_name);
             break;
         case "Move":
-            move_dialoque(file_name);
+            move_dialogue(file_name);
             break;
         case "Delete":
-            delete_dialoque(file_name);
+            delete_dialogue(file_name);
             break;
     }
 }
