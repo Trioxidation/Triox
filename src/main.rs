@@ -1,21 +1,16 @@
-// this is required to fix an issue with Rust 1.46...
-#![type_length_limit = "100000000"]
-
 //! # Triox - a cloud server for the next generation
 //!
 //!☘️ **Open Source** - We strongly believe in collaboration and transparency.
 //!
-//!⚡ **Speed** - Get the most out of your hardware! Triox runs fast, even on less powerful setups.
+//!⚡ **Speed** - Get the most out of your hardware! Triox runs fast, even on weak hardware.
 //!
-//!🔒 **Security** - We're using the Argon2 algorithm to protect your passwords.
+//!🔒 **Security** - We're using state-of-the-art algorithms and authentication methods to protect your data.
 //!
-//!⛓️ **Reliability** - Built on top of the strong guarantees of the
-//![Rust programming language](https://rust-lang.org).
+//!⛓️ **Reliability** - Built on top of the strong guarantees of the [Rust programming language](https://rust-lang.org).
 //!
 //!🛫 **Easy Setup** - Triox comes with batteries included and is easy to configure.
 //!
-//!🔬 **Modern Technologies** - No cookies but authentication with [JWT](https://jwt.io)
-//! and a front-end based on [WebAssembly](https://webassembly.org).
+//!🔬 **Modern Technologies** - Authentication with [JWT](https://jwt.io) and a front-end based on [WebAssembly](https://webassembly.org).
 
 #[macro_use]
 extern crate diesel;
@@ -23,13 +18,13 @@ extern crate diesel;
 #[macro_use]
 extern crate log;
 
-/// The API is split into apps that take care of certain features.
+/// "Apps" in this module take care of certain parts of the API. For example the files app will provide services for uploading and downloading files.
 mod apps;
 
-/// Global configuration struct for Triox.
+/// This module defines a configuration struct for Triox that allows more robust and efficient access to configuration.
 mod app_conf;
 
-/// API for authentification. Including sign in, sign out and user information.
+/// API for authentication. Including sign in, sign out and user information.
 mod auth;
 
 /// Database structures and helper functions for loading, setting and updating the database.
@@ -38,14 +33,14 @@ mod database;
 /// Helper functions for hashing and comparing passwords.
 mod hash;
 
-/// Structures and Extrators for JWT authentification.
+/// Structures and extractors for JWT authentication.
 mod jwt;
 
 /// Tests.
 mod tests;
 
-use actix_web::{middleware, web, App, HttpRequest, HttpServer};
 use actix_files::NamedFile;
+use actix_web::{middleware, web, App, HttpRequest, HttpServer};
 use env_logger::Env;
 
 use config::Config;
@@ -76,7 +71,6 @@ async fn main() -> std::io::Result<()> {
     // setup logger
     env_logger::Builder::from_env(Env::default().default_filter_or("info")).init();
 
-    // Load configurations
     let mut config = Config::default();
 
     // open default config
@@ -95,14 +89,14 @@ async fn main() -> std::io::Result<()> {
         eprintln!("Could not open local config file!");
     }
 
-    // gerate struct from config HashMap
+    // generate struct from config HashMap
     let config = app_conf::load_config(&config);
 
     // create database pool
     let db_pool = database::connect(&config.database.url())
         .expect("Failed to create database pool.");
 
-    // Clone config before it is moved into the closure
+    // clone config before it is moved into the closure
     let server_conf = config.server.clone();
     let ssl_conf = config.ssl.clone();
 
@@ -116,26 +110,29 @@ async fn main() -> std::io::Result<()> {
                 db_pool: db_pool.clone(),
             })
             .wrap(middleware::Logger::default())
+            // static pages
             .route("/", web::get().to(index))
             .route("/user_info", web::get().to(auth::user_info))
             .route("/sign_up", web::get().to(auth::sign_up_page))
-            .route("/sign_up", web::post().to(auth::sign_up))
             .route("/sign_in", web::get().to(auth::sign_in_page))
+            // authentication API
             .route("/sign_in", web::post().to(auth::sign_in))
+            .route("/sign_up", web::post().to(auth::sign_up))
+            // file app API
             .service(apps::files::get::get)
             .service(apps::files::list::list)
-            .service(apps::files::list::list_root)
-            .service(apps::files::up::up)
-            .service(apps::files::up::up_root)
-
-            // Serve static files from ./static/ to /static/
+            .service(apps::files::upload::upload)
+            .service(apps::files::copy::copy)
+            .service(apps::files::r#move::r#move)
+            .service(apps::files::remove::remove)
+            .service(apps::files::create_dir::create_dir)
+            // serve static files from ./static/ to /static/
             .service(actix_files::Files::new("/static", "static"))
     });
 
     let listen_address = server_conf.listen_address();
 
     server = if ssl_conf.enabled {
-        // enable HTTPS
         let mut ssl_acceptor_builder =
             SslAcceptor::mozilla_intermediate(SslMethod::tls())
                 .expect("Couldn't create SslAcceptor");
@@ -147,7 +144,6 @@ async fn main() -> std::io::Result<()> {
             .expect("Couldn't set certificate chain file");
         server.bind_openssl(listen_address, ssl_acceptor_builder)?
     } else {
-        // create normal HTTP server
         server.bind(listen_address)?
     };
 

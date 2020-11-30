@@ -4,6 +4,7 @@ use actix_web::{get, web, Error, HttpResponse};
 use tokio::fs;
 use tokio::fs::{DirEntry, ReadDir};
 
+use super::QueryPath;
 use crate::jwt;
 use crate::AppState;
 
@@ -15,38 +16,17 @@ struct Response {
 }
 
 /// Service for listing files via an API
-#[get("/app/files/list/{path}")]
+#[get("/app/files/list")]
 pub async fn list(
     app_state: web::Data<AppState>,
     jwt: jwt::JWT,
-    web::Path(path): web::Path<String>,
-) -> Result<HttpResponse, Error> {
-    list_files(&app_state, jwt, path).await
-}
-
-/// Service for listing files of the root directory via an API
-#[get("/app/files/list/")]
-pub async fn list_root(
-    app_state: web::Data<AppState>,
-    jwt: jwt::JWT,
-) -> Result<HttpResponse, Error> {
-    list_files(&app_state, jwt, "".to_owned()).await
-}
-
-/// Helper function for the `list` and `list_root` services
-async fn list_files(
-    app_state: &AppState,
-    jwt: jwt::JWT,
-    path: String,
+    web::Query(query_path): web::Query<QueryPath>,
 ) -> Result<HttpResponse, Error> {
     let claims = jwt::extract_claims(&jwt.0, &app_state.config.jwt.secret).await?;
 
-    let path: std::path::PathBuf =
-        [".", "data", "users", &claims.id.to_string(), "files", &path]
-            .iter()
-            .collect();
+    let full_path = super::resolve_path(claims.id, &query_path.path)?;
 
-    let mut dir: ReadDir = fs::read_dir(&path)
+    let mut dir: ReadDir = fs::read_dir(&full_path)
         .await
         .map_err(ErrorInternalServerError)?;
 

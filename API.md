@@ -70,14 +70,14 @@ Success Response: JSON
 
 ## Files
 ### Get (Download)
-Path: `/app/files/get/{path}`  
+Path: `/app/files/get?path=path/to/file`  
 Method: GET  
 Auth: JWT  
 
 Success Response: File
 
 ### List
-Path: `/app/files/list/{path}`  
+Path: `/app/files/list?path=path/to/file`  
 Method: GET  
 Auth: JWT  
 
@@ -89,10 +89,52 @@ Success Response: JSON
 }
 ```
 
-### Up (Upload)
-Path: `/app/files/up/{path}`  
+### Upload
+Path: `/app/files/upload?path=path/to/file`  
 Method: POST  
 Auth: JWT  
 Body: multipart data
 
-Success Response: "upload finished" as text/plain
+Success Response: "upload finished!" as text/plain
+
+### Create directory
+Path: `/app/files/create_dir?path=path/to/file`  
+Method: GET  
+Auth: JWT  
+
+Success Response: "directory successfully created!" as text/plain
+
+### Remove
+Path: `/app/files/remove?path=path/to/file`  
+Method: GET  
+Auth: JWT  
+
+Success Response:  "directory successfully deleted!" or "file successfully deleted!" as text/plain
+
+### Copy
+Path: `/app/files/copy`  
+Method: POST  
+Auth: JWT  
+Body: JSON
+```json
+{
+    from: "path/to/source",
+    to: "path/to/destination"
+}
+```
+
+Success Response:  "directory successfully copied!" or "file successfully copied!" as text/plain
+
+### Move
+Path: `/app/files/move`  
+Method: POST  
+Auth: JWT  
+Body: JSON
+```json
+{
+    from: "path/to/source",
+    to: "path/to/destination"
+}
+```
+
+Success Response:  "directory successfully moved!" or "file successfully moved!" as text/plain

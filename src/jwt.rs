@@ -33,7 +33,7 @@ pub fn extract_claims(jwt: &str, secret: &[u8]) -> Ready<Result<Claims, Error>> 
 
 /// Extractor for JWT header as String.
 ///
-/// Returns an error if header is missing can't be converted to string.
+/// Returns an error if header is missing or can't be converted to string.
 impl FromRequest for JWT {
     type Error = Error;
     type Future = Ready<Result<JWT, Error>>;
@@ -45,7 +45,7 @@ impl FromRequest for JWT {
         if let Some(jwt) = req.headers().get("authorization") {
             // Extract string from header
             // The header should look like this:
-            // Bearer ENOCODED_JWT
+            // Bearer ENCODED_JWT
             let auth_str: &str = match jwt.to_str() {
                 Ok(str) => str,
                 Err(_) => {
