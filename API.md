@@ -98,10 +98,33 @@ Auth: JWT
 Success Response: JSON
 ```json
 {
-  "files": ["file1", "file2"],
-  "dirs": ["dir1", "dir2"]
+  "files": [
+    {
+      "name": "file.zip",
+      "size": 7206445,
+      "last_modified": 1606818956
+    },
+    {
+      "name": "main.rs",
+      "size": 9334,
+      "last_modified": 1604945280
+    },
+  ],
+  "directories": [
+    {
+      "name": "test_folder",
+      "last_modified": 1606490838
+    },
+    {
+      "name": "src",
+      "last_modified": 1606592435
+    },
+  ]
 }
 ```
+
++ last_modified stores a date in unix time (seconds since 00:00:00 UTC on 1 January 1970)
++ size stores the size of files in bytes
 
 ### Upload
 Path: `/app/files/upload?path=path/to/file`  

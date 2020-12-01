@@ -76,7 +76,7 @@ function leave_dir() {
     update_dir();
 }
 
-function new_list_entry(name, type, date = "never") {
+function new_list_entry(file, type) {
     const row = document.createElement("tr");
 
     const checkbox_td = document.createElement("td");
@@ -87,31 +87,107 @@ function new_list_entry(name, type, date = "never") {
 </label>`;
 
     row.appendChild(checkbox_td);
-    
+
     const name_td = document.createElement("td");
 
-    if (type == "File") {
+    if (type === "File") {
         name_td.innerHTML = `
-<a href="/app/files/get?path=${get_dir_string(current_path, [name])}" download>
-  ${name}
+<a href="/app/files/get?path=${get_dir_string(current_path, [file.name])}" download>
+  ${file.name}
 </a>`
     } else {
         name_td.innerHTML = `
-<a onclick="open_dir('${name}')">
-  ${name}
+<a onclick="open_dir('${file.name}')">
+  ${file.name}
 </a>`
     }
     row.appendChild(name_td);
 
 
-    const type_td = document.createElement("td");
-    type_td.innerText = type;
-    row.appendChild(type_td);
+    const size_td = document.createElement("td");
 
+    if (type === "File") {
+        let size = file.size;
+        let tousands = 0;
 
-    const date_td = document.createElement("td");
-    date_td.innerText = date;
-    row.appendChild(date_td);
+        while (size > 1000) {
+            size /= 1000;
+            tousands++;
+        }
+
+        size = size.toFixed(1);
+
+        let unit;
+        switch (tousands) {
+            case 0:
+                unit = "B";
+                break;
+            case 1:
+                unit = "KB";
+                break;
+            case 2:
+                unit = "MB";
+                break;
+            case 3:
+                unit = "GB";
+                break;
+            case 4:
+                unit = "TB";
+                break;
+        }
+        size_td.innerText = `${size} ${unit}`;
+    } else {
+
+    }
+
+    row.appendChild(size_td);
+
+    const last_modified = new Date(file.last_modified * 1000);
+
+    const millis_since_modified = Date.now() - last_modified;
+
+    let time_string;
+
+    const years = Math.floor(millis_since_modified / 31536000000);
+    const weeks = Math.floor(millis_since_modified / 604800000);
+    const days = Math.floor(millis_since_modified / 86400000);
+    const hours = Math.floor(millis_since_modified / 3600000);
+    const minutes = Math.floor(millis_since_modified / 60000);
+    const seconds = Math.floor(millis_since_modified / 1000);
+
+    if (last_modified == 0) {
+        time_string = "never";
+    } else if (years == 1) {
+        time_string = `one year ago`;
+    } else if (years != 0) {
+        time_string = `${years} years ago`;
+    } else if (weeks == 1) {
+        time_string = `one week ago`;
+    } else if (weeks != 0) {
+        time_string = `${weeks} weeks ago`;
+    } else if (days == 1) {
+        time_string = `one day ago`;
+    } else if (days != 0) {
+        time_string = `${days} days ago`;
+    } else if (hours == 1) {
+        time_string = `one hour ago`;
+    } else if (hours != 0) {
+        time_string = `${hours} hours ago`;
+    } else if (minutes == 1) {
+        time_string = `one minute ago`;
+    } else if (minutes != 0) {
+        time_string = `${minutes} minutes ago`;
+    } else if (seconds == 1) {
+        time_string = `one second ago`;
+    } else if (seconds != 0) {
+        time_string = `${seconds} seconds ago`;
+    } else {
+        time_string = "just now";
+    }
+
+    const last_modified_td = document.createElement("td");
+    last_modified_td.innerText = time_string;
+    row.appendChild(last_modified_td);
 
 
     const dropdown_td = document.createElement("td");
@@ -226,7 +302,7 @@ function load_files() {
             list.appendChild(new_entry);
         }
 
-        for (let dir of result.dirs) {
+        for (let dir of result.directories) {
             const new_entry = new_list_entry(dir, "Folder");
             list.appendChild(new_entry);
         }
