@@ -144,10 +144,8 @@ pub async fn delete_user(
     app_state: web::Data<AppState>,
     form: web::Json<DeleteUserForm>,
 ) -> Result<HttpResponse, Error> {
-    let closure_app_state = app_state.clone();
-
     let _user =
-        web::block(move || database::users::delete_user(&form, closure_app_state))
+        web::block(move || database::users::delete_user(&form, app_state))
             .await
             .map_err(|outer_err| match outer_err {
                 BlockingError::Error(err) => match err.err_type {
