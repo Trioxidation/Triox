@@ -51,6 +51,20 @@ Body: JSON
 
 Success Response: "user created" as text/plain
 
+### Delete User
+Path: `/delete_user`  
+Method: POST  
+Auth: None  
+Body: JSON
+```json
+{
+  "user_name": "test_user",
+  "password": "test_password",
+}
+```
+
+Success Response: "user successfully deleted" as text/plain
+
 ### User information
 Path: `/user_info`  
 Method: GET  
