@@ -78,6 +78,7 @@ async fn main() -> std::io::Result<()> {
             // authentication API
             .route("/sign_in", web::post().to(auth::sign_in))
             .route("/sign_up", web::post().to(auth::sign_up))
+            .route("/delete_user", web::post().to(auth::delete_user))
             // file app API
             .service(apps::files::get::get)
             .service(apps::files::list::list)

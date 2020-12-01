@@ -95,30 +95,71 @@ mod sign_in {
 mod sign_up {
     use crate::{app_state::AppState, auth};
     use actix_web::{http, web};
+    use rand::distributions::Alphanumeric;
+    use rand::{thread_rng, Rng};
 
     #[actix_rt::test]
     async fn sign_up_and_sign_in() {
+        // generating and loading data
         let app_state: web::Data<AppState> = web::Data::new(super::default_app_state());
 
+        let user_name: String =
+            thread_rng().sample_iter(&Alphanumeric).take(10).collect();
+
+        let password: String =
+            thread_rng().sample_iter(&Alphanumeric).take(30).collect();
+
+        let mut email: String =
+            thread_rng().sample_iter(&Alphanumeric).take(10).collect();
+
+        email.push_str("@test.com");
+
+        // sign up
         let form = web::Json(auth::SignUpForm {
-            user_name: "test user".to_owned(),
-            password: "decent password".to_owned(),
-            email: "admin@gmail.com".to_owned(),
+            user_name: user_name.clone(),
+            password: password.clone(),
+            email,
         });
 
         let resp = auth::sign_up(app_state.clone(), form).await.unwrap();
 
         assert_eq!(resp.status(), http::StatusCode::OK);
 
+        // sign in
         let form = web::Json(auth::SignInForm {
-            user_name: "test user".to_owned(),
-            password: "decent password".to_owned(),
+            user_name: user_name.clone(),
+            password: password.clone(),
+            cookie: None,
         });
 
-        let resp = auth::sign_in(app_state, form)
+        let resp = auth::sign_in(app_state.clone(), form)
             .await
             .expect("request should not throw an error");
 
         assert_eq!(resp.status(), http::StatusCode::OK);
+
+        // delete user
+         let form = web::Json(auth::DeleteUserForm {
+            user_name: user_name.clone(),
+            password: password.clone(),
+        });
+
+        let resp = auth::delete_user(app_state.clone(), form)
+            .await
+            .expect("request should not throw an error");
+
+        assert_eq!(resp.status(), http::StatusCode::OK);
+
+        // sign in again (should fail)
+        let form = web::Json(auth::SignInForm {
+            user_name: user_name.clone(),
+            password: password.clone(),
+            cookie: None,
+        });
+
+        let resp = auth::sign_in(app_state.clone(), form)
+            .await.expect_err("request should throw an error");
+
+        assert_eq!(resp.to_string(), actix_web::error::ErrorUnauthorized("unable to locate user").to_string());
     }
 }

@@ -5,7 +5,6 @@ use actix_files::NamedFile;
 use actix_web::error::BlockingError;
 use actix_web::error::{ErrorBadRequest, ErrorInternalServerError, ErrorUnauthorized};
 use actix_web::{http, web, Error, HttpRequest, HttpResponse};
-use tokio::fs;
 
 use std::time::{SystemTime, UNIX_EPOCH};
 
@@ -27,6 +26,13 @@ pub struct SignUpForm {
     pub user_name: String,
     pub password: String,
     pub email: String, //TODO: captcha: Vec<u8>
+}
+
+/// Information required for deleting a user.
+#[derive(serde::Deserialize)]
+pub struct DeleteUserForm {
+    pub user_name: String,
+    pub password: String,
 }
 
 /// Return user information stored inside the JWT.
@@ -118,7 +124,7 @@ pub async fn sign_up(
     app_state: web::Data<AppState>,
     form: web::Json<SignUpForm>,
 ) -> Result<HttpResponse, Error> {
-    let user = web::block(move || database::users::add_user(&form, app_state.clone()))
+    let _user = web::block(move || database::users::add_user(&form, app_state.clone()))
         .await
         .map_err(|outer_err| match outer_err {
             BlockingError::Error(err) => match err.err_type {
@@ -131,12 +137,30 @@ pub async fn sign_up(
             }
         })?;
 
-    // generate storage path for user
-    let path: std::path::PathBuf = [".", "data", "users", &user.id.to_string(), "files"]
-        .iter()
-        .collect();
-
-    fs::create_dir_all(path).await?;
-
     Ok(HttpResponse::Ok().body("user created"))
+}
+
+pub async fn delete_user(
+    app_state: web::Data<AppState>,
+    form: web::Json<DeleteUserForm>,
+) -> Result<HttpResponse, Error> {
+    let closure_app_state = app_state.clone();
+
+    let _user =
+        web::block(move || database::users::delete_user(&form, closure_app_state))
+            .await
+            .map_err(|outer_err| match outer_err {
+                BlockingError::Error(err) => match err.err_type {
+                    DbErrorType::InternalServerError => {
+                        ErrorInternalServerError(err.cause)
+                    }
+                    DbErrorType::BadRequest => ErrorBadRequest(err.cause),
+                    DbErrorType::Unauthorized => ErrorUnauthorized(err.cause),
+                },
+                BlockingError::Canceled => {
+                    ErrorInternalServerError("database request canceled")
+                }
+            })?;
+
+    Ok(HttpResponse::Ok().body("user successfully deleted"))
 }
