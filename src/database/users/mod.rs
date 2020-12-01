@@ -1,7 +1,7 @@
 /// Utility functions for password and email validation
 pub mod util;
 
-use crate::AppState;
+use crate::app_state::AppState;
 
 use actix_web::web;
 

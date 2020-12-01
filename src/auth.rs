@@ -11,7 +11,7 @@ use std::time::{SystemTime, UNIX_EPOCH};
 
 use crate::database::users::DbErrorType;
 
-use crate::{database, AppState};
+use crate::{app_state::AppState, database};
 
 /// Information required for sign in.
 #[derive(serde::Deserialize)]

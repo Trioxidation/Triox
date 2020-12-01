@@ -5,8 +5,8 @@ use tokio::fs;
 use tokio::fs::{DirEntry, ReadDir};
 
 use super::QueryPath;
+use crate::app_state::AppState;
 use crate::jwt;
-use crate::AppState;
 
 /// File list returned by the `list` and `list_root` services as JSON
 #[derive(serde::Serialize)]

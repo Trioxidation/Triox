@@ -1,4 +1,4 @@
-use crate::DbPool;
+pub type DbPool = r2d2::Pool<ConnectionManager<MysqlConnection>>;
 use diesel::r2d2::ConnectionManager;
 use diesel::MysqlConnection;
 

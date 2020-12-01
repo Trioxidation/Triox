@@ -1,7 +1,7 @@
 use actix_web::{post, web, Error, HttpResponse};
 
 use crate::jwt;
-use crate::AppState;
+use crate::app_state::AppState;
 
 /// Service for deleting files or directories
 #[post("/app/files/move")]

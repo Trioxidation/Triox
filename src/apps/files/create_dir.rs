@@ -1,7 +1,7 @@
 use actix_web::{get, web, Error, HttpResponse};
 
+use crate::app_state::AppState;
 use crate::jwt;
-use crate::AppState;
 
 /// Service for creating directories
 #[get("/app/files/create_dir")]

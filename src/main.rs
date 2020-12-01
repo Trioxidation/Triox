@@ -24,6 +24,9 @@ mod apps;
 /// This module defines a configuration struct for Triox that allows more robust and efficient access to configuration.
 mod app_conf;
 
+/// This module defines a configuration struct for Triox that allows more robust and efficient access to configuration.
+mod app_state;
+
 /// API for authentication. Including sign in, sign out and user information.
 mod auth;
 
@@ -43,13 +46,6 @@ use actix_files::NamedFile;
 use actix_web::{middleware, web, App, HttpRequest, HttpServer};
 use env_logger::Env;
 
-use config::Config;
-use dashmap::DashMap;
-
-use diesel::r2d2::{self, ConnectionManager};
-use diesel::MysqlConnection;
-pub type DbPool = r2d2::Pool<ConnectionManager<MysqlConnection>>;
-
 use openssl::ssl::{SslAcceptor, SslFiletype, SslMethod};
 
 /// Index page
@@ -57,58 +53,22 @@ async fn index(_req: HttpRequest) -> actix_web::Result<NamedFile> {
     Ok(NamedFile::open("static/index.html")?.set_content_type(mime::TEXT_HTML_UTF_8))
 }
 
-/// Storing the state of the application
-/// Can be accessed using the AppData extractor.
-#[derive(Clone)]
-pub struct AppState {
-    db_pool: DbPool,
-    config: app_conf::AppConfig,
-    login_count: DashMap<u32, u8>,
-}
-
 #[actix_web::main]
 async fn main() -> std::io::Result<()> {
     // setup logger
     env_logger::Builder::from_env(Env::default().default_filter_or("info")).init();
 
-    let mut config = Config::default();
-
-    // open default config
-    if config
-        .merge(config::File::with_name("config/default"))
-        .is_err()
-    {
-        eprintln!("Could not open default config file!");
-    }
-
-    // open user config
-    if config
-        .merge(config::File::with_name("config/local"))
-        .is_err()
-    {
-        eprintln!("Could not open local config file!");
-    }
-
-    // generate struct from config HashMap
-    let config = app_conf::load_config(&config);
-
-    // create database pool
-    let db_pool = database::connect(&config.database.url())
-        .expect("Failed to create database pool.");
+    let app_state = app_state::load_app_state("config");
 
     // clone config before it is moved into the closure
-    let server_conf = config.server.clone();
-    let ssl_conf = config.ssl.clone();
+    let server_conf = app_state.config.server.clone();
+    let ssl_conf = app_state.config.ssl.clone();
 
     // setup HTTP server
     let mut server = HttpServer::new(move || {
         App::new()
             // setup application state extractor
-            .data(AppState {
-                config: config.clone(),
-                login_count: DashMap::new(),
-                db_pool: db_pool.clone(),
-            })
+            .data(app_state.clone())
             .wrap(middleware::Logger::default())
             // static pages
             .route("/", web::get().to(index))

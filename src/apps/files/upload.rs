@@ -6,8 +6,8 @@ use futures::{StreamExt, TryStreamExt};
 use actix_web::error::{ErrorBadRequest, ErrorInternalServerError};
 use actix_web::{post, web, Error, HttpResponse};
 
+use crate::app_state::AppState;
 use crate::jwt;
-use crate::AppState;
 
 #[derive(serde::Serialize)]
 struct Response {

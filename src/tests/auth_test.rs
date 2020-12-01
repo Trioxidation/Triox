@@ -1,28 +1,13 @@
-use crate::{app_conf, database, AppState};
-use config::Config;
-use dashmap::DashMap;
+use crate::app_state::AppState;
 
 fn default_app_state() -> AppState {
-    // Load configurations
-    let config = Config::default();
-
-    // generate struct from config HashMap
-    let config = app_conf::load_config(&config);
-
-    // create database pool
-    let db_pool = database::connect(&config.database.url())
-        .expect("Failed to create database pool.");
-
-    AppState {
-        config,
-        login_count: DashMap::new(),
-        db_pool,
-    }
+    // Tests expect the config to be placed in the "config" directory
+    crate::app_state::load_app_state("config")
 }
 
 #[cfg(test)]
 mod sign_in {
-    use crate::{auth, AppState};
+    use crate::{app_state::AppState, auth};
     use actix_web::web;
 
     #[actix_rt::test]
@@ -31,6 +16,7 @@ mod sign_in {
         let form = web::Json(auth::SignInForm {
             user_name: "unknown user".to_owned(),
             password: "decent password".to_owned(),
+            cookie: None,
         });
 
         let resp = auth::sign_in(app_state, form)
@@ -46,6 +32,7 @@ mod sign_in {
         let form = web::Json(auth::SignInForm {
             user_name: "decent user name".to_owned(),
             password: "1234".to_owned(),
+            cookie: None,
         });
 
         let resp = auth::sign_in(app_state, form)
@@ -61,6 +48,7 @@ mod sign_in {
         let form = web::Json(auth::SignInForm {
             user_name: "decent user name".to_owned(),
             password: "01234567890123456789012345678901234567890".to_owned(),
+            cookie: None,
         });
 
         let resp = auth::sign_in(app_state, form)
@@ -76,6 +64,7 @@ mod sign_in {
         let form = web::Json(auth::SignInForm {
             user_name: "user".to_owned(),
             password: "decent password".to_owned(),
+            cookie: None,
         });
 
         let resp = auth::sign_in(app_state, form)
@@ -91,6 +80,7 @@ mod sign_in {
         let form = web::Json(auth::SignInForm {
             user_name: "01234567890123456789012345678901234567890".to_owned(),
             password: "decent password".to_owned(),
+            cookie: None,
         });
 
         let resp = auth::sign_in(app_state, form)
@@ -103,7 +93,7 @@ mod sign_in {
 
 #[cfg(test)]
 mod sign_up {
-    use crate::{auth, AppState};
+    use crate::{app_state::AppState, auth};
     use actix_web::{http, web};
 
     #[actix_rt::test]

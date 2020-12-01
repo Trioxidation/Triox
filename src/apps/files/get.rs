@@ -2,8 +2,8 @@ use actix_files::NamedFile;
 use actix_web::error::ErrorInternalServerError;
 use actix_web::{get, web, Error};
 
+use crate::app_state::AppState;
 use crate::jwt;
-use crate::AppState;
 
 /// Service for downloading files via an API
 #[get("/app/files/get")]
