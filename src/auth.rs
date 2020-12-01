@@ -144,21 +144,18 @@ pub async fn delete_user(
     app_state: web::Data<AppState>,
     form: web::Json<DeleteUserForm>,
 ) -> Result<HttpResponse, Error> {
-    let _user =
-        web::block(move || database::users::delete_user(&form, app_state))
-            .await
-            .map_err(|outer_err| match outer_err {
-                BlockingError::Error(err) => match err.err_type {
-                    DbErrorType::InternalServerError => {
-                        ErrorInternalServerError(err.cause)
-                    }
-                    DbErrorType::BadRequest => ErrorBadRequest(err.cause),
-                    DbErrorType::Unauthorized => ErrorUnauthorized(err.cause),
-                },
-                BlockingError::Canceled => {
-                    ErrorInternalServerError("database request canceled")
-                }
-            })?;
+    let _user = web::block(move || database::users::delete_user(&form, app_state))
+        .await
+        .map_err(|outer_err| match outer_err {
+            BlockingError::Error(err) => match err.err_type {
+                DbErrorType::InternalServerError => ErrorInternalServerError(err.cause),
+                DbErrorType::BadRequest => ErrorBadRequest(err.cause),
+                DbErrorType::Unauthorized => ErrorUnauthorized(err.cause),
+            },
+            BlockingError::Canceled => {
+                ErrorInternalServerError("database request canceled")
+            }
+        })?;
 
     Ok(HttpResponse::Ok().body("user successfully deleted"))
 }

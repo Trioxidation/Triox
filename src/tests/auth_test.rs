@@ -139,7 +139,7 @@ mod sign_up {
         assert_eq!(resp.status(), http::StatusCode::OK);
 
         // delete user
-         let form = web::Json(auth::DeleteUserForm {
+        let form = web::Json(auth::DeleteUserForm {
             user_name: user_name.clone(),
             password: password.clone(),
         });
@@ -158,8 +158,12 @@ mod sign_up {
         });
 
         let resp = auth::sign_in(app_state.clone(), form)
-            .await.expect_err("request should throw an error");
+            .await
+            .expect_err("request should throw an error");
 
-        assert_eq!(resp.to_string(), actix_web::error::ErrorUnauthorized("unable to locate user").to_string());
+        assert_eq!(
+            resp.to_string(),
+            actix_web::error::ErrorUnauthorized("unable to locate user").to_string()
+        );
     }
 }

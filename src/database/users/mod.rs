@@ -8,7 +8,7 @@ use actix_web::web;
 use crate::database::schema::users::dsl::*;
 use diesel::prelude::*;
 
-use crate::auth::{SignInForm, SignUpForm, DeleteUserForm};
+use crate::auth::{DeleteUserForm, SignInForm, SignUpForm};
 use crate::hash;
 
 /// Storing user information. Can be serialized by diesel from a database query.
