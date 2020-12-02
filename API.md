@@ -155,8 +155,8 @@ Auth: JWT
 Body: JSON
 ```json
 {
-    from: "path/to/source",
-    to: "path/to/destination"
+    "from": "path/to/source",
+    "to": "path/to/destination"
 }
 ```
 
@@ -169,8 +169,8 @@ Auth: JWT
 Body: JSON
 ```json
 {
-    from: "path/to/source",
-    to: "path/to/destination"
+    "from": "path/to/source",
+    "to": "path/to/destination"
 }
 ```
 
