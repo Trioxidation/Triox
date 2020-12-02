@@ -46,11 +46,11 @@
       });
       console.log(data);
       send_json(data, '/sign_in', (text) => {
-        alert(text);
         if (!use_cookie) {
           localStorage.setItem('triox-jwt', text);
           console.log("updated JWT in local storage!");
         }
+        window.location.href = "/static/files.html";
       });
     }
   </script>

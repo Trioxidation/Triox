@@ -43,14 +43,34 @@ mod jwt;
 mod tests;
 
 use actix_files::NamedFile;
-use actix_web::{middleware, web, App, HttpRequest, HttpServer};
+use actix_web::{http, middleware, web, App, HttpRequest, HttpResponse, HttpServer};
 use env_logger::Env;
 
 use openssl::ssl::{SslAcceptor, SslFiletype, SslMethod};
 
-/// Index page
+/// index page
 async fn index(_req: HttpRequest) -> actix_web::Result<NamedFile> {
     Ok(NamedFile::open("static/index.html")?.set_content_type(mime::TEXT_HTML_UTF_8))
+}
+
+async fn redirect(
+    optional_jwt: Option<jwt::JWT>,
+    app_state: web::Data<app_state::AppState>,
+) -> HttpResponse {
+    if let Some(jwt) = optional_jwt {
+        if jwt::extract_claims(&jwt.0, &app_state.config.jwt.secret)
+            .await
+            .is_ok()
+        {
+            return HttpResponse::Found()
+                .header(http::header::LOCATION, "/static/files.html")
+                .finish();
+        }
+    }
+
+    HttpResponse::Found()
+        .header(http::header::LOCATION, "/sign_in")
+        .finish()
 }
 
 #[actix_web::main]
@@ -70,8 +90,9 @@ async fn main() -> std::io::Result<()> {
             // setup application state extractor
             .data(app_state.clone())
             .wrap(middleware::Logger::default())
+            .route("/", web::get().to(redirect))
             // static pages
-            .route("/", web::get().to(index))
+            .route("/index", web::get().to(index))
             .route("/user_info", web::get().to(auth::user_info))
             .route("/sign_up", web::get().to(auth::sign_up_page))
             .route("/sign_in", web::get().to(auth::sign_in_page))
