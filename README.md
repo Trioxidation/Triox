@@ -56,6 +56,8 @@ FLUSH PRIVILEGES;
 cargo install diesel_cli --no-default-features --features mysql
 ```
 
+> Installing diesel_cli requires libmysqlclient to be installed. The package is often called `libmysqlclient-dev` or `libmariadb-dev-compat`.
+
 ### Add .env for diesel client
 
 ```bash
