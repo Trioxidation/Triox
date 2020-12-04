@@ -33,7 +33,11 @@ The easiest way to contribute changes is to fork Triox, and then create a pull r
 # Setup
 
 + Install Rust using [rustup](https://rustup.rs).
-+ Install a MySQL-server such as mariadb (`sudo apt install mariadb-server`)
++ Install dependencies:
+  - pkg-config, common package name: `pkg-config`
+  - OpenSSL, common package name: `libssl-dev` or `openssl-devel`
+  - MySQL-client, common package name: `libmysqlclient-dev` or `libmariadb-dev-compat`
++ Install a MySQL-server such as mariadb, common package name: `mariadb-server`
 + Setup database (more below)
 + [optional] setup SSL certificate for HTTPS
 
@@ -55,8 +59,6 @@ FLUSH PRIVILEGES;
 ```bash
 cargo install diesel_cli --no-default-features --features mysql
 ```
-
-> Installing diesel_cli requires libmysqlclient to be installed. The package is often called `libmysqlclient-dev` or `libmariadb-dev-compat`.
 
 ### Add .env for diesel client
 
