@@ -106,7 +106,7 @@ pub async fn sign_in(
                     http::Cookie::build("triox_jwt", token)
                         .domain(app_state.config.server.url.to_string())
                         .path("/")
-                        .secure(true)
+                        .secure(app_state.config.ssl.enabled)
                         .http_only(true)
                         .finish(),
                 )
