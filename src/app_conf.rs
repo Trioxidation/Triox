@@ -46,6 +46,8 @@ pub struct DatabaseConfig {
 #[derive(Debug, Clone)]
 pub struct SslConfig {
     pub enabled: bool,
+    pub certificate_path: Box<str>,
+    pub key_path: Box<str>,
 }
 
 /// Configurations for JWT authentication.
@@ -163,6 +165,8 @@ pub fn load_config(config: &Config) -> AppConfig {
         },
         ssl: SslConfig {
             enabled: conf.get("ssl.enabled", true),
+            certificate_path: conf.get_str("ssl.certificate", "ssl/cert.pem"),
+            key_path: conf.get_str("ssl.key", "ssl/key.pem"),
         },
         jwt: JwtConfig {
             secret: conf.get_bytes_from_path("jwt.secret", 2048),

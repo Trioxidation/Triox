@@ -21,6 +21,7 @@ disable_sign_up = false
 
 
 [database]
+
 # Database type (currently only MySQL is available)
 type = "mysql"
 
@@ -39,8 +40,17 @@ name = "triox"
 
 [ssl]
 
+# Certificates can be easily created with certbot (https://certbot.eff.org/) by running
+# certbot certonly --standalone
+
 # Enable/disable SSL
 enabled = false
+
+# Path to the certificate file
+certificate = "ssl/cert.pem"
+
+# Path to the key file
+key = "ssl/key.pem"
 
 
 [jwt]

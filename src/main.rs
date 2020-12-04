@@ -127,10 +127,10 @@ async fn main() -> std::io::Result<()> {
             SslAcceptor::mozilla_intermediate(SslMethod::tls())
                 .expect("Couldn't create SslAcceptor");
         ssl_acceptor_builder
-            .set_private_key_file("ssl/key.pem", SslFiletype::PEM)
+            .set_private_key_file(ssl_conf.key_path.as_ref(), SslFiletype::PEM)
             .expect("Couldn't set private key");
         ssl_acceptor_builder
-            .set_certificate_chain_file("ssl/cert.pem")
+            .set_certificate_chain_file(ssl_conf.certificate_path.as_ref())
             .expect("Couldn't set certificate chain file");
         server.bind_openssl(listen_address, ssl_acceptor_builder)?
     } else {
