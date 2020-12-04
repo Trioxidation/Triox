@@ -92,7 +92,7 @@ function new_list_entry(file, type) {
 
     if (type === "File") {
         name_td.innerHTML = `
-<a href="/app/files/get?path=${get_dir_string(current_path, [file.name])}" download>
+<a href="/app/files/get?path=${encodeURIComponent(get_dir_string(current_path, [file.name]))}" download>
   ${file.name}
 </a>`
     } else {

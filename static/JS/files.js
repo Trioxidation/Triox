@@ -47,7 +47,7 @@ function copy_file(old_path, new_path) {
 
 function delete_file(path) {
 
-    fetch(`/app/files/remove?path=${path}`, {
+    fetch(`/app/files/remove?path=${encodeURIComponent(path)}`, {
             method: "GET",
         }).then(response => response.body)
         .then(response => load_files());
@@ -55,7 +55,7 @@ function delete_file(path) {
 
 function create_dir(path) {
 
-    fetch(`/app/files/create_dir?path=${path}`, {
+    fetch(`/app/files/create_dir?path=${encodeURIComponent(path)}`, {
             method: "GET",
         }).then(response => response.body)
         .then(response => load_files());
@@ -63,7 +63,7 @@ function create_dir(path) {
 
 async function list_files(path = "/") {
 
-    const response = await fetch(`/app/files/list?path=${path}`, {
+    const response = await fetch(`/app/files/list?path=${encodeURIComponent(path)}`, {
         method: 'GET',
         headers: get_jwt_header(),
     });
