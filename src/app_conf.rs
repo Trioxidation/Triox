@@ -27,6 +27,11 @@ pub struct ServerConfig {
     pub workers: usize,
 }
 
+#[derive(Debug, Clone)]
+pub struct UsersConfig {
+    pub disable_sign_up: bool,
+}
+
 /// Configurations for the database connector.
 #[derive(Debug, Clone)]
 pub struct DatabaseConfig {
@@ -54,6 +59,7 @@ pub struct JwtConfig {
 pub struct AppConfig {
     pub server: ServerConfig,
     pub database: DatabaseConfig,
+    pub users: UsersConfig,
     pub ssl: SslConfig,
     pub jwt: JwtConfig,
 }
@@ -144,6 +150,9 @@ pub fn load_config(config: &Config) -> AppConfig {
             listen: conf.get_str("server.listen", "127.0.0.1"),
             port: conf.get("server.port", 8080),
             workers: conf.get("server.workers", 1),
+        },
+        users: UsersConfig {
+            disable_sign_up: conf.get("users.disable_sign_up", true),
         },
         database: DatabaseConfig {
             server_type: DbServerType::Mysql,
