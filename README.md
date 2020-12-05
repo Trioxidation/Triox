@@ -22,6 +22,7 @@ Triox is still in an early stage but already supports most important features. B
 
 - [x] Authentication
 - [x] File API
+- [x] *Temporary JavaScript based front-end*
 - [ ] WebAssembly based front-end
 
 ## Demo servers
