@@ -32,7 +32,7 @@ Sign in with username `demo_user` and password `demo_password`.
 **We are not responsible for contents uploaded to the demo servers! Please don't upload anything illegal!**
 
 - US server: [triox-demo.aaron-erhardt.de](https://triox-demo.aaron-erhardt.de)
-- EU server: [triox-demo-eu.aaron-erhardt.de](https://triox-demo.aaron-erhardt.de)
+- EU server: [triox-demo-eu.aaron-erhardt.de](https://triox-demo-eu.aaron-erhardt.de)
 
 > Sadly, the demo servers have very limited bandwidth and a monthly network transfer limit which can result in slow response times, especially if you send a lot of data.
 
