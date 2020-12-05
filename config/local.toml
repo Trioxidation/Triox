@@ -4,7 +4,7 @@
 url = "127.0.0.1"
 
 # Socket address to bind
-listen = "127.0.0.1"
+listen = "[::]"
 
 # Port that should be listened on
 port = 8080
