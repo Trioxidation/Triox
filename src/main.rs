@@ -39,10 +39,14 @@ mod hash;
 /// Structures and extractors for JWT authentication.
 mod jwt;
 
+/// Services for handling http errors.
+mod error_handler;
+
 /// Tests.
 mod tests;
 
 use actix_files::NamedFile;
+use actix_web::middleware::errhandlers::ErrorHandlers;
 use actix_web::{http, middleware, web, App, HttpRequest, HttpResponse, HttpServer};
 use env_logger::Env;
 
@@ -88,6 +92,11 @@ async fn main() -> std::io::Result<()> {
     // setup HTTP server
     let mut server = HttpServer::new(move || {
         let app = App::new()
+            // setup error handlers
+            .wrap(
+                ErrorHandlers::new()
+                    .handler(http::StatusCode::NOT_FOUND, error_handler::render_404),
+            )
             // setup application state extractor
             .data(app_state.clone())
             .wrap(middleware::Logger::default())
