@@ -47,7 +47,6 @@ pub async fn upload(
         let mut file_path = base_path.clone();
         file_path.push(filename);
 
-
         let mut file = fs::File::create(file_path)
             .await
             .map_err(ErrorInternalServerError)?;
