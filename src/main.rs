@@ -123,7 +123,13 @@ async fn main() -> std::io::Result<()> {
             app.route("/sign_up", web::get().to(auth::sign_up_page))
                 .route("/sign_up", web::post().to(auth::sign_up))
         } else {
-            app
+            app.route(
+                "/sign_up",
+                web::get().to(|| {
+                    HttpResponse::Ok()
+                        .body("<h1>Sign up was disabled</h1><a href=\"/\">Go back</a>")
+                }),
+            )
         };
 
         app
