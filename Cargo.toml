@@ -53,4 +53,4 @@ futures = "*"
 tokio = { version = "0.2", features = ["fs"] }
 
 # argument parsing
-clap = "2.0"
+clap = "2.33"
