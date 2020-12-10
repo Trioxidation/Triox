@@ -45,6 +45,9 @@ mod error_handler;
 /// Tests.
 mod tests;
 
+// Cli options
+mod cli;
+
 use actix_files::NamedFile;
 use actix_web::middleware::errhandlers::ErrorHandlers;
 use actix_web::{http, middleware, web, App, HttpRequest, HttpResponse, HttpServer};
@@ -79,10 +82,13 @@ async fn redirect(
 
 #[actix_web::main]
 async fn main() -> std::io::Result<()> {
-    // setup logger
-    env_logger::Builder::from_env(Env::default().default_filter_or("info")).init();
 
-    let app_state = app_state::load_app_state("config");
+    let cli_options = cli::Options::new();
+
+    // setup logger
+    env_logger::Builder::from_env(Env::default().default_filter_or(cli_options.log_level)).init();
+
+    let app_state = app_state::load_app_state(cli_options.config_dir.as_ref());
 
     // clone config before it is moved into the closure
     let server_conf = app_state.config.server.clone();

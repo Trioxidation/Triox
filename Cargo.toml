@@ -51,3 +51,6 @@ openssl = { version = "0.10", features = ["v110"] }
 # futures
 futures = "*"
 tokio = { version = "0.2", features = ["fs"] }
+
+# argument parsing
+clap = "2.33"
