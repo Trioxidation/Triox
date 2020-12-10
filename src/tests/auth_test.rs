@@ -11,10 +11,10 @@ mod sign_in {
     use actix_web::web;
 
     #[actix_rt::test]
-    async fn unknown_user_name() {
+    async fn unknown_username() {
         let app_state: web::Data<AppState> = web::Data::new(super::default_app_state());
         let form = web::Json(auth::SignInForm {
-            user_name: "unknown user".to_owned(),
+            username: "unknown user".to_owned(),
             password: "decent password".to_owned(),
             cookie: None,
         });
@@ -30,7 +30,7 @@ mod sign_in {
     async fn short_password() {
         let app_state: web::Data<AppState> = web::Data::new(super::default_app_state());
         let form = web::Json(auth::SignInForm {
-            user_name: "decent user name".to_owned(),
+            username: "decent user name".to_owned(),
             password: "1234".to_owned(),
             cookie: None,
         });
@@ -46,7 +46,7 @@ mod sign_in {
     async fn long_password() {
         let app_state: web::Data<AppState> = web::Data::new(super::default_app_state());
         let form = web::Json(auth::SignInForm {
-            user_name: "decent user name".to_owned(),
+            username: "decent user name".to_owned(),
             password: "01234567890123456789012345678901234567890".to_owned(),
             cookie: None,
         });
@@ -59,10 +59,10 @@ mod sign_in {
     }
 
     #[actix_rt::test]
-    async fn short_user_name() {
+    async fn short_username() {
         let app_state: web::Data<AppState> = web::Data::new(super::default_app_state());
         let form = web::Json(auth::SignInForm {
-            user_name: "user".to_owned(),
+            username: "user".to_owned(),
             password: "decent password".to_owned(),
             cookie: None,
         });
@@ -75,10 +75,10 @@ mod sign_in {
     }
 
     #[actix_rt::test]
-    async fn long_user_name() {
+    async fn long_username() {
         let app_state: web::Data<AppState> = web::Data::new(super::default_app_state());
         let form = web::Json(auth::SignInForm {
-            user_name: "01234567890123456789012345678901234567890".to_owned(),
+            username: "01234567890123456789012345678901234567890".to_owned(),
             password: "decent password".to_owned(),
             cookie: None,
         });
@@ -103,7 +103,7 @@ mod sign_up {
         // generating and loading data
         let app_state: web::Data<AppState> = web::Data::new(super::default_app_state());
 
-        let user_name: String =
+        let username: String =
             thread_rng().sample_iter(&Alphanumeric).take(10).collect();
 
         let password: String =
@@ -116,7 +116,7 @@ mod sign_up {
 
         // sign up
         let form = web::Json(auth::SignUpForm {
-            user_name: user_name.clone(),
+            username: username.clone(),
             password: password.clone(),
             email,
         });
@@ -127,7 +127,7 @@ mod sign_up {
 
         // sign in
         let form = web::Json(auth::SignInForm {
-            user_name: user_name.clone(),
+            username: username.clone(),
             password: password.clone(),
             cookie: None,
         });
@@ -140,7 +140,7 @@ mod sign_up {
 
         // delete user
         let form = web::Json(auth::DeleteUserForm {
-            user_name: user_name.clone(),
+            username: username.clone(),
             password: password.clone(),
         });
 
@@ -152,7 +152,7 @@ mod sign_up {
 
         // sign in again (should fail)
         let form = web::Json(auth::SignInForm {
-            user_name: user_name.clone(),
+            username: username.clone(),
             password: password.clone(),
             cookie: None,
         });

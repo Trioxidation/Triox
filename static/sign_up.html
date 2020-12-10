@@ -20,7 +20,7 @@
                         <form id="form">
                             <div class="field">
                                 <div class="control">
-                                    <input class="input is-large" type='text' id='user_name' name='user_name' required="required" minlength="8" placeholder="Username" autofocus="">
+                                    <input class="input is-large" type='text' id='username' name='username' required="required" minlength="8" placeholder="Username" autofocus="">
                                 </div>
                             </div>
                             <div class="field">
@@ -46,7 +46,7 @@
   <script type='text/javascript'>
     function submitform() {
       data = JSON.stringify({
-        'user_name': document.getElementById('user_name').value,
+        'username': document.getElementById('username').value,
         'password': document.getElementById('password').value,
         'email': document.getElementById('email').value,
       })

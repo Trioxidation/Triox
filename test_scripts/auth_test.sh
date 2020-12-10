@@ -10,7 +10,7 @@ EMAIL="tester@http.com"
 # Try signing up a new user
 SIGN_UP=`curl -H "$DEFAULT_HEADERS" \
   -X POST \
-  -d "{\"user_name\":\"$USER_NAME\",\"password\":\"$PASSWORD\", \"email\": \"$EMAIL\"}" \
+  -d "{\"username\":\"$USER_NAME\",\"password\":\"$PASSWORD\", \"email\": \"$EMAIL\"}" \
   -i -s \
   "$ADDR/sign_up"`
 
@@ -25,7 +25,7 @@ echo
 # Try signing the user in
 SIGN_IN=`curl -H "$DEFAULT_HEADERS" \
   -X POST \
-  -d "{\"user_name\":\"$USER_NAME\",\"password\":\"$PASSWORD\"}" \
+  -d "{\"username\":\"$USER_NAME\",\"password\":\"$PASSWORD\"}" \
   -s \
   "$ADDR/sign_in"`
 

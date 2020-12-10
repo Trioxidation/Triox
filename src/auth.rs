@@ -15,7 +15,7 @@ use crate::{app_state::AppState, database};
 /// Information required for sign in.
 #[derive(serde::Deserialize)]
 pub struct SignInForm {
-    pub user_name: String,
+    pub username: String,
     pub password: String,
     pub cookie: Option<bool>,
 }
@@ -23,7 +23,7 @@ pub struct SignInForm {
 /// Information required for sign up.
 #[derive(serde::Deserialize)]
 pub struct SignUpForm {
-    pub user_name: String,
+    pub username: String,
     pub password: String,
     pub email: String, //TODO: captcha: Vec<u8>
 }
@@ -31,7 +31,7 @@ pub struct SignUpForm {
 /// Information required for deleting a user.
 #[derive(serde::Deserialize)]
 pub struct DeleteUserForm {
-    pub user_name: String,
+    pub username: String,
     pub password: String,
 }
 

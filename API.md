@@ -23,7 +23,7 @@ Auth: None
 Body: JSON
 ```json
 {
-  "user_name": "test_user",
+  "username": "test_user",
   "password": "test_password",
   "cookie": false
 }
@@ -43,7 +43,7 @@ Auth: None
 Body: JSON
 ```json
 {
-  "user_name": "test_user",
+  "username": "test_user",
   "password": "test_password",
   "email": "test@triox.com"
 }
@@ -58,7 +58,7 @@ Auth: None
 Body: JSON
 ```json
 {
-  "user_name": "test_user",
+  "username": "test_user",
   "password": "test_password",
 }
 ```

@@ -1,13 +1,13 @@
 use super::{DbError, DbErrorType};
 
-pub fn validate_credentials(user_name: &str, password: &str) -> Result<(), DbError> {
+pub fn validate_credentials(username: &str, password: &str) -> Result<(), DbError> {
     // Check whether username and password have a reasonable length
-    if user_name.len() > 40 {
+    if username.len() > 40 {
         Err(DbError {
             err_type: DbErrorType::BadRequest,
             cause: "user name too long".to_owned(),
         })
-    } else if user_name.len() < 5 {
+    } else if username.len() < 5 {
         Err(DbError {
             err_type: DbErrorType::BadRequest,
             cause: "user name too short".to_owned(),

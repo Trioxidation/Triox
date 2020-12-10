@@ -54,13 +54,13 @@ pub fn authenticate_user(
     })?;
 
     // Check whether username and password have a reasonable length
-    if let Err(error) = util::validate_credentials(&data.user_name, &data.password) {
+    if let Err(error) = util::validate_credentials(&data.username, &data.password) {
         return Err(error);
     }
 
     // Load user from database
     let user = users
-        .filter(NAME.eq(&data.user_name))
+        .filter(NAME.eq(&data.username))
         .first::<User>(&db_conn)
         .map_err(|_| DbError {
             err_type: DbErrorType::Unauthorized,
@@ -105,7 +105,7 @@ pub fn add_user(
 
     // Check whether username and password have a reasonable length
     // and whether the email address is syntactically correct
-    if let Err(error) = util::validate_credentials(&data.user_name, &data.password) {
+    if let Err(error) = util::validate_credentials(&data.username, &data.password) {
         return Err(error);
     }
 
@@ -116,7 +116,7 @@ pub fn add_user(
     // Check whether user name already exists in database
     if users
         .select(ID)
-        .filter(NAME.eq(&data.user_name))
+        .filter(NAME.eq(&data.username))
         .first::<u32>(&db_conn)
         .is_ok()
     {
@@ -162,7 +162,7 @@ pub fn add_user(
     diesel::insert_into(users)
         .values((
             ID.eq(id),
-            NAME.eq(&data.user_name),
+            NAME.eq(&data.username),
             PASSWORD_HASH.eq(hash),
             EMAIL.eq(&data.email),
             ROLE.eq(0),
@@ -178,7 +178,7 @@ pub fn add_user(
 
     // Check whether new user can be located
     let user = users
-        .filter(NAME.eq(&data.user_name))
+        .filter(NAME.eq(&data.username))
         .first::<User>(&db_conn)
         .map_err(|err| {
             error!("DATABASE: {:?}", err);
@@ -216,13 +216,13 @@ pub fn delete_user(
     })?;
 
     // Check whether username and password have a reasonable length
-    if let Err(error) = util::validate_credentials(&data.user_name, &data.password) {
+    if let Err(error) = util::validate_credentials(&data.username, &data.password) {
         return Err(error);
     }
 
     // Load user from database
     let user = users
-        .filter(NAME.eq(&data.user_name))
+        .filter(NAME.eq(&data.username))
         .first::<User>(&db_conn)
         .map_err(|_| DbError {
             err_type: DbErrorType::Unauthorized,
