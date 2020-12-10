@@ -24,7 +24,7 @@ pub async fn copy(
         })
         .await?;
 
-        Ok(HttpResponse::Ok().body("directory successfully copied!"))
+        Ok(HttpResponse::Ok().body("Directory successfully copied"))
     } else {
         let copy_options = fs_extra::file::CopyOptions::new();
         web::block(move || {
@@ -32,6 +32,6 @@ pub async fn copy(
         })
         .await?;
 
-        Ok(HttpResponse::Ok().body("file successfully copied!"))
+        Ok(HttpResponse::Ok().body("File successfully copied"))
     }
 }

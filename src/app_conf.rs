@@ -79,7 +79,7 @@ impl<'a> ConfWrapper<'a> {
     ) -> T {
         self.0.get::<T>(key).unwrap_or_else(|_| {
             warn!(
-                "config: Couldn't find entry '{}', falling back to default value '{}'",
+                "CONFIG: Couldn't find entry '{}', falling back to default value '{}'",
                 key, default_val
             );
             default_val
@@ -93,7 +93,7 @@ impl<'a> ConfWrapper<'a> {
             .get_str(key)
             .unwrap_or_else(|_| {
                 warn!(
-                    "config: Couldn't find entry '{}', falling back to default value '{}'",
+                    "CONFIG: Couldn't find entry '{}', falling back to default value '{}'",
                     key, default_val
                 );
                 default_val.to_string()
@@ -115,19 +115,19 @@ impl<'a> ConfWrapper<'a> {
                     return bytes.into_boxed_slice();
                 } else {
                     warn!(
-                        "config: Read bytes from file at path '{}' specified in '{}', generating random secret instead",
+                        "CONFIG: Read bytes from file at path '{}' specified in '{}', generating random secret instead",
                         &str_path, key
                     );
                 }
             } else {
                 warn!(
-                    "config: Couldn't open file at path '{}' specified in '{}', generating random secret instead",
+                    "CONFIG: Couldn't open file at path '{}' specified in '{}', generating random secret instead",
                     &str_path, key
                 );
             }
         } else {
             info!(
-                "config: Entry '{}' is empty, generating random secret instead",
+                "CONFIG: Entry '{}' is empty, generating random secret instead",
                 key
             );
         }

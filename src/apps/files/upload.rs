@@ -40,7 +40,7 @@ pub async fn upload(
 
         if filename.contains("..") {
             return Err(actix_web::error::ErrorBadRequest(
-                "Moving up directories is not allowed!",
+                "Moving up directories is not allowed",
             ));
         }
 
@@ -59,5 +59,5 @@ pub async fn upload(
                 .map_err(ErrorInternalServerError)?;
         }
     }
-    Ok(HttpResponse::Ok().body("upload finished!"))
+    Ok(HttpResponse::Ok().body("Upload finished"))
 }

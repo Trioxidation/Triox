@@ -18,9 +18,9 @@ pub async fn remove(
 
     if metadata.is_dir() {
         tokio::fs::remove_dir_all(&full_path).await?;
-        Ok(HttpResponse::Ok().body("directory successfully deleted!"))
+        Ok(HttpResponse::Ok().body("Directory successfully deleted"))
     } else {
         tokio::fs::remove_file(&full_path).await?;
-        Ok(HttpResponse::Ok().body("file successfully deleted!"))
+        Ok(HttpResponse::Ok().body("File successfully deleted"))
     }
 }

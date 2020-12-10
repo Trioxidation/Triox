@@ -24,9 +24,9 @@ pub fn extract_claims(jwt: &str, secret: &[u8]) -> Ready<Result<Claims, Error>> 
         Ok(token) => ok(token.claims),
         Err(e) => match e.kind() {
             errors::ErrorKind::ExpiredSignature => {
-                err(ErrorUnauthorized("expired token!"))
+                err(ErrorUnauthorized("Expired token"))
             }
-            _ => err(ErrorUnauthorized("invalid token!")),
+            _ => err(ErrorUnauthorized("Invalid token")),
         },
     }
 }
@@ -42,7 +42,7 @@ fn extract_jwt_from_authorization_header(
         let auth_str: &str = match jwt.to_str() {
             Ok(str) => str,
             Err(_) => {
-                return Some(err(ErrorUnauthorized("invalid authorization header!")))
+                return Some(err(ErrorUnauthorized("Invalid authorization header")))
             }
         };
 
@@ -58,10 +58,10 @@ fn extract_jwt_from_authorization_header(
 
                 Some(ok(JWT(jwt_str.to_string())))
             } else {
-                Some(err(ErrorUnauthorized("invalid token!")))
+                Some(err(ErrorUnauthorized("Invalid authorization token")))
             }
         } else {
-            Some(err(ErrorUnauthorized("invalid authorization type!")))
+            Some(err(ErrorUnauthorized("Invalid authorization type")))
         }
     } else {
         None
@@ -76,7 +76,7 @@ fn extract_jwt_from_cookie_header(
         // Extract string from token
         let cookie_str: &str = match cookies.to_str() {
             Ok(str) => str,
-            Err(_) => return Some(err(ErrorUnauthorized("invalid cookie header!"))),
+            Err(_) => return Some(err(ErrorUnauthorized("Invalid cookie header"))),
         };
 
         // Cookies are divided by spaces, let's split them up!
@@ -99,7 +99,9 @@ fn extract_jwt_from_cookie_header(
 
             Some(ok(JWT(jwt_str.to_string())))
         } else {
-            Some(err(ErrorUnauthorized("no token in cookie header!")))
+            Some(err(ErrorUnauthorized(
+                "No authorization token inside cookie header",
+            )))
         }
     } else {
         None
@@ -129,7 +131,7 @@ impl FromRequest for JWT {
         }
         // no token found
         else {
-            err(ErrorUnauthorized("no token!"))
+            err(ErrorUnauthorized("No authorization token was sent"))
         }
     }
 }

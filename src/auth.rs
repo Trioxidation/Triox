@@ -74,7 +74,7 @@ pub async fn sign_in(
                     DbErrorType::Unauthorized => ErrorUnauthorized(err.cause),
                 },
                 BlockingError::Canceled => {
-                    ErrorInternalServerError("database request canceled")
+                    ErrorInternalServerError("Database request canceled")
                 }
             })?;
 
@@ -110,7 +110,7 @@ pub async fn sign_in(
                         .http_only(true)
                         .finish(),
                 )
-                .body("Success: Cookie is set"))
+                .body("Cookie is set"))
         } else {
             Ok(HttpResponse::Ok().body(token))
         }
@@ -133,11 +133,11 @@ pub async fn sign_up(
                 DbErrorType::Unauthorized => ErrorUnauthorized(err.cause),
             },
             BlockingError::Canceled => {
-                ErrorInternalServerError("database request canceled")
+                ErrorInternalServerError("Database request canceled")
             }
         })?;
 
-    Ok(HttpResponse::Ok().body("user created"))
+    Ok(HttpResponse::Ok().body("User created"))
 }
 
 pub async fn delete_user(
@@ -153,9 +153,9 @@ pub async fn delete_user(
                 DbErrorType::Unauthorized => ErrorUnauthorized(err.cause),
             },
             BlockingError::Canceled => {
-                ErrorInternalServerError("database request canceled")
+                ErrorInternalServerError("Database request canceled")
             }
         })?;
 
-    Ok(HttpResponse::Ok().body("user successfully deleted"))
+    Ok(HttpResponse::Ok().body("User successfully deleted"))
 }

@@ -16,5 +16,5 @@ pub async fn create_dir(
 
     tokio::fs::create_dir_all(&full_path).await?;
 
-    Ok(HttpResponse::Ok().body("directory successfully created!"))
+    Ok(HttpResponse::Ok().body("Directory successfully created"))
 }

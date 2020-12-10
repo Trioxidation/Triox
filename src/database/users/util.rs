@@ -5,22 +5,22 @@ pub fn validate_credentials(username: &str, password: &str) -> Result<(), DbErro
     if username.len() > 40 {
         Err(DbError {
             err_type: DbErrorType::BadRequest,
-            cause: "user name too long".to_owned(),
+            cause: "Username is too long".to_owned(),
         })
     } else if username.len() < 5 {
         Err(DbError {
             err_type: DbErrorType::BadRequest,
-            cause: "user name too short".to_owned(),
+            cause: "Username is too short".to_owned(),
         })
     } else if password.len() > 32 {
         Err(DbError {
             err_type: DbErrorType::BadRequest,
-            cause: "password too long".to_owned(),
+            cause: "Password is too long".to_owned(),
         })
     } else if password.len() < 8 {
         Err(DbError {
             err_type: DbErrorType::BadRequest,
-            cause: "password too short".to_owned(),
+            cause: "Password is too short".to_owned(),
         })
     } else {
         // Nothing bad found, return Ok
@@ -32,12 +32,12 @@ pub fn validate_email(email: &str) -> Result<(), DbError> {
     if email.len() > 40 {
         Err(DbError {
             err_type: DbErrorType::BadRequest,
-            cause: "email address too long".to_owned(),
+            cause: "Email address is too long".to_owned(),
         })
     } else if email.len() < 5 {
         Err(DbError {
             err_type: DbErrorType::BadRequest,
-            cause: "email address too short".to_owned(),
+            cause: "Email address is too short".to_owned(),
         })
     // Expected patter: semething@something.something
     } else if !email.contains('@')
@@ -48,7 +48,7 @@ pub fn validate_email(email: &str) -> Result<(), DbError> {
     {
         Err(DbError {
             err_type: DbErrorType::BadRequest,
-            cause: "badly formatted email address".to_owned(),
+            cause: "Incorrect email address".to_owned(),
         })
     } else {
         Ok(())

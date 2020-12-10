@@ -27,7 +27,7 @@ pub fn resolve_path(
 ) -> Result<std::path::PathBuf, actix_web::Error> {
     if query_path.contains("..") {
         Err(actix_web::error::ErrorBadRequest(
-            "Moving up directories is not allowed!",
+            "Moving up directories is not allowed",
         ))
     } else {
         Ok(std::path::PathBuf::from(format!(

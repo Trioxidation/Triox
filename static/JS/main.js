@@ -1,6 +1,10 @@
 'use strict';
 
 function insert_notification_on_top(parent, text) {
+    if (!text) {
+        text = "Unknown error";
+    }
+
     const elem = document.getElementById("notification_on_top");
 
     if (elem) {

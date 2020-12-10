@@ -50,7 +50,7 @@ pub fn authenticate_user(
 ) -> Result<User, DbError> {
     let db_conn = app_state.db_pool.get().map_err(|_| DbError {
         err_type: DbErrorType::InternalServerError,
-        cause: "couldn't connect to database".to_owned(),
+        cause: "Couldn't connect to database".to_owned(),
     })?;
 
     // Check whether username and password have a reasonable length
@@ -64,7 +64,7 @@ pub fn authenticate_user(
         .first::<User>(&db_conn)
         .map_err(|_| DbError {
             err_type: DbErrorType::Unauthorized,
-            cause: "unable to locate user".to_owned(),
+            cause: "Username doesn't exist".to_owned(),
         })?;
 
     // Return error if login count is above 4
@@ -72,7 +72,7 @@ pub fn authenticate_user(
         if *count <= 4 {
             return Err(DbError {
                 err_type: DbErrorType::Unauthorized,
-                cause: "you have too many active sessions".to_owned(),
+                cause: "Too many active sessions".to_owned(),
             });
         }
     };
@@ -86,7 +86,7 @@ pub fn authenticate_user(
     {
         return Err(DbError {
             err_type: DbErrorType::Unauthorized,
-            cause: "wrong password".to_owned(),
+            cause: "Wrong password".to_owned(),
         });
     }
 
@@ -100,7 +100,7 @@ pub fn add_user(
 ) -> Result<User, DbError> {
     let db_conn = app_state.db_pool.get().map_err(|_| DbError {
         err_type: DbErrorType::InternalServerError,
-        cause: "couldn't connect to database".to_owned(),
+        cause: "Couldn't connect to database".to_owned(),
     })?;
 
     // Check whether username and password have a reasonable length
@@ -122,7 +122,7 @@ pub fn add_user(
     {
         return Err(DbError {
             err_type: DbErrorType::BadRequest,
-            cause: "user name is already taken!".to_owned(),
+            cause: "User name is already taken".to_owned(),
         });
     }
 
@@ -135,7 +135,7 @@ pub fn add_user(
     {
         return Err(DbError {
             err_type: DbErrorType::BadRequest,
-            cause: "email address is already taken!".to_owned(),
+            cause: "Email address is already taken".to_owned(),
         });
     }
 
@@ -172,7 +172,7 @@ pub fn add_user(
             error!("DATABASE: {:?}", err);
             DbError {
                 err_type: DbErrorType::BadRequest,
-                cause: err.to_string(),
+                cause: "Unable to receive user".to_owned(),
             }
         })?;
 
@@ -197,7 +197,7 @@ pub fn add_user(
         error!("STORAGE PATH: {:?}", err);
         DbError {
             err_type: DbErrorType::InternalServerError,
-            cause: err.to_string(),
+            cause: "Couldn't create user directory".to_owned(),
         }
     })?;
 
@@ -212,7 +212,7 @@ pub fn delete_user(
 ) -> Result<User, DbError> {
     let db_conn = app_state.db_pool.get().map_err(|_| DbError {
         err_type: DbErrorType::InternalServerError,
-        cause: "couldn't connect to database".to_owned(),
+        cause: "Couldn't connect to database".to_owned(),
     })?;
 
     // Check whether username and password have a reasonable length
@@ -226,7 +226,7 @@ pub fn delete_user(
         .first::<User>(&db_conn)
         .map_err(|_| DbError {
             err_type: DbErrorType::Unauthorized,
-            cause: "unable to locate user".to_owned(),
+            cause: "Username doesn't exist".to_owned(),
         })?;
 
     // Check password
@@ -238,7 +238,7 @@ pub fn delete_user(
     {
         return Err(DbError {
             err_type: DbErrorType::Unauthorized,
-            cause: "wrong password".to_owned(),
+            cause: "Wrong password".to_owned(),
         });
     }
 
@@ -247,7 +247,7 @@ pub fn delete_user(
         .execute(&db_conn)
         .map_err(|_| DbError {
             err_type: DbErrorType::InternalServerError,
-            cause: "unable to delete user".to_owned(),
+            cause: "Unable to delete user".to_owned(),
         })?;
 
     // delete storage path of the user
@@ -259,7 +259,7 @@ pub fn delete_user(
         error!("STORAGE PATH: {:?}", err);
         DbError {
             err_type: DbErrorType::InternalServerError,
-            cause: err.to_string(),
+            cause: "Couldn't delete user files".to_owned(),
         }
     })?;
 
