@@ -1,6 +1,27 @@
 'use strict';
 
-function send_json(json, url, success_fn) {
+function insert_notification_on_top(parent, text) {
+    const elem = document.getElementById("notification_on_top");
+
+    if (elem) {
+        elem.innerText = text;
+        return;
+    }
+
+    const div = document.createElement("DIV");
+    const button = document.createElement("BUTTON");
+
+    div.className = "notification is-danger";
+    button.className = "delete";
+
+    div.appendChild(button);
+    div.innerText = text;
+    div.id = "notification_on_top";
+
+    parent.insertBefore(div, parent.firstChild);
+}
+
+function send_json(json, url, success_fn, error_fn) {
     console.table(json, url);
     var xhr = new XMLHttpRequest();
     xhr.open('POST', url, true);
@@ -10,6 +31,8 @@ function send_json(json, url, success_fn) {
             console.log(`Response: ${xhr.responseText}`);
             if (xhr.status === 200) {
                 success_fn(xhr.responseText);
+            } else {
+                error_fn(xhr.responseText);
             }
         }
     }

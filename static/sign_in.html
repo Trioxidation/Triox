@@ -1,59 +1,66 @@
 <!DOCTYPE html>
+
 <html>
 
 <head>
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <meta charset="UTF-8">
-  <title>Title of the document</title>
-  <link rel="stylesheet" type="text/css" href="/static/CSS/main.css">
-  <script src="/static/JS/main.js"></script>
-  <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/AaronErhardt/Triox-Theme@0.1.0/css/triox-theme.css">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta charset="UTF-8">
+    <title>Title of the document</title>
+    <link rel="stylesheet" type="text/css" href="/static/CSS/main.css">
+    <script src="/static/JS/main.js"></script>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/AaronErhardt/Triox-Theme@0.1.0/css/triox-theme.css">
 </head>
 
 <body>
-  <div class="columns is-centered fullscreen-form">
-    <div class="column is-narrow">
-      <div class="box">
-        <h1 class="title">SIGN IN PAGE</h1>
-        <form>
-          <div class="field">
-            <label class="label" for='username'>Username</label>
-            <div class="control">
-              <input class="input" type='text' id='username' name='user_name' required="required" minlength="8">
+    <section class="hero is-link is-fullheight">
+        <div class="hero-body">
+            <div class="container has-text-centered">
+                <div class="column is-4 is-offset-4">
+                    <h1 class="title">Sign In</h1>
+                    <div class="box">
+                        <form id="form">
+                            <div class="field">
+                                <div class="control">
+                                    <input class="input is-large" type='text' id='user_name' name='user_name' required="required" minlength="8" placeholder="Username" autofocus="">
+                                </div>
+                            </div>
+                            <div class="field">
+                                <div class="control">
+                                    <input class="input is-large" type='password' id='password' name='password' required="required" minlength="8" placeholder="Password">
+                                </div>
+                            </div>
+                            <input type="button" value="Sign In" class="button is-block is-success is-large is-fullwidth" onclick='submitform(event)'>
+                        </form>
+                    </div>
+                    <p>
+                        <a href="/sign_up">Sign Up</a>
+                    </p>
+                </div>
             </div>
-          </div>
-          <div class="field">
-            <label class="label" for='password'>Password</label>
-            <div class="control">
-              <input class="input" type='password' id='password' name='password' required="required" minlength="8">
-            </div>
-          </div>
-          <div class="is-flex is-justify-content-space-between">
-            <input class="button is-primary" type='button' value='Submit' onclick='submitform()'> <input class="button is-link" type='button' onclick='location.href="/sign_up"' value='Sign up'>
-          </div>
-        </form>
-      </div>
-    </div>
-  </div>
-  <script type='text/javascript'>
-    function submitform() {
-      const use_cookie = true;
+        </div>
+    </section>
+    <script type='text/javascript'>
+        function submitform(ev) {
+           ev.preventDefault();
+           const use_cookie = true;
 
-      data = JSON.stringify({
-        'user_name': document.getElementsByTagName('input')[0].value,
-        'password': document.getElementsByTagName('input')[1].value,
-        'cookie': use_cookie
-      });
-      console.log(data);
-      send_json(data, '/sign_in', (text) => {
-        if (!use_cookie) {
-          localStorage.setItem('triox-jwt', text);
-          console.log("updated JWT in local storage!");
-        }
-        window.location.href = "/static/files.html";
-      });
-    }
-  </script>
+           data = JSON.stringify({
+             'user_name': document.getElementById('user_name').value,
+             'password': document.getElementById('password').value,
+             'cookie': use_cookie
+           });
+           console.log(data);
+           send_json(data, '/sign_in', (text) => {
+             if (!use_cookie) {
+               localStorage.setItem('triox-jwt', text);
+               console.log("updated JWT in local storage!");
+             }
+             window.location.href = "/static/files.html";
+           }, (text) => {
+               insert_notification_on_top(document.getElementById('form'), text);
+           });
+         }
+    </script>
 </body>
 
 </html>
