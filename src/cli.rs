@@ -43,7 +43,14 @@ impl Options {
         }
 
         if let Some(log_level) = matches.value_of("default-log-level") {
-            options.log_level = log_level.to_owned();
+            match log_level {
+                "warn" | "trace" | "debug" | "error" | "info" => {
+                    options.log_level = log_level.to_owned()
+                }
+                _ => eprintln!(
+                    "Incorrect value for default-log-level, using default value instead"
+                ),
+            }
         }
 
         options
