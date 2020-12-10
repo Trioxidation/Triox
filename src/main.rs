@@ -82,11 +82,13 @@ async fn redirect(
 
 #[actix_web::main]
 async fn main() -> std::io::Result<()> {
-
     let cli_options = cli::Options::new();
 
     // setup logger
-    env_logger::Builder::from_env(Env::default().default_filter_or(cli_options.log_level)).init();
+    env_logger::Builder::from_env(
+        Env::default().default_filter_or(cli_options.log_level),
+    )
+    .init();
 
     let app_state = app_state::load_app_state(cli_options.config_dir.as_ref());
 
