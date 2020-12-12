@@ -105,6 +105,7 @@ async fn main() -> std::io::Result<()> {
                 ErrorHandlers::new()
                     .handler(http::StatusCode::NOT_FOUND, error_handler::render_404),
             )
+            .wrap(middleware::Compress::default())
             // setup application state extractor
             .data(app_state.clone())
             .wrap(middleware::Logger::default())
