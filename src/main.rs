@@ -95,7 +95,7 @@ async fn main() -> std::io::Result<()> {
     // clone config before it is moved into the closure
     let server_conf = app_state.config.server.clone();
     let ssl_conf = app_state.config.ssl.clone();
-    let users_conf = app_state.config.users.clone();
+    let user_conf = app_state.config.user.clone();
 
     // setup HTTP server
     let mut server = HttpServer::new(move || {
@@ -128,7 +128,7 @@ async fn main() -> std::io::Result<()> {
             // serve static files from ./static/ to /static/
             .service(actix_files::Files::new("/static", "static"));
 
-        let app = if !users_conf.disable_sign_up {
+        let app = if !user_conf.disable_sign_up {
             app.route("/sign_up", web::get().to(auth::sign_up_page))
                 .route("/sign_up", web::post().to(auth::sign_up))
         } else {

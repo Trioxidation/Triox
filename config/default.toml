@@ -14,7 +14,7 @@ port = 8080
 workers = 0
 
 
-[users]
+[user]
 
 # Disable sign_up service to prevent creation of new accounts through the API
 disable_sign_up = false

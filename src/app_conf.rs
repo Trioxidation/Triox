@@ -28,7 +28,7 @@ pub struct ServerConfig {
 }
 
 #[derive(Debug, Clone)]
-pub struct UsersConfig {
+pub struct UserConfig {
     pub disable_sign_up: bool,
 }
 
@@ -61,7 +61,7 @@ pub struct JwtConfig {
 pub struct AppConfig {
     pub server: ServerConfig,
     pub database: DatabaseConfig,
-    pub users: UsersConfig,
+    pub user: UserConfig,
     pub ssl: SslConfig,
     pub jwt: JwtConfig,
 }
@@ -153,8 +153,8 @@ pub fn load_config(config: &Config) -> AppConfig {
             port: conf.get("server.port", 8080),
             workers: conf.get("server.workers", 1),
         },
-        users: UsersConfig {
-            disable_sign_up: conf.get("users.disable_sign_up", true),
+        user: UserConfig {
+            disable_sign_up: conf.get("user.disable_sign_up", true),
         },
         database: DatabaseConfig {
             server_type: DbServerType::Mysql,
