@@ -32,6 +32,11 @@ pub struct UserConfig {
     pub disable_sign_up: bool,
 }
 
+#[derive(Debug, Clone)]
+pub struct FilesConfig {
+    pub read_only: bool,
+}
+
 /// Configurations for the database connector.
 #[derive(Debug, Clone)]
 pub struct DatabaseConfig {
@@ -60,8 +65,9 @@ pub struct JwtConfig {
 #[derive(Debug, Clone)]
 pub struct AppConfig {
     pub server: ServerConfig,
-    pub database: DatabaseConfig,
     pub user: UserConfig,
+    pub files: FilesConfig,
+    pub database: DatabaseConfig,
     pub ssl: SslConfig,
     pub jwt: JwtConfig,
 }
@@ -155,6 +161,9 @@ pub fn load_config(config: &Config) -> AppConfig {
         },
         user: UserConfig {
             disable_sign_up: conf.get("user.disable_sign_up", true),
+        },
+        files: FilesConfig {
+            read_only: conf.get("files.read_only", true),
         },
         database: DatabaseConfig {
             server_type: DbServerType::Mysql,

@@ -20,6 +20,12 @@ workers = 0
 disable_sign_up = false
 
 
+[files]
+
+# Disable file system modification like uploading or moving files
+read_only = false
+
+
 [database]
 
 # Database type (currently only MySQL is available)

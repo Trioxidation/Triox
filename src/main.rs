@@ -93,9 +93,7 @@ async fn main() -> std::io::Result<()> {
     let app_state = app_state::load_app_state(cli_options.config_dir.as_ref());
 
     // clone config before it is moved into the closure
-    let server_conf = app_state.config.server.clone();
-    let ssl_conf = app_state.config.ssl.clone();
-    let user_conf = app_state.config.user.clone();
+    let config = app_state.config.clone();
 
     // setup HTTP server
     let mut server = HttpServer::new(move || {
@@ -117,18 +115,24 @@ async fn main() -> std::io::Result<()> {
             // authentication API
             .route("/sign_in", web::post().to(auth::sign_in))
             .route("/delete_user", web::post().to(auth::delete_user))
-            // file app API
+            // read only file app API
             .service(apps::files::get::get)
             .service(apps::files::list::list)
-            .service(apps::files::upload::upload)
-            .service(apps::files::copy::copy)
-            .service(apps::files::r#move::r#move)
-            .service(apps::files::remove::remove)
-            .service(apps::files::create_dir::create_dir)
             // serve static files from ./static/ to /static/
             .service(actix_files::Files::new("/static", "static"));
 
-        let app = if !user_conf.disable_sign_up {
+        // additional file app API if read only isn't enabled
+        let app = if !app_state.config.files.read_only {
+            app.service(apps::files::upload::upload)
+                .service(apps::files::copy::copy)
+                .service(apps::files::r#move::r#move)
+                .service(apps::files::remove::remove)
+                .service(apps::files::create_dir::create_dir)
+        } else {
+            app
+        };
+
+        let app = if !app_state.config.user.disable_sign_up {
             app.route("/sign_up", web::get().to(auth::sign_up_page))
                 .route("/sign_up", web::post().to(auth::sign_up))
         } else {
@@ -144,26 +148,26 @@ async fn main() -> std::io::Result<()> {
         app
     });
 
-    let listen_address = server_conf.listen_address();
+    let listen_address = config.server.listen_address();
 
-    server = if ssl_conf.enabled {
+    server = if config.ssl.enabled {
         let mut ssl_acceptor_builder =
             SslAcceptor::mozilla_intermediate(SslMethod::tls())
                 .expect("Couldn't create SslAcceptor");
         ssl_acceptor_builder
-            .set_private_key_file(ssl_conf.key_path.as_ref(), SslFiletype::PEM)
+            .set_private_key_file(config.ssl.key_path.as_ref(), SslFiletype::PEM)
             .expect("Couldn't set private key");
         ssl_acceptor_builder
-            .set_certificate_chain_file(ssl_conf.certificate_path.as_ref())
+            .set_certificate_chain_file(config.ssl.certificate_path.as_ref())
             .expect("Couldn't set certificate chain file");
         server.bind_openssl(listen_address, ssl_acceptor_builder)?
     } else {
         server.bind(listen_address)?
     };
 
-    if server_conf.workers != 0 {
-        server = server.workers(server_conf.workers);
+    if config.server.workers != 0 {
+        server = server.workers(config.server.workers);
     }
 
-    server.server_hostname(server_conf.url).run().await
+    server.server_hostname(config.server.url).run().await
 }
