@@ -23,7 +23,7 @@ disable_sign_up = false
 [files]
 
 # Disable file system modification like uploading or moving files
-read_only = true
+read_only = false
 
 
 [database]
