@@ -29,12 +29,10 @@ Triox is still in an early stage but already supports most important features. B
 
 Sign in with username `demo_user` and password `demo_password`.
 
-**We are not responsible for contents uploaded to the demo servers! Please don't upload anything illegal!**
+Sadly, we can't allow users to upload files due to legal restrictions. Since we can't guarantee that no illegal data will be uploaded the demo servers run in read-only mode.
 
 - US server: [triox-demo.aaron-erhardt.de](https://triox-demo.aaron-erhardt.de)
 - EU server: [triox-demo-eu.aaron-erhardt.de](https://triox-demo-eu.aaron-erhardt.de)
-
-> Sadly, the demo servers have very limited bandwidth and a monthly network transfer limit which can result in slow response times, especially if you send a lot of data.
 
 ## Contributing
 
