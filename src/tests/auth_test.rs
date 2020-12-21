@@ -23,7 +23,7 @@ mod sign_in {
             .await
             .expect_err("request should throw an error");
 
-        assert_eq!(resp.to_string(), "unable to locate user");
+        assert_eq!(resp.to_string(), "Username doesn't exist");
     }
 
     #[actix_rt::test]
@@ -39,7 +39,7 @@ mod sign_in {
             .await
             .expect_err("request should throw an error");
 
-        assert_eq!(resp.to_string(), "password too short");
+        assert_eq!(resp.to_string(), "Password is too short");
     }
 
     #[actix_rt::test]
@@ -55,7 +55,7 @@ mod sign_in {
             .await
             .expect_err("request should throw an error");
 
-        assert_eq!(resp.to_string(), "password too long");
+        assert_eq!(resp.to_string(), "Password is too long");
     }
 
     #[actix_rt::test]
@@ -71,7 +71,7 @@ mod sign_in {
             .await
             .expect_err("request should throw an error");
 
-        assert_eq!(resp.to_string(), "user name too short");
+        assert_eq!(resp.to_string(), "Username is too short");
     }
 
     #[actix_rt::test]
@@ -87,7 +87,7 @@ mod sign_in {
             .await
             .expect_err("request should throw an error");
 
-        assert_eq!(resp.to_string(), "user name too long");
+        assert_eq!(resp.to_string(), "Username is too long");
     }
 }
 
@@ -163,7 +163,7 @@ mod sign_up {
 
         assert_eq!(
             resp.to_string(),
-            actix_web::error::ErrorUnauthorized("unable to locate user").to_string()
+            actix_web::error::ErrorUnauthorized("Username doesn't exist").to_string()
         );
     }
 }
