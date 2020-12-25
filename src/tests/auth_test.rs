@@ -103,14 +103,23 @@ mod sign_up {
         // generating and loading data
         let app_state: web::Data<AppState> = web::Data::new(super::default_app_state());
 
-        let username: String =
-            thread_rng().sample_iter(&Alphanumeric).take(10).collect();
+        let username: String = thread_rng()
+            .sample_iter(&Alphanumeric)
+            .take(10)
+            .map(char::from)
+            .collect();
 
-        let password: String =
-            thread_rng().sample_iter(&Alphanumeric).take(30).collect();
+        let password: String = thread_rng()
+            .sample_iter(&Alphanumeric)
+            .take(30)
+            .map(char::from)
+            .collect();
 
-        let mut email: String =
-            thread_rng().sample_iter(&Alphanumeric).take(10).collect();
+        let mut email: String = thread_rng()
+            .sample_iter(&Alphanumeric)
+            .take(10)
+            .map(char::from)
+            .collect();
 
         email.push_str("@test.com");
 
