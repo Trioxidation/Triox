@@ -1,3 +1,5 @@
+use actix_web::web;
+
 /// Download files
 pub mod get;
 
@@ -20,8 +22,21 @@ pub mod r#move;
 /// Copy files and directories
 pub mod copy;
 
+/// Shared struct for extracting paths
+#[derive(serde::Deserialize)]
+pub struct QueryPath {
+    path: String,
+}
+
+/// Shared struct for moving or copying files
+#[derive(serde::Deserialize)]
+pub struct SourceAndDest {
+    from: String,
+    to: String,
+}
+
 /// Helper function to translate paths from requests into absolute path
-pub fn resolve_path(
+fn resolve_path(
     user_id: u32,
     query_path: &str,
 ) -> Result<std::path::PathBuf, actix_web::Error> {
@@ -37,15 +52,27 @@ pub fn resolve_path(
     }
 }
 
-/// Shared struct for extracting paths
-#[derive(serde::Deserialize)]
-pub struct QueryPath {
-    path: String,
+/// Helper function to
+fn read_only_guard(config: &crate::app_conf::AppConfig) -> Result<(), actix_web::Error> {
+    if config.files.read_only {
+        Err(actix_web::error::ErrorForbidden(
+            "Read only mode is active",
+        ))
+    } else {
+        Ok(())
+    }
 }
 
-/// Shared struct for moving or copying files
-#[derive(serde::Deserialize)]
-pub struct SourceAndDest {
-    from: String,
-    to: String,
+// Configure files app services
+pub fn service_config(cfg: &mut web::ServiceConfig) {
+    cfg
+        // read only file app API
+        .service(get::get)
+        .service(list::list)
+        // file modifying file app API
+        .service(upload::upload)
+        .service(r#move::r#move)
+        .service(copy::copy)
+        .service(remove::remove)
+        .service(create_dir::create_dir);
 }

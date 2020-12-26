@@ -115,22 +115,10 @@ async fn main() -> std::io::Result<()> {
             // authentication API
             .route("/sign_in", web::post().to(auth::sign_in))
             .route("/delete_user", web::post().to(auth::delete_user))
-            // read only file app API
-            .service(apps::files::get::get)
-            .service(apps::files::list::list)
             // serve static files from ./static/ to /static/
-            .service(actix_files::Files::new("/static", "static"));
-
-        // additional file app API if read only isn't enabled
-        let app = if !app_state.config.files.read_only {
-            app.service(apps::files::upload::upload)
-                .service(apps::files::copy::copy)
-                .service(apps::files::r#move::r#move)
-                .service(apps::files::remove::remove)
-                .service(apps::files::create_dir::create_dir)
-        } else {
-            app
-        };
+            .service(actix_files::Files::new("/static", "static"))
+            // setup files API
+            .configure(apps::files::service_config);
 
         let app = if !app_state.config.user.disable_sign_up {
             app.route("/sign_up", web::get().to(auth::sign_up_page))

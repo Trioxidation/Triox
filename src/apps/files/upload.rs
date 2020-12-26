@@ -25,6 +25,8 @@ pub async fn upload(
     web::Query(query_path): web::Query<super::QueryPath>,
     mut payload: Multipart,
 ) -> Result<HttpResponse, Error> {
+    super::read_only_guard(&app_state.config)?;
+
     let claims = jwt::extract_claims(&jwt.0, &app_state.config.jwt.secret).await?;
 
     let base_path = super::resolve_path(claims.id, &query_path.path)?;

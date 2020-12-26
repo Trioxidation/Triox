@@ -10,6 +10,8 @@ pub async fn copy(
     jwt: jwt::JWT,
     params: web::Json<super::SourceAndDest>,
 ) -> Result<HttpResponse, Error> {
+    super::read_only_guard(&app_state.config)?;
+
     let claims = jwt::extract_claims(&jwt.0, &app_state.config.jwt.secret).await?;
 
     let source_path = super::resolve_path(claims.id, &params.from)?;
