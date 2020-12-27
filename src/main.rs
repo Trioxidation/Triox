@@ -110,28 +110,14 @@ async fn main() -> std::io::Result<()> {
             .route("/", web::get().to(redirect))
             // static pages
             .route("/index", web::get().to(index))
-            .route("/user_info", web::get().to(auth::user_info))
             .route("/sign_in", web::get().to(auth::sign_in_page))
-            // authentication API
-            .route("/sign_in", web::post().to(auth::sign_in))
-            .route("/delete_user", web::post().to(auth::delete_user))
+            .route("/sign_up", web::get().to(auth::sign_up_page))
             // serve static files from ./static/ to /static/
             .service(actix_files::Files::new("/static", "static"))
             // setup files API
-            .configure(apps::files::service_config);
-
-        let app = if !app_state.config.user.disable_sign_up {
-            app.route("/sign_up", web::get().to(auth::sign_up_page))
-                .route("/sign_up", web::post().to(auth::sign_up))
-        } else {
-            app.route(
-                "/sign_up",
-                web::get().to(|| {
-                    HttpResponse::Ok()
-                        .body("<h1>Sign up was disabled</h1><a href=\"/\">Go back</a>")
-                }),
-            )
-        };
+            .configure(apps::files::service_config)
+            // setup auth API
+            .configure(auth::service_config);
 
         app
     });

@@ -45,6 +45,7 @@ mime = "*"
 actix-rt = "1"
 actix-files = "0.4"
 actix-multipart = "0.3"
+actix-governor = "0.2"
 actix-web = { version = "3", features = ["openssl"] }
 openssl = { version = "0.10", features = ["v110"] }
 

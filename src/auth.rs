@@ -3,8 +3,12 @@ use jsonwebtoken::{encode, EncodingKey, Header};
 
 use actix_files::NamedFile;
 use actix_web::error::BlockingError;
-use actix_web::error::{ErrorBadRequest, ErrorInternalServerError, ErrorUnauthorized};
+use actix_web::error::{
+    ErrorBadRequest, ErrorForbidden, ErrorInternalServerError, ErrorUnauthorized,
+};
 use actix_web::{http, web, Error, HttpRequest, HttpResponse};
+
+use actix_governor::{Governor, GovernorConfig};
 
 use std::time::{SystemTime, UNIX_EPOCH};
 
@@ -33,6 +37,34 @@ pub struct SignUpForm {
 pub struct DeleteUserForm {
     pub username: String,
     pub password: String,
+}
+
+// Configure auth services
+pub fn service_config(cfg: &mut web::ServiceConfig) {
+    // set up a secure rate limiter that prevents brute
+    // forcing credentials
+    let governor_config = GovernorConfig::secure();
+
+    cfg.service(
+        web::resource("/sign_in")
+            .route(web::post().to(sign_in))
+            .wrap(Governor::new(&governor_config)),
+    )
+    .service(
+        web::resource("/delete_user")
+            .route(web::post().to(delete_user))
+            .wrap(Governor::new(&governor_config)),
+    )
+    .service(
+        web::resource("/sign_up")
+            .route(web::post().to(sign_up))
+            .wrap(Governor::new(&governor_config)),
+    )
+    .service(
+        web::resource("/user_info")
+            .route(web::get().to(user_info))
+            .wrap(Governor::new(&governor_config)),
+    );
 }
 
 /// Return user information stored inside the JWT.
@@ -124,6 +156,9 @@ pub async fn sign_up(
     app_state: web::Data<AppState>,
     form: web::Json<SignUpForm>,
 ) -> Result<HttpResponse, Error> {
+    if app_state.config.user.disable_sign_up {
+        return Err(ErrorForbidden("Sign up is disabled"));
+    }
     let _user = web::block(move || database::users::add_user(&form, app_state.clone()))
         .await
         .map_err(|outer_err| match outer_err {
