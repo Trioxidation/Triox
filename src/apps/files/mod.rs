@@ -55,9 +55,7 @@ fn resolve_path(
 /// Helper function to
 fn read_only_guard(config: &crate::app_conf::AppConfig) -> Result<(), actix_web::Error> {
     if config.files.read_only {
-        Err(actix_web::error::ErrorForbidden(
-            "Read only mode is active",
-        ))
+        Err(actix_web::error::ErrorForbidden("Read only mode is active"))
     } else {
         Ok(())
     }
