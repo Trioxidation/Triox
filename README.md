@@ -1,3 +1,6 @@
+![build](https://img.shields.io/github/workflow/status/AaronErhardt/Triox/Rust?style=flat-square)
+![issues](https://img.shields.io/github/issues/AaronErhardt/Triox?style=flat-square)
+
 # Triox - a cloud server for the next generation
 
 **A free file hosting server that focuses on speed, reliability and security.**
