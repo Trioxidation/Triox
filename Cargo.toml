@@ -25,7 +25,7 @@ rust-argon2 = "*"
 rand = "*"
 
 # concurrent map
-dashmap = "3"
+dashmap = "4"
 
 # log
 log = "0.4"
