@@ -19,10 +19,10 @@ diesel = { version = "1", features = ["mysql", "r2d2"] }
 r2d2 = "0.8"
 
 # hash
-rust-argon2 = "*"
+rust-argon2 = "0.8"
 
 # random
-rand = "*"
+rand = "0.8"
 
 # concurrent map
 dashmap = "4"
@@ -41,16 +41,16 @@ serde = { version = "1", features = ["derive"] }
 jsonwebtoken = "7"
 
 # actix
-mime = "*"
+mime = "0.3"
 actix-rt = "1"
 actix-files = "0.5"
 actix-multipart = "0.3"
 actix-governor = "0.2"
 actix-web = { version = "3", features = ["openssl"] }
-openssl = { version = "0.10", features = ["v110"] }
+openssl = "0.10"
 
 # futures
-futures = "*"
+futures = "0.3"
 tokio = { version = "0.2", features = ["fs"] }
 
 # argument parsing
