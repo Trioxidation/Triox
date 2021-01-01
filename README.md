@@ -1,5 +1,7 @@
-![build](https://img.shields.io/github/workflow/status/AaronErhardt/Triox/Rust?style=flat-square)
+![CI (Linux)](<https://github.com/AaronErhardt/Triox/workflows/CI%20(Linux)/badge.svg>)
 ![issues](https://img.shields.io/github/issues/AaronErhardt/Triox?style=flat-square)
+[![dependency status](https://deps.rs/repo/github/AaronErhardt/Triox/status.svg)](https://deps.rs/repo/github/AaronErhardt/Triox)
+
 
 # Triox - a cloud server for the next generation
 
