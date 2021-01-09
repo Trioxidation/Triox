@@ -1,3 +1,8 @@
+## Source code
+Path: `/source`  
+The source code of Triox is available to download at this location.
+
+
 ## Authorization
 The authorization process requires the client to send a JWT (JSON Web Token) to the server. This can be done in two ways: Either by using the authorization header or by using a cookie. The authorization header is the preferred authorization method, the cookie header exist primarily for comparability with browsers and some HTTP-client implementations.
 

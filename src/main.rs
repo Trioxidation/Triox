@@ -80,6 +80,19 @@ async fn redirect(
         .finish()
 }
 
+/// For AGPL compliance Triox needs to allow users to download the source code over the network
+async fn source_code(_req: HttpRequest) -> HttpResponse {
+    // If you modify the source code and use it in for a public network service
+    // you need to update this link to point to a copy of your modified version
+    // More info: https://www.gnu.org/licenses/why-affero-gpl.html
+    HttpResponse::SeeOther()
+        .header(
+            http::header::LOCATION,
+            "https://github.com/AaronErhardt/Triox",
+        )
+        .finish()
+}
+
 #[actix_web::main]
 async fn main() -> std::io::Result<()> {
     let cli_options = cli::Options::new();
@@ -108,6 +121,7 @@ async fn main() -> std::io::Result<()> {
             .data(app_state.clone())
             .wrap(middleware::Logger::default())
             .route("/", web::get().to(redirect))
+            .route("/source", web::get().to(source_code))
             // static pages
             .route("/index", web::get().to(index))
             .route("/sign_in", web::get().to(auth::sign_in_page))
