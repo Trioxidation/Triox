@@ -1,7 +1,9 @@
-use actix_web::error::ErrorUnauthorized;
+use actix_web::error::{ErrorInternalServerError, ErrorUnauthorized};
 use actix_web::{dev, http, Error, FromRequest, HttpRequest};
 use futures::future::{err, ok, Ready};
-use jsonwebtoken::{decode, errors, Algorithm, DecodingKey, Validation};
+use jsonwebtoken::{
+    decode, encode, errors, Algorithm, DecodingKey, EncodingKey, Header, Validation,
+};
 
 /// JWT claims.
 #[derive(Debug, serde::Serialize, serde::Deserialize)]
@@ -13,6 +15,16 @@ pub struct Claims {
 }
 
 pub struct JWT(pub String);
+
+/// Helper function for encoding claims to JWT string
+pub fn encode_claims(claims: &Claims, secret: &[u8]) -> Result<String, Error> {
+    encode(
+        &Header::default(),
+        claims,
+        &EncodingKey::from_secret(secret),
+    )
+    .map_err(|_| ErrorInternalServerError("JWTs encoding failed"))
+}
 
 /// Helper function for extracting claims from JWT string
 pub fn extract_claims(jwt: &str, secret: &[u8]) -> Ready<Result<Claims, Error>> {

@@ -1,5 +1,4 @@
 use crate::jwt;
-use jsonwebtoken::{encode, EncodingKey, Header};
 
 use actix_files::NamedFile;
 use actix_web::error::BlockingError;
@@ -17,7 +16,7 @@ use crate::database::users::DbErrorType;
 use crate::{app_state::AppState, database};
 
 /// Information required for sign in.
-#[derive(serde::Deserialize)]
+#[derive(serde::Deserialize, Clone)]
 pub struct SignInForm {
     pub username: String,
     pub password: String,
@@ -25,7 +24,7 @@ pub struct SignInForm {
 }
 
 /// Information required for sign up.
-#[derive(serde::Deserialize)]
+#[derive(serde::Deserialize, Clone)]
 pub struct SignUpForm {
     pub username: String,
     pub password: String,
@@ -33,7 +32,7 @@ pub struct SignUpForm {
 }
 
 /// Information required for deleting a user.
-#[derive(serde::Deserialize)]
+#[derive(serde::Deserialize, Clone)]
 pub struct DeleteUserForm {
     pub username: String,
     pub password: String,
@@ -125,29 +124,21 @@ pub async fn sign_in(
         exp: timestamp + 7200, // now + two hours
     };
 
-    let res_token = encode(
-        &Header::default(),
-        &claims,
-        &EncodingKey::from_secret(&app_state.config.jwt.secret),
-    );
+    let token = jwt::encode_claims(&claims, &app_state.config.jwt.secret)?;
 
-    if let Ok(token) = res_token {
-        if use_cookies {
-            Ok(HttpResponse::Ok()
-                .cookie(
-                    http::Cookie::build("triox_jwt", token)
-                        .domain(app_state.config.server.url.to_string())
-                        .path("/")
-                        .secure(app_state.config.ssl.enabled)
-                        .http_only(true)
-                        .finish(),
-                )
-                .body("Cookie is set"))
-        } else {
-            Ok(HttpResponse::Ok().body(token))
-        }
+    if use_cookies {
+        Ok(HttpResponse::Ok()
+            .cookie(
+                http::Cookie::build("triox_jwt", token)
+                    .domain(app_state.config.server.url.to_string())
+                    .path("/")
+                    .secure(app_state.config.ssl.enabled)
+                    .http_only(true)
+                    .finish(),
+            )
+            .body("Cookie is set"))
     } else {
-        Err(ErrorInternalServerError("JWTs generation failed"))
+        Ok(HttpResponse::Ok().body(token))
     }
 }
 
