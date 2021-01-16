@@ -7,10 +7,8 @@ use crate::apps::files::get::get;
 use crate::tests::util;
 
 fn get_jwt(app_state: &web::Data<AppState>) -> String {
-    use jsonwebtoken::{encode, EncodingKey, Header};
-    use std::time::{SystemTime, UNIX_EPOCH};
-
     use crate::jwt;
+    use std::time::{SystemTime, UNIX_EPOCH};
 
     let time_now = SystemTime::now();
     let timestamp = time_now
@@ -18,7 +16,6 @@ fn get_jwt(app_state: &web::Data<AppState>) -> String {
         .expect("Time went backwards")
         .as_secs() as usize;
 
-    let secret = &app_state.config.jwt.secret;
     let claims = jwt::Claims {
         sub: "someusername".to_owned(),
         id: 0,
@@ -26,11 +23,7 @@ fn get_jwt(app_state: &web::Data<AppState>) -> String {
         exp: timestamp + 7200 // now + two hours
     };
 
-    let res_token = encode(
-        &Header::default(),
-        &claims,
-        &EncodingKey::from_secret(secret),
-    ).unwrap();
+    let res_token = jwt::encode_claims(&claims, &app_state.config.jwt.secret).unwrap();
 
     res_token
 }
