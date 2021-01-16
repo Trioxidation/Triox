@@ -6,11 +6,6 @@ use crate::app_state::AppState;
 use crate::apps::files::get::get;
 use crate::tests::util;
 
-fn default_app_state() -> AppState {
-    // Tests expect the config to be placed in the "config" directory
-    crate::app_state::load_app_state("config")
-}
-
 fn get_jwt(app_state: &web::Data<AppState>) -> String {
     use jsonwebtoken::{encode, EncodingKey, Header};
     use std::time::{SystemTime, UNIX_EPOCH};
@@ -42,7 +37,7 @@ fn get_jwt(app_state: &web::Data<AppState>) -> String {
 
 #[actix_rt::test]
 async fn verification_fails() {
-    let app_state: web::Data<AppState> = web::Data::new(default_app_state());
+    let app_state: web::Data<AppState> = web::Data::new(util::default_app_state());
 
     let app = App::new()
     .app_data(app_state)
@@ -63,7 +58,7 @@ async fn verification_fails() {
 
 #[actix_rt::test]
 async fn file_doesnt_exist() {
-    let app_state: web::Data<AppState> = web::Data::new(default_app_state());
+    let app_state: web::Data<AppState> = web::Data::new(util::default_app_state());
     let jwt = get_jwt(&app_state);
 
     let app = App::new()
@@ -86,7 +81,7 @@ async fn file_doesnt_exist() {
 
 #[actix_rt::test]
 async fn move_up_directory() {
-    let app_state: web::Data<AppState> = web::Data::new(default_app_state());
+    let app_state: web::Data<AppState> = web::Data::new(util::default_app_state());
     let jwt = get_jwt(&app_state);
 
     let app = App::new()
@@ -111,7 +106,7 @@ async fn move_up_directory() {
 #[actix_rt::test]
 async fn ok_case() {
     use tokio::fs;
-    let app_state = default_app_state();
+    let app_state = util::default_app_state();
     let user = util::test_user(app_state.clone());
     fs::File::create(format!("./data/users/{}/files/test_file", user.id)).await.unwrap();
 
