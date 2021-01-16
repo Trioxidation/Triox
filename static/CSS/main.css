@@ -1,3 +1,4 @@
-.fullscreen-form {
-  padding: 8rem 2rem;
+th:first-child, td:first-child, th:last-child, td:last-child {
+    /* Makes checkboxes appear smaller in the file list */
+    width: 1px;
 }
