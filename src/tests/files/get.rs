@@ -4,6 +4,7 @@ use actix_web::http::StatusCode;
 
 use crate::app_state::AppState;
 use crate::apps::files::get::get;
+use crate::tests::util;
 
 fn default_app_state() -> AppState {
     // Tests expect the config to be placed in the "config" directory
@@ -105,4 +106,29 @@ async fn move_up_directory() {
 
     let response_body = test::read_body(response).await;
     assert_eq!(response_body, "Moving up directories is not allowed");
+}
+
+#[actix_rt::test]
+async fn ok_case() {
+    use tokio::fs;
+    let app_state = default_app_state();
+    let user = util::test_user(app_state.clone());
+    fs::File::create(format!("./data/users/{}/files/test_file", user.id)).await.unwrap();
+
+    let app_state: web::Data<AppState> = web::Data::new(app_state);
+
+    let app = App::new()
+    .app_data(app_state.clone())
+    .configure(|i: &mut web::ServiceConfig|{
+        i.service(get);
+    });
+
+    let mut app = test::init_service(app).await;
+
+    let request = test::TestRequest::get().uri("http://127.0.0.1:8080/app/files/get?path=test_file")
+        .header("Authorization", format!("Bearer{}", user.jwt));
+
+
+    let response = test::call_service(&mut app, request.to_request()).await;
+    assert_eq!(response.status(), StatusCode::OK);
 }
