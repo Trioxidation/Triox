@@ -40,15 +40,13 @@ pub struct TestUser {
 
 #[test]
 fn test_test_user() {
-    let _user = test_user();
+    let _user = test_user(default_app_state());
 }
 
 /// Return test user
 /// Can be used to test services that require authentication
 /// User will be automatically deleted when the user variable is dropped
-pub fn test_user() -> TestUser {
-    let app_state = default_app_state();
-
+pub fn test_user(app_state: AppState) -> TestUser {
     // generate random credentials
     let creds = random_creds();
 
