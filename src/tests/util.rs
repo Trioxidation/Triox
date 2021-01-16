@@ -35,7 +35,7 @@ pub struct TestUser {
     pub creds: auth::SignUpForm,
     pub jwt: String,
     pub app_state: AppState,
-    pub id: u32
+    pub id: u32,
 }
 
 #[test]
@@ -77,7 +77,7 @@ pub fn test_user(app_state: AppState) -> TestUser {
         jwt: jwt::encode_claims(&claims, &app_state.config.jwt.secret)
             .expect("JWT encoding failed"),
         app_state,
-        id: user.id
+        id: user.id,
     }
 }
 
