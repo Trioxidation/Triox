@@ -35,19 +35,18 @@ pub struct TestUser {
     pub creds: auth::SignUpForm,
     pub jwt: String,
     pub app_state: AppState,
+    pub id: u32
 }
 
 #[test]
 fn test_test_user() {
-    let _user = test_user();
+    let _user = test_user(default_app_state());
 }
 
 /// Return test user
 /// Can be used to test services that require authentication
 /// User will be automatically deleted when the user variable is dropped
-pub fn test_user() -> TestUser {
-    let app_state = default_app_state();
-
+pub fn test_user(app_state: AppState) -> TestUser {
     // generate random credentials
     let creds = random_creds();
 
@@ -78,6 +77,7 @@ pub fn test_user() -> TestUser {
         jwt: jwt::encode_claims(&claims, &app_state.config.jwt.secret)
             .expect("JWT encoding failed"),
         app_state,
+        id: user.id
     }
 }
 
