@@ -23,12 +23,7 @@
 
 ## Features
 
-Triox is still in an early stage but already supports most important features. Before releasing the first beta version we want to implement the following features:
-
-- [x] Authentication
-- [x] File API
-- [x] *Temporary JavaScript based front-end*
-- [ ] WebAssembly based front-end
+Triox is still in an early stage but is already usable. The features we'd like to add before our first release can be found in [this issue](https://github.com/AaronErhardt/Triox/issues/17).
 
 ## Demo servers
 

@@ -1,18 +1,12 @@
-use crate::app_state::AppState;
-
-fn default_app_state() -> AppState {
-    // Tests expect the config to be placed in the "config" directory
-    crate::app_state::load_app_state("config")
-}
-
 #[cfg(test)]
 mod sign_in {
-    use crate::{app_state::AppState, auth};
+    use crate::{app_state::AppState, auth, tests};
     use actix_web::web;
 
     #[actix_rt::test]
     async fn unknown_username() {
-        let app_state: web::Data<AppState> = web::Data::new(super::default_app_state());
+        let app_state: web::Data<AppState> =
+            web::Data::new(tests::util::default_app_state());
         let form = web::Json(auth::SignInForm {
             username: "unknown user".to_owned(),
             password: "decent password".to_owned(),
@@ -28,7 +22,8 @@ mod sign_in {
 
     #[actix_rt::test]
     async fn short_password() {
-        let app_state: web::Data<AppState> = web::Data::new(super::default_app_state());
+        let app_state: web::Data<AppState> =
+            web::Data::new(tests::util::default_app_state());
         let form = web::Json(auth::SignInForm {
             username: "decent user name".to_owned(),
             password: "1234".to_owned(),
@@ -44,7 +39,8 @@ mod sign_in {
 
     #[actix_rt::test]
     async fn long_password() {
-        let app_state: web::Data<AppState> = web::Data::new(super::default_app_state());
+        let app_state: web::Data<AppState> =
+            web::Data::new(tests::util::default_app_state());
         let form = web::Json(auth::SignInForm {
             username: "decent user name".to_owned(),
             password: "01234567890123456789012345678901234567890".to_owned(),
@@ -60,7 +56,8 @@ mod sign_in {
 
     #[actix_rt::test]
     async fn short_username() {
-        let app_state: web::Data<AppState> = web::Data::new(super::default_app_state());
+        let app_state: web::Data<AppState> =
+            web::Data::new(tests::util::default_app_state());
         let form = web::Json(auth::SignInForm {
             username: "user".to_owned(),
             password: "decent password".to_owned(),
@@ -76,7 +73,8 @@ mod sign_in {
 
     #[actix_rt::test]
     async fn long_username() {
-        let app_state: web::Data<AppState> = web::Data::new(super::default_app_state());
+        let app_state: web::Data<AppState> =
+            web::Data::new(tests::util::default_app_state());
         let form = web::Json(auth::SignInForm {
             username: "01234567890123456789012345678901234567890".to_owned(),
             password: "decent password".to_owned(),
@@ -93,42 +91,19 @@ mod sign_in {
 
 #[cfg(test)]
 mod sign_up {
-    use crate::{app_state::AppState, auth};
+    use crate::{app_state::AppState, auth, tests};
     use actix_web::{http, web};
-    use rand::distributions::Alphanumeric;
-    use rand::{thread_rng, Rng};
 
     #[actix_rt::test]
     async fn sign_up_and_sign_in() {
         // generating and loading data
-        let app_state: web::Data<AppState> = web::Data::new(super::default_app_state());
+        let app_state: web::Data<AppState> =
+            web::Data::new(tests::util::default_app_state());
 
-        let username: String = thread_rng()
-            .sample_iter(&Alphanumeric)
-            .take(10)
-            .map(char::from)
-            .collect();
-
-        let password: String = thread_rng()
-            .sample_iter(&Alphanumeric)
-            .take(30)
-            .map(char::from)
-            .collect();
-
-        let mut email: String = thread_rng()
-            .sample_iter(&Alphanumeric)
-            .take(10)
-            .map(char::from)
-            .collect();
-
-        email.push_str("@test.com");
+        let creds = tests::util::random_creds();
 
         // sign up
-        let form = web::Json(auth::SignUpForm {
-            username: username.clone(),
-            password: password.clone(),
-            email,
-        });
+        let form = web::Json(creds.clone());
 
         let resp = auth::sign_up(app_state.clone(), form).await.unwrap();
 
@@ -136,8 +111,8 @@ mod sign_up {
 
         // sign in
         let form = web::Json(auth::SignInForm {
-            username: username.clone(),
-            password: password.clone(),
+            username: creds.username.clone(),
+            password: creds.password.clone(),
             cookie: None,
         });
 
@@ -149,8 +124,8 @@ mod sign_up {
 
         // delete user
         let form = web::Json(auth::DeleteUserForm {
-            username: username.clone(),
-            password: password.clone(),
+            username: creds.username.clone(),
+            password: creds.password.clone(),
         });
 
         let resp = auth::delete_user(app_state.clone(), form)
@@ -161,8 +136,8 @@ mod sign_up {
 
         // sign in again (should fail)
         let form = web::Json(auth::SignInForm {
-            username: username.clone(),
-            password: password.clone(),
+            username: creds.username.clone(),
+            password: creds.password.clone(),
             cookie: None,
         });
 
