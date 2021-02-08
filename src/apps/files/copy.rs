@@ -19,21 +19,11 @@ pub async fn copy(
 
     let metadata = tokio::fs::metadata(&source_path).await?;
 
-    if metadata.is_dir() {
-        let copy_options = fs_extra::dir::CopyOptions::new();
-        web::block(move || {
-            fs_extra::dir::copy(&source_path, &destination_path, &copy_options)
-        })
-        .await?;
+    tokio::fs::copy(&source_path, &destination_path).await?;
 
+    if metadata.is_dir() {
         Ok(HttpResponse::Ok().body("Directory successfully copied"))
     } else {
-        let copy_options = fs_extra::file::CopyOptions::new();
-        web::block(move || {
-            fs_extra::file::copy(&source_path, &destination_path, &copy_options)
-        })
-        .await?;
-
         Ok(HttpResponse::Ok().body("File successfully copied"))
     }
 }
