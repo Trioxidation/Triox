@@ -23,7 +23,7 @@ fn get_jwt(app_state: &web::Data<AppState>) -> String {
         exp: timestamp + 7200, // now + two hours
     };
 
-    let res_token = jwt::encode_claims(&claims, &app_state.config.jwt.secret).unwrap();
+    let res_token = jwt::encode_claims(&claims, &app_state.config.server.secret).unwrap();
 
     res_token
 }

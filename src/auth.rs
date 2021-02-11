@@ -71,7 +71,7 @@ pub async fn user_info(
     app_state: web::Data<AppState>,
     jwt: jwt::JWT,
 ) -> Result<HttpResponse, Error> {
-    let claims = jwt::extract_claims(&jwt.0, &app_state.config.jwt.secret).await?;
+    let claims = jwt::extract_claims(&jwt.0, &app_state.config.server.secret).await?;
     Ok(HttpResponse::Ok().json(claims))
 }
 
@@ -124,15 +124,15 @@ pub async fn sign_in(
         exp: timestamp + 7200, // now + two hours
     };
 
-    let token = jwt::encode_claims(&claims, &app_state.config.jwt.secret)?;
+    let token = jwt::encode_claims(&claims, &app_state.config.server.secret)?;
 
     if use_cookies {
         Ok(HttpResponse::Ok()
             .cookie(
                 http::Cookie::build("triox_jwt", token)
-                    .domain(app_state.config.server.url.to_string())
+                    .domain(app_state.config.server.host.to_string())
                     .path("/")
-                    .secure(app_state.config.ssl.enabled)
+                    .secure(app_state.config.tls.enabled)
                     .http_only(true)
                     .finish(),
             )
@@ -147,7 +147,7 @@ pub async fn sign_up(
     app_state: web::Data<AppState>,
     form: web::Json<SignUpForm>,
 ) -> Result<HttpResponse, Error> {
-    if app_state.config.user.disable_sign_up {
+    if !app_state.config.server.registration {
         return Err(ErrorForbidden("Sign up is disabled"));
     }
     let _user = web::block(move || database::users::add_user(&form, app_state.clone()))

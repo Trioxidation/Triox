@@ -17,20 +17,20 @@ pub struct Claims {
 pub struct JWT(pub String);
 
 /// Helper function for encoding claims to JWT string
-pub fn encode_claims(claims: &Claims, secret: &[u8]) -> Result<String, Error> {
+pub fn encode_claims(claims: &Claims, secret: &str) -> Result<String, Error> {
     encode(
         &Header::default(),
         claims,
-        &EncodingKey::from_secret(secret),
+        &EncodingKey::from_secret(secret.as_ref()),
     )
     .map_err(|_| ErrorInternalServerError("JWTs encoding failed"))
 }
 
 /// Helper function for extracting claims from JWT string
-pub fn extract_claims(jwt: &str, secret: &[u8]) -> Ready<Result<Claims, Error>> {
+pub fn extract_claims(jwt: &str, secret: &str) -> Ready<Result<Claims, Error>> {
     match decode::<Claims>(
         jwt,
-        &DecodingKey::from_secret(secret),
+        &DecodingKey::from_secret(secret.as_ref()),
         &Validation::new(Algorithm::HS256),
     ) {
         Ok(token) => ok(token.claims),
