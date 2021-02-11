@@ -45,6 +45,10 @@ mod error_handler;
 /// Tests.
 mod tests;
 
+/// errors.
+mod errors;
+
+
 // Cli options
 mod cli;
 
@@ -66,7 +70,6 @@ async fn redirect(
 ) -> HttpResponse {
     if let Some(jwt) = optional_jwt {
         if jwt::extract_claims(&jwt.0, &app_state.config.server.secret)
-            .await
             .is_ok()
         {
             return HttpResponse::Found()

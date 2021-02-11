@@ -52,3 +52,6 @@ tokio = { version = "0.2", features = ["fs"] }
 
 # argument parsing
 clap = "2.33"
+
+# derive macros
+derive_more = "0.99"
