@@ -8,8 +8,10 @@ port = 8080
 # Amount of worker threads
 # If set to zero Triox will use one worker per physical CPU core
 workers = 0
-# change this
-secret = "asdlkfajsdlk;faj;sdlfkslkdjfaksjdfakldsjfalksdjfs"
+# REQUIRED:
+# provide a random string for the following field
+# secret = ""
+
 # Disable sign_up service to prevent creation of new accounts through the API
 registration = true
 

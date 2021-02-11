@@ -110,6 +110,10 @@ impl AppConfig {
             config.set("database.port", val).unwrap();
         };
 
+        config
+            .get::<String>("server.secret")
+            .expect("Please set a secret in configuration file");
+
         config.try_into()
     }
 }
