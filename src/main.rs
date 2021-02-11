@@ -22,7 +22,7 @@ extern crate log;
 mod apps;
 
 /// This module defines a configuration struct for Triox that allows more robust and efficient access to configuration.
-mod app_conf;
+mod config;
 
 /// This module defines a configuration struct for Triox that allows more robust and efficient access to configuration.
 mod app_state;
@@ -65,7 +65,7 @@ async fn redirect(
     app_state: web::Data<app_state::AppState>,
 ) -> HttpResponse {
     if let Some(jwt) = optional_jwt {
-        if jwt::extract_claims(&jwt.0, &app_state.config.jwt.secret)
+        if jwt::extract_claims(&jwt.0, &app_state.config.server.secret)
             .await
             .is_ok()
         {
@@ -103,7 +103,7 @@ async fn main() -> std::io::Result<()> {
     )
     .init();
 
-    let app_state = app_state::load_app_state(cli_options.config_dir.as_ref());
+    let app_state = app_state::AppState::new(cli_options.config_dir.as_ref());
 
     // clone config before it is moved into the closure
     let config = app_state.config.clone();
@@ -138,15 +138,15 @@ async fn main() -> std::io::Result<()> {
 
     let listen_address = config.server.listen_address();
 
-    server = if config.ssl.enabled {
+    server = if config.tls.enabled {
         let mut ssl_acceptor_builder =
             SslAcceptor::mozilla_intermediate(SslMethod::tls())
                 .expect("Couldn't create SslAcceptor");
         ssl_acceptor_builder
-            .set_private_key_file(config.ssl.key_path.as_ref(), SslFiletype::PEM)
+            .set_private_key_file(config.tls.key_path.unwrap(), SslFiletype::PEM)
             .expect("Couldn't set private key");
         ssl_acceptor_builder
-            .set_certificate_chain_file(config.ssl.certificate_path.as_ref())
+            .set_certificate_chain_file(config.tls.certificate_path.unwrap())
             .expect("Couldn't set certificate chain file");
         server.bind_openssl(listen_address, ssl_acceptor_builder)?
     } else {
@@ -157,5 +157,5 @@ async fn main() -> std::io::Result<()> {
         server = server.workers(config.server.workers);
     }
 
-    server.server_hostname(config.server.url).run().await
+    server.server_hostname(config.server.host).run().await
 }

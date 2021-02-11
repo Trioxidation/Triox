@@ -1,70 +1,45 @@
 [server]
-
 # Server host name
-url = "127.0.0.1"
-
+host = "127.0.0.1"
 # Socket address to bind
-listen = "[::]"
-
+ip = "[::]"
 # Port that should be listened on
 port = 8080
-
 # Amount of worker threads
 # If set to zero Triox will use one worker per physical CPU core
 workers = 0
-
-
-[user]
+# REQUIRED:
+# provide a random string for the following field
+# secret = ""
 
 # Disable sign_up service to prevent creation of new accounts through the API
-disable_sign_up = false
-
+registration = true
 
 [files]
-
 # Disable file system modification like uploading or moving files
 read_only = false
 
-
 [database]
-
 # Database type (currently only MySQL is available)
 type = "mysql"
-
 # Username of the database user
 user = "triox"
-
 # Password of the database user
 password = "triox"
-
 # Database address
-address = "localhost"
-
+host = "localhost"
+# Username of the database user
+port = "3306"
 # Name of the database
 name = "triox"
 
 
-[ssl]
-
+[tls]
 # Certificates can be easily created with certbot (https://certbot.eff.org/) by running
 # certbot certonly --standalone
-
-# Enable/disable SSL
+# Enable/disable TLS
 enabled = false
-
 # Path to the certificate file
-certificate = "ssl/cert.pem"
-
+certificate = "tls/cert.pem"
 # Path to the key file
-key = "ssl/key.pem"
-
-
-[jwt]
-
-# Path to JWT secret file.
-# In not specified a set of random numbers is generated instead.
-# This is secure but will break JWTs on server restarts
-# To avoid this behavior, set the path to a file containing a randomly generated secret.
-# On Unix systems you can generate this secret file using:
-# dd if=/dev/random of=path/to/file count=4 bs=1024
-# secret = "path/to/file"
+key = "tls/key.pem"

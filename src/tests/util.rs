@@ -2,7 +2,7 @@ use crate::app_state::AppState;
 
 pub fn default_app_state() -> AppState {
     // Tests expect the config to be placed in the "config" directory
-    crate::app_state::load_app_state("config")
+    crate::app_state::AppState::new("config")
 }
 
 use rand::distributions::Alphanumeric;
@@ -74,7 +74,7 @@ pub fn test_user(app_state: AppState) -> TestUser {
 
     TestUser {
         creds: creds.clone(),
-        jwt: jwt::encode_claims(&claims, &app_state.config.jwt.secret)
+        jwt: jwt::encode_claims(&claims, &app_state.config.server.secret)
             .expect("JWT encoding failed"),
         app_state,
         id: user.id,
