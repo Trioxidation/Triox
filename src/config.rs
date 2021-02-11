@@ -98,7 +98,9 @@ impl AppConfig {
             .merge(File::with_name(local_path))
             .expect(&format!("couldn't read config from: {:?}", local_path));
 
-        config.merge(Environment::with_prefix("TRIOX"))?;
+        config
+            .merge(Environment::with_prefix("TRIOX").separator("_"))
+            .expect("Problem reading env vars");
 
         if let Ok(val) = env::var("PORT") {
             config.set("server.port", val).unwrap();
