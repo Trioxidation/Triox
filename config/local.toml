@@ -47,6 +47,6 @@ name = "triox"
 # Enable/disable TLS
 enabled = false
 # Path to the certificate file
-certificate = "tls/cert.pem"
+certificate_path = "tls/cert.pem"
 # Path to the key file
-key = "tls/key.pem"
+key_path  = "tls/key.pem"
