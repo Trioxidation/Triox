@@ -25,14 +25,13 @@
 
 Triox is still in an early stage but is already usable. The features we'd like to add before our first release can be found in [this issue](https://github.com/AaronErhardt/Triox/issues/17).
 
-## Demo servers
+## Demo server
 
 Sign in with username `demo_user` and password `demo_password`.
 
-Sadly, we can't allow users to upload files due to legal restrictions. Since we can't guarantee that no illegal data will be uploaded the demo servers run in read-only mode.
+Sadly, we can't allow users to upload files due to legal restrictions. Since we can't guarantee that no illegal data will be uploaded the demo server runs in read-only mode.
 
-- US server: [triox-demo.aaron-erhardt.de](https://triox-demo.aaron-erhardt.de)
-- EU server: [triox-demo-eu.aaron-erhardt.de](https://triox-demo-eu.aaron-erhardt.de)
+**[triox-demo.aaron-erhardt.de](https://triox-demo.aaron-erhardt.de)**
 
 ## Contributing
 
