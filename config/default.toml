@@ -1,3 +1,8 @@
+# === DEFAULT CONFIG ===
+# This file includes default values that will be overwritten
+# by the local config (local.toml) or environment variables
+# ONLY EDIT THIS FILE IF YOU WANT TO ADJUST FALLBACK VALUES
+
 [server]
 # Server host name
 host = "127.0.0.1"
@@ -13,7 +18,8 @@ workers = 0
 # secret = ""
 
 # Disable sign_up service to prevent creation of new accounts through the API
-registration = false
+registration = true
+
 
 [files]
 # Disable file system modification like uploading or moving files

@@ -1,3 +1,8 @@
+# === LOCAL CONFIG ===
+# This file overwrites the default values of the default.toml file.
+# USE THIS FILE FOR YOU CONFIGURATION AND USE default.toml AS BACKUP
+# ENVIRONMENT VARIABLES STILL HAVE HIGHER PRIORITY AND WILL OVERWRITE THIS CONFIG
+
 [server]
 # Server host name
 host = "127.0.0.1"
@@ -15,13 +20,15 @@ workers = 0
 # Disable sign_up service to prevent creation of new accounts through the API
 registration = true
 
+
 [files]
 # Disable file system modification like uploading or moving files
 read_only = false
 
+
 [database]
 # Database type (currently only MySQL is available)
-type = "mysql"
+db = "mysql"
 # Username of the database user
 user = "triox"
 # Password of the database user
