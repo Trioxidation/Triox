@@ -110,7 +110,7 @@ async fn main() -> std::io::Result<()> {
 
     // setup HTTP server
     let mut server = HttpServer::new(move || {
-        let app = App::new()
+        App::new()
             // setup error handlers
             .wrap(
                 ErrorHandlers::new()
@@ -131,9 +131,7 @@ async fn main() -> std::io::Result<()> {
             // setup files API
             .configure(apps::files::service_config)
             // setup auth API
-            .configure(auth::service_config);
-
-        app
+            .configure(auth::service_config)
     });
 
     let listen_address = config.server.listen_address();

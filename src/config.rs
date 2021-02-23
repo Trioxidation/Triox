@@ -90,13 +90,13 @@ impl AppConfig {
         let default_path = default.to_str().unwrap_or("config/default.toml");
         config
             .merge(File::with_name(default_path))
-            .expect(&format!("couldn't read config from: {:?}", default));
+            .unwrap_or_else(|_| panic!("couldn't read config from: {:?}", default));
 
         let local: PathBuf = [dir, "local"].iter().collect();
         let local_path = local.to_str().unwrap_or("config/local");
         config
             .merge(File::with_name(local_path))
-            .expect(&format!("couldn't read config from: {:?}", local_path));
+            .unwrap_or_else(|_| panic!("couldn't read config from: {:?}", local_path));
 
         config
             .merge(Environment::with_prefix("TRIOX").separator("_"))
