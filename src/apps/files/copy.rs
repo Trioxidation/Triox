@@ -1,4 +1,4 @@
-use actix_web::{post, web, Error, HttpResponse};
+use actix_web::{post, web, HttpResponse};
 
 use crate::app_state::AppState;
 use crate::errors::*;

@@ -1,8 +1,8 @@
-use actix_web::error::{ErrorInternalServerError, ErrorUnauthorized};
+use actix_web::error::ErrorUnauthorized;
 use actix_web::{dev, http, Error, FromRequest, HttpRequest};
 use futures::future::{err, ok, Ready};
 use jsonwebtoken::{
-    decode, encode, errors, Algorithm, DecodingKey, EncodingKey, Header, Validation,
+    decode, encode, Algorithm, DecodingKey, EncodingKey, Header, Validation,
 };
 
 use crate::errors::*;
