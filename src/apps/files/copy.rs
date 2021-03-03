@@ -1,6 +1,7 @@
 use actix_web::{post, web, Error, HttpResponse};
 
 use crate::app_state::AppState;
+use crate::errors::*;
 use crate::jwt;
 
 /// Service for deleting files or directories
@@ -9,7 +10,7 @@ pub async fn copy(
     app_state: web::Data<AppState>,
     jwt: jwt::JWT,
     params: web::Json<super::SourceAndDest>,
-) -> Result<HttpResponse, Error> {
+) -> ServiceResult<HttpResponse> {
     super::read_only_guard(&app_state.config)?;
 
     let claims = jwt::extract_claims(&jwt.0, &app_state.config.server.secret)?;

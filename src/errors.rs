@@ -1,6 +1,9 @@
+use std::io::{Error as IOError, ErrorKind as IOErrorKind};
+
+use actix_multipart::MultipartError;
 use actix_web::{
     dev::HttpResponseBuilder,
-    error::{Error as ActixWebError, ResponseError},
+    error::ResponseError,
     http::{header, StatusCode},
     HttpResponse,
 };
@@ -19,12 +22,24 @@ pub enum ServiceError {
     InternalServerError,
     #[display(fmt = "The value you entered for email is not an email")] //405j
     NotAnEmail,
-    #[display(fmt = "Response Doesn't exist")]
+    #[display(fmt = "Bad request")]
     BadRequest,
+    #[display(fmt = "Unknown MIME type")]
+    UnknownMIME,
     #[display(fmt = "Expired token")]
     TokenExpired,
     #[display(fmt = "Invalid token")]
     InvalidToken,
+    #[display(fmt = "File not found")]
+    FileNotFouond,
+    #[display(fmt = "File exists")]
+    FileExists,
+    #[display(fmt = "Permission denied")]
+    PermissionDenied,
+    #[display(fmt = "Server in readonly mode")]
+    FSReadOnly,
+    #[display(fmt = "Invalid credentials")]
+    InvalidCredentials,
 }
 
 #[derive(Serialize)]
@@ -47,8 +62,14 @@ impl ResponseError for ServiceError {
             ServiceError::InternalServerError => StatusCode::INTERNAL_SERVER_ERROR,
             ServiceError::BadRequest => StatusCode::BAD_REQUEST,
             ServiceError::NotAnEmail => StatusCode::BAD_REQUEST,
+            ServiceError::UnknownMIME => StatusCode::BAD_REQUEST,
             ServiceError::TokenExpired => StatusCode::UNAUTHORIZED,
             ServiceError::InvalidToken => StatusCode::UNAUTHORIZED,
+            ServiceError::FileNotFouond => StatusCode::NOT_FOUND,
+            ServiceError::FileExists => StatusCode::METHOD_NOT_ALLOWED,
+            ServiceError::PermissionDenied => StatusCode::UNAUTHORIZED,
+            ServiceError::FSReadOnly => StatusCode::METHOD_NOT_ALLOWED,
+            ServiceError::InvalidCredentials => StatusCode::UNAUTHORIZED,
         }
     }
 }
@@ -63,11 +84,22 @@ impl From<JwtError> for ServiceError {
     }
 }
 
-// impl From<ActixWebError> for ServiceError {
-//     fn from(_: ActixWebError) -> ServiceError {
-//         ServiceError::InternalServerError
-//     }
-// }
+impl From<IOError> for ServiceError {
+    fn from(e: IOError) -> ServiceError {
+        match e.kind() {
+            IOErrorKind::NotFound => ServiceError::FileNotFouond,
+            IOErrorKind::PermissionDenied => ServiceError::PermissionDenied,
+            IOErrorKind::AlreadyExists => ServiceError::FileExists,
+            _ => ServiceError::InternalServerError,
+        }
+    }
+}
+
+impl From<MultipartError> for ServiceError {
+    fn from(_: MultipartError) -> ServiceError {
+        ServiceError::InternalServerError
+    }
+}
 
 // impl From<ValidationErrors> for ServiceError {
 //     fn from(_: ValidationErrors) -> ServiceError {

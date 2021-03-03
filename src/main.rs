@@ -48,7 +48,6 @@ mod tests;
 /// errors.
 mod errors;
 
-
 // Cli options
 mod cli;
 
@@ -69,9 +68,7 @@ async fn redirect(
     app_state: web::Data<app_state::AppState>,
 ) -> HttpResponse {
     if let Some(jwt) = optional_jwt {
-        if jwt::extract_claims(&jwt.0, &app_state.config.server.secret)
-            .is_ok()
-        {
+        if jwt::extract_claims(&jwt.0, &app_state.config.server.secret).is_ok() {
             return HttpResponse::Found()
                 .header(http::header::LOCATION, "/static/files.html")
                 .finish();
