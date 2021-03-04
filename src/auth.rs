@@ -71,7 +71,7 @@ pub async fn user_info(
     app_state: web::Data<AppState>,
     jwt: jwt::JWT,
 ) -> Result<HttpResponse, Error> {
-    let claims = jwt::extract_claims(&jwt.0, &app_state.config.server.secret).await?;
+    let claims = jwt::extract_claims(&jwt.0, &app_state.config.server.secret)?;
     Ok(HttpResponse::Ok().json(claims))
 }
 

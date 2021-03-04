@@ -1,9 +1,11 @@
-use actix_web::error::{ErrorInternalServerError, ErrorUnauthorized};
+use actix_web::error::ErrorUnauthorized;
 use actix_web::{dev, http, Error, FromRequest, HttpRequest};
 use futures::future::{err, ok, Ready};
 use jsonwebtoken::{
-    decode, encode, errors, Algorithm, DecodingKey, EncodingKey, Header, Validation,
+    decode, encode, Algorithm, DecodingKey, EncodingKey, Header, Validation,
 };
+
+use crate::errors::*;
 
 /// JWT claims.
 #[derive(Debug, serde::Serialize, serde::Deserialize)]
@@ -17,30 +19,25 @@ pub struct Claims {
 pub struct JWT(pub String);
 
 /// Helper function for encoding claims to JWT string
-pub fn encode_claims(claims: &Claims, secret: &str) -> Result<String, Error> {
-    encode(
+pub fn encode_claims(claims: &Claims, secret: &str) -> ServiceResult<String> {
+    let claim = encode(
         &Header::default(),
         claims,
         &EncodingKey::from_secret(secret.as_ref()),
-    )
-    .map_err(|_| ErrorInternalServerError("JWTs encoding failed"))
+    )?;
+
+    Ok(claim)
 }
 
 /// Helper function for extracting claims from JWT string
-pub fn extract_claims(jwt: &str, secret: &str) -> Ready<Result<Claims, Error>> {
-    match decode::<Claims>(
+pub fn extract_claims(jwt: &str, secret: &str) -> ServiceResult<Claims> {
+    let token = decode::<Claims>(
         jwt,
         &DecodingKey::from_secret(secret.as_ref()),
         &Validation::new(Algorithm::HS256),
-    ) {
-        Ok(token) => ok(token.claims),
-        Err(e) => match e.kind() {
-            errors::ErrorKind::ExpiredSignature => {
-                err(ErrorUnauthorized("Expired token"))
-            }
-            _ => err(ErrorUnauthorized("Invalid token")),
-        },
-    }
+    )?;
+
+    Ok(token.claims)
 }
 
 /// Helper function to extract a JWT from the authorization header

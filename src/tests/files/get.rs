@@ -23,7 +23,8 @@ fn get_jwt(app_state: &web::Data<AppState>) -> String {
         exp: timestamp + 7200, // now + two hours
     };
 
-    let res_token = jwt::encode_claims(&claims, &app_state.config.server.secret).unwrap();
+    let res_token =
+        jwt::encode_claims(&claims, &app_state.config.server.secret).unwrap();
 
     res_token
 }
@@ -46,9 +47,6 @@ async fn verification_fails() {
 
     let response = test::call_service(&mut app, request.to_request()).await;
     assert_eq!(response.status(), StatusCode::UNAUTHORIZED);
-
-    let response_body = test::read_body(response).await;
-    assert_eq!(response_body, "Invalid token");
 }
 
 #[actix_rt::test]
@@ -69,10 +67,7 @@ async fn file_doesnt_exist() {
         .header("Authorization", format!("Bearer{}", jwt));
 
     let response = test::call_service(&mut app, request.to_request()).await;
-    assert_eq!(response.status(), StatusCode::INTERNAL_SERVER_ERROR);
-
-    let response_body = test::read_body(response).await;
-    assert_eq!(response_body, "No such file or directory (os error 2)");
+    assert_eq!(response.status(), StatusCode::NOT_FOUND);
 }
 
 #[actix_rt::test]
@@ -93,10 +88,7 @@ async fn move_up_directory() {
         .header("Authorization", format!("Bearer{}", jwt));
 
     let response = test::call_service(&mut app, request.to_request()).await;
-    assert_eq!(response.status(), StatusCode::BAD_REQUEST);
-
-    let response_body = test::read_body(response).await;
-    assert_eq!(response_body, "Moving up directories is not allowed");
+    assert_eq!(response.status(), StatusCode::UNAUTHORIZED);
 }
 
 #[actix_rt::test]

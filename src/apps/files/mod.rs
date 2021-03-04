@@ -1,5 +1,7 @@
 use actix_web::web;
 
+use crate::errors::*;
+
 /// Download files
 pub mod get;
 
@@ -36,14 +38,9 @@ pub struct SourceAndDest {
 }
 
 /// Helper function to translate paths from requests into absolute path
-fn resolve_path(
-    user_id: u32,
-    query_path: &str,
-) -> Result<std::path::PathBuf, actix_web::Error> {
+fn resolve_path(user_id: u32, query_path: &str) -> ServiceResult<std::path::PathBuf> {
     if query_path.contains("..") {
-        Err(actix_web::error::ErrorBadRequest(
-            "Moving up directories is not allowed",
-        ))
+        Err(ServiceError::PermissionDenied)
     } else {
         Ok(std::path::PathBuf::from(format!(
             "data/users/{}/files/{}",
@@ -53,9 +50,9 @@ fn resolve_path(
 }
 
 /// Helper function to
-fn read_only_guard(config: &crate::config::AppConfig) -> Result<(), actix_web::Error> {
+fn read_only_guard(config: &crate::config::AppConfig) -> ServiceResult<()> {
     if config.files.read_only {
-        Err(actix_web::error::ErrorForbidden("Read only mode is active"))
+        Err(ServiceError::FSReadOnly)
     } else {
         Ok(())
     }

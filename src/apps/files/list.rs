@@ -1,5 +1,4 @@
-use actix_web::error::ErrorInternalServerError;
-use actix_web::{get, web, Error, HttpResponse};
+use actix_web::{get, web, HttpResponse};
 
 use futures::Stream;
 use tokio::fs;
@@ -9,6 +8,7 @@ use std::time::SystemTime;
 
 use super::QueryPath;
 use crate::app_state::AppState;
+use crate::errors::*;
 use crate::jwt;
 
 #[derive(serde::Serialize)]
@@ -37,14 +37,13 @@ pub async fn list(
     app_state: web::Data<AppState>,
     jwt: jwt::JWT,
     web::Query(query_path): web::Query<QueryPath>,
-) -> Result<HttpResponse, Error> {
-    let claims = jwt::extract_claims(&jwt.0, &app_state.config.server.secret).await?;
+) -> ServiceResult<HttpResponse> {
+    let claims = jwt::extract_claims(&jwt.0, &app_state.config.server.secret)?;
 
     let full_path = super::resolve_path(claims.id, &query_path.path)?;
 
-    let mut dir: ReadDir = fs::read_dir(&full_path)
-        .await
-        .map_err(ErrorInternalServerError)?;
+    let mut dir: ReadDir = fs::read_dir(&full_path).await?;
+    // .map_err(ErrorInternalServerError)?;
 
     let (lower_bound, upper_bound) = dir.size_hint();
 
@@ -71,13 +70,10 @@ pub async fn list(
     let mut directories: Vec<Directory> = Vec::new();
 
     for entry in entries {
-        let file_name = entry.file_name().into_string().map_err(|err| {
-            ErrorInternalServerError(
-                err.to_str()
-                    .unwrap_or("String conversion failed")
-                    .to_owned(),
-            )
-        })?;
+        let file_name = entry
+            .file_name()
+            .into_string()
+            .map_err(|_| ServiceError::InternalServerError)?;
         let last_modified: u64 = entry
             .metadata()
             .await?
@@ -87,12 +83,7 @@ pub async fn list(
             .unwrap_or_else(|_| std::time::Duration::new(0, 0))
             .as_secs();
 
-        match entry
-            .file_type()
-            .await
-            .map_err(ErrorInternalServerError)?
-            .is_file()
-        {
+        match entry.file_type().await?.is_file() {
             true => files.push(File {
                 name: file_name,
                 size: entry.metadata().await?.len(),
