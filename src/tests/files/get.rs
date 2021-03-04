@@ -68,7 +68,6 @@ async fn file_doesnt_exist() {
 
     let response = test::call_service(&mut app, request.to_request()).await;
     assert_eq!(response.status(), StatusCode::NOT_FOUND);
-
 }
 
 #[actix_rt::test]

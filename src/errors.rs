@@ -31,7 +31,7 @@ pub enum ServiceError {
     #[display(fmt = "Invalid token")]
     InvalidToken,
     #[display(fmt = "File not found")]
-    FileNotFouond,
+    FileNotFound,
     #[display(fmt = "File exists")]
     FileExists,
     #[display(fmt = "Permission denied")]
@@ -65,7 +65,7 @@ impl ResponseError for ServiceError {
             ServiceError::UnknownMIME => StatusCode::BAD_REQUEST,
             ServiceError::TokenExpired => StatusCode::UNAUTHORIZED,
             ServiceError::InvalidToken => StatusCode::UNAUTHORIZED,
-            ServiceError::FileNotFouond => StatusCode::NOT_FOUND,
+            ServiceError::FileNotFound => StatusCode::NOT_FOUND,
             ServiceError::FileExists => StatusCode::METHOD_NOT_ALLOWED,
             ServiceError::PermissionDenied => StatusCode::UNAUTHORIZED,
             ServiceError::FSReadOnly => StatusCode::METHOD_NOT_ALLOWED,
@@ -79,7 +79,7 @@ impl From<JwtError> for ServiceError {
         match e.kind() {
             JwtErrorKind::ExpiredSignature => ServiceError::TokenExpired,
             JwtErrorKind::InvalidSignature => ServiceError::InvalidToken,
-            _ => ServiceError::InternalServerError,
+            _ => ServiceError::InvalidCredentials,
         }
     }
 }
@@ -87,7 +87,7 @@ impl From<JwtError> for ServiceError {
 impl From<IOError> for ServiceError {
     fn from(e: IOError) -> ServiceError {
         match e.kind() {
-            IOErrorKind::NotFound => ServiceError::FileNotFouond,
+            IOErrorKind::NotFound => ServiceError::FileNotFound,
             IOErrorKind::PermissionDenied => ServiceError::PermissionDenied,
             IOErrorKind::AlreadyExists => ServiceError::FileExists,
             _ => ServiceError::InternalServerError,
