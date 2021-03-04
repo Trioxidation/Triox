@@ -48,7 +48,7 @@ openssl = "0.10"
 
 # futures
 futures = "0.3"
-tokio = { version = "0.2", features = ["fs"] }
+tokio = { version = "1.2", features = ["fs"] }
 
 # argument parsing
 clap = "2.33"
