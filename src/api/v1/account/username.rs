@@ -14,30 +14,35 @@
 * You should have received a copy of the GNU Affero General Public License
 * along with this program.  If not, see <https://www.gnu.org/licenses/>.
 */
+use actix_web::{web, HttpResponse, Responder};
 
-// TODO setup governor
-pub mod account;
-pub mod auth;
+use super::{AccountCheckPayload, AccountCheckResp};
+use crate::errors::*;
+use crate::AppData;
 
-use account::routes::Account;
-use auth::routes::Auth;
-pub const ROUTES: Routes = Routes::new();
+#[my_codegen::post(path = "crate::V1_API_ROUTES.account.username_exists")]
+async fn username_exists(
+    payload: web::Json<AccountCheckPayload>,
+    data: AppData,
+) -> ServiceResult<impl Responder> {
+    let res = sqlx::query!(
+        "SELECT EXISTS (SELECT 1 from triox_users WHERE name = $1)",
+        &payload.val,
+    )
+    .fetch_one(&data.db)
+    .await?;
 
-pub struct Routes {
-    pub auth: Auth,
-    pub account: Account,
-}
+    let mut resp = AccountCheckResp { exists: false };
 
-impl Routes {
-    const fn new() -> Routes {
-        Routes {
-            auth: Auth::new(),
-            account: Account::new(),
+    if let Some(x) = res.exists {
+        if x {
+            resp.exists = true;
         }
     }
+
+    Ok(HttpResponse::Ok().json(resp))
 }
 
 pub fn services(cfg: &mut actix_web::web::ServiceConfig) {
-    auth::services(cfg);
-    account::services(cfg);
+    cfg.service(username_exists);
 }

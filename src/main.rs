@@ -129,7 +129,7 @@ async fn main() -> std::io::Result<()> {
             // setup files API
             .configure(apps::files::service_config)
             // setup auth API
-            .configure(api::v1::auth::services)
+            .configure(api::v1::services)
     });
 
     let listen_address = SETTINGS.server.listen_address();
