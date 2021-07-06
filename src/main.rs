@@ -54,8 +54,8 @@ mod errors;
 mod cli;
 
 use actix_files::NamedFile;
-use actix_web::middleware::errhandlers::ErrorHandlers;
 use actix_identity::{CookieIdentityPolicy, IdentityService};
+use actix_web::middleware::errhandlers::ErrorHandlers;
 use actix_web::{http, middleware, web, App, HttpRequest, HttpResponse, HttpServer};
 use env_logger::Env;
 use lazy_static::lazy_static;
@@ -134,8 +134,8 @@ async fn main() -> std::io::Result<()> {
                     .handler(http::StatusCode::NOT_FOUND, error_handler::render_404),
             )
             .wrap(middleware::Compress::default())
-               .wrap(get_identity_service())
-                      .wrap(actix_web::middleware::NormalizePath::new(
+            .wrap(get_identity_service())
+            .wrap(actix_web::middleware::NormalizePath::new(
                 actix_web::middleware::normalize::TrailingSlash::Trim,
             ))
             // setup application state extractor

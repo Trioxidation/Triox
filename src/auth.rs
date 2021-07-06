@@ -1,5 +1,5 @@
-use actix_web::Responder;
 use actix_web::HttpResponse;
+use actix_web::Responder;
 
 //use crate::database::users::DbErrorType;
 
@@ -74,7 +74,6 @@ pub async fn sign_in_page() -> impl Responder {
     HttpResponse::Ok()
         .content_type("text/html; charset=utf-8")
         .body(SIGN_IN)
-
 }
 
 /// Give user sign up page.
@@ -82,7 +81,6 @@ pub async fn sign_up_page() -> impl Responder {
     HttpResponse::Ok()
         .content_type("text/html; charset=utf-8")
         .body(SIGN_UP)
-
 }
 
 ///// Sign in user and return JWT on success.

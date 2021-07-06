@@ -168,6 +168,7 @@ pub mod runners {
             .await;
         }
         if let Err(sqlx::Error::Database(err)) = res {
+            log::error!("{}", err);
             if err.code() == Some(Cow::from("23505")) {
                 let msg = err.message();
                 if msg.contains("triox_users_name_key") {

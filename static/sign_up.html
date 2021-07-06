@@ -60,12 +60,13 @@
                     />
                   </div>
                 </div>
-                <input
+                <button
                   type="button"
-                  value="Sign Up"
                   class="button is-block is-success is-large is-fullwidth"
-                  onclick="submitform(event)"
-                />
+                  id="submit-btn"
+                >
+                  Sign Up
+                </button>
                 <p class="mt-4">
                   <a href="/sign_in">Sign In</a>
                 </p>
@@ -76,12 +77,12 @@
       </div>
     </section>
     <script type="text/javascript">
+      const btn = document.querySelector('#submit-btn');
+      btn.addEventListener('click', e => submitform(e));
       function submitform(e) {
         e.preventDefault();
 
-        const email = document.getElementById('email').value;
-        isBlankString(email, 'email', e);
-
+        const emailElement = document.getElementById('email');
         let email = emailElement.value;
         if (!email.replace(/\s/g, '').length) {
           email = null;
@@ -96,7 +97,7 @@
         });
         send_json(
           data,
-          '/sign_up',
+          '/api/v1/signup',
           text => {
             window.location.href = '/sign_in';
           },

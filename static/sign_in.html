@@ -73,7 +73,7 @@
         console.log(data);
         send_json(
           data,
-          '/sign_in',
+          '/api/v1/signin',
           text => {
             window.location.href = '/static/files.html';
           },
