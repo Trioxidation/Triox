@@ -52,6 +52,15 @@ async fn delete_account(
                 sqlx::query!("DELETE FROM triox_users WHERE name = ($1)", &username)
                     .execute(&data.db)
                     .await?;
+
+                // delete storage path of the user
+                let path: std::path::PathBuf =
+                    [".", "data", "users", &username].iter().collect();
+
+                std::fs::remove_dir_all(path).map_err(|err| {
+                    log::error!("STORAGE PATH: {:?}", err);
+                    err
+                })?;
                 Ok(HttpResponse::Ok())
             } else {
                 Err(ServiceError::InvalidCredentials)
