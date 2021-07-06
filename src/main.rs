@@ -71,11 +71,10 @@ async fn index(_req: HttpRequest) -> actix_web::Result<NamedFile> {
 }
 
 #[actix_web::get("/", wrap = "crate::CheckLogin")]
-async fn redirect(
-) -> HttpResponse {
-            HttpResponse::Found()
-                .header(http::header::LOCATION, "/static/files.html")
-                .finish()
+async fn redirect() -> HttpResponse {
+    HttpResponse::Found()
+        .header(http::header::LOCATION, "/static/files.html")
+        .finish()
 }
 
 /// For AGPL compliance Triox needs to allow users to download the source code over the network
@@ -101,7 +100,7 @@ async fn main() -> std::io::Result<()> {
     )
     .init();
 
-    let app_state = app_state::AppState::new(cli_options.config_dir.as_ref()).await;
+    let app_state = app_state::AppState::new().await;
 
     // setup HTTP server
     let mut server = HttpServer::new(move || {
@@ -140,7 +139,10 @@ async fn main() -> std::io::Result<()> {
             SslAcceptor::mozilla_intermediate(SslMethod::tls())
                 .expect("Couldn't create SslAcceptor");
         ssl_acceptor_builder
-            .set_private_key_file(SETTINGS.tls.key_path.as_ref().unwrap(), SslFiletype::PEM)
+            .set_private_key_file(
+                SETTINGS.tls.key_path.as_ref().unwrap(),
+                SslFiletype::PEM,
+            )
             .expect("Couldn't set private key");
         ssl_acceptor_builder
             .set_certificate_chain_file(SETTINGS.tls.certificate_path.as_ref().unwrap())

@@ -1,7 +1,6 @@
 use actix_files::NamedFile;
 use actix_web::{get, web};
 
-use crate::app_state::AppState;
 use crate::errors::*;
 
 /// Service for downloading files via an API

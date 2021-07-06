@@ -1,4 +1,3 @@
-use dashmap::DashMap;
 use sqlx::postgres::PgPoolOptions;
 use sqlx::PgPool;
 
@@ -8,15 +7,13 @@ use crate::SETTINGS;
 /// Can be accessed using the AppData extractor.
 #[derive(Clone)]
 pub struct AppState {
-    //  pub db_pool: database::DbPool,
-    pub login_count: DashMap<u32, u8>,
     pub creds: argon2_creds::Config,
     // sqlx
     pub db: PgPool,
 }
 
 impl AppState {
-    pub async fn new(config_path: &str) -> Self {
+    pub async fn new() -> Self {
         let creds = argon2_creds::ConfigBuilder::default()
             .username_case_mapped(true)
             .profanity(true)
@@ -39,11 +36,6 @@ impl AppState {
             .await
             .expect("Unable to form database pool");
         init.join().unwrap();
-        AppState {
-            login_count: DashMap::new(),
-            //db_pool,
-            creds,
-            db,
-        }
+        AppState { creds, db }
     }
 }

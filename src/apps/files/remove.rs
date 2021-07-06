@@ -1,6 +1,5 @@
 use actix_web::{get, web, HttpResponse};
 
-use crate::app_state::AppState;
 use crate::errors::*;
 
 /// Service for deleting files or directories

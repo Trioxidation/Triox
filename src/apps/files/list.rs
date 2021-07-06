@@ -7,7 +7,6 @@ use tokio::fs::{DirEntry, ReadDir};
 use std::time::SystemTime;
 
 use super::QueryPath;
-use crate::app_state::AppState;
 use crate::errors::*;
 
 #[derive(serde::Serialize)]
@@ -33,7 +32,6 @@ struct Response {
 /// Service for listing files via an API
 #[get("/app/files/list", wrap = "crate::CheckLogin")]
 pub async fn list(
-    app_state: web::Data<AppState>,
     id: actix_identity::Identity,
     web::Query(query_path): web::Query<QueryPath>,
 ) -> ServiceResult<HttpResponse> {
@@ -95,5 +93,5 @@ pub async fn list(
         }
     }
 
-    Ok(HttpResponse::Ok().json(Response { directories, files }))
+    Ok(HttpResponse::Ok().json(Response { files, directories }))
 }
