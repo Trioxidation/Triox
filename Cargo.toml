@@ -36,7 +36,7 @@ actix-governor = "0.2"
 actix-web = { version = "3", features = ["openssl"] }
 actix-identity = "0.3"
 actix-service = "1.0.6"
-openssl = "0.10"
+openssl = { version = "0.10.29", features = ["vendored"] }
 
 sqlx = { version = "0.4.0", features = [ "runtime-actix-rustls", "postgres", "time", "offline" ] }
 argon2-creds = { branch = "master", git = "https://github.com/realaravinth/argon2-creds"}
