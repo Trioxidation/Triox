@@ -7,8 +7,18 @@ description = "An open source cloud server that focuses on speed, reliability an
 repository = "https://github.com/AaronErhardt/Triox"
 readme = "README.md"
 license = "AGPL-3.0-or-later"
+default-run = "triox"
 
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+
+
+[[bin]]
+name = "triox"
+path = "./src/main.rs"
+
+[[bin]]
+name = "tests-migrate"
+path = "./src/tests-migrate.rs"
 
 [dependencies]
 # config
