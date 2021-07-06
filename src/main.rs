@@ -35,6 +35,8 @@ mod auth;
 mod error_handler;
 
 /// Tests.
+#[cfg(test)]
+#[macro_use]
 mod tests;
 
 /// errors.
@@ -42,6 +44,8 @@ mod errors;
 
 // Cli options
 mod cli;
+
+use std::sync::Arc;
 
 use actix_files::NamedFile;
 use actix_identity::{CookieIdentityPolicy, IdentityService};
@@ -56,7 +60,7 @@ use crate::api::v1::ROUTES as V1_API_ROUTES;
 use crate::config::AppConfig;
 
 pub use crate::app_state::AppState;
-pub type AppData = actix_web::web::Data<AppState>;
+pub type AppData = actix_web::web::Data<Arc<AppState>>;
 
 lazy_static! {
     pub static ref SETTINGS: AppConfig = {
@@ -127,7 +131,7 @@ async fn main() -> std::io::Result<()> {
             // serve static files from ./static/ to /static/
             .service(actix_files::Files::new("/static", "static"))
             // setup files API
-            .configure(apps::files::service_config)
+            .configure(apps::files::services)
             // setup auth API
             .configure(api::v1::services)
     });

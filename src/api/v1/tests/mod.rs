@@ -15,31 +15,5 @@
 * along with this program.  If not, see <https://www.gnu.org/licenses/>.
 */
 
-// TODO setup governor
-pub mod account;
-pub mod auth;
-#[cfg(test)]
-mod tests;
-
-use account::routes::Account;
-use auth::routes::Auth;
-pub const ROUTES: Routes = Routes::new();
-
-pub struct Routes {
-    pub auth: Auth,
-    pub account: Account,
-}
-
-impl Routes {
-    const fn new() -> Routes {
-        Routes {
-            auth: Auth::new(),
-            account: Account::new(),
-        }
-    }
-}
-
-pub fn services(cfg: &mut actix_web::web::ServiceConfig) {
-    auth::services(cfg);
-    account::services(cfg);
-}
+mod auth;
+mod protected;

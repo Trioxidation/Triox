@@ -25,6 +25,8 @@ use actix_web::{http, Error, FromRequest, HttpResponse};
 
 use futures::future::{ok, Either, Ready};
 
+pub const SIGIN_PAGE: &str = "/sign_in";
+
 pub struct CheckLogin;
 
 impl<S, B> Transform<S> for CheckLogin
@@ -76,7 +78,7 @@ where
             let req = ServiceRequest::from_parts(r, pl).ok().unwrap();
             Either::Right(ok(req.into_response(
                 HttpResponse::Found()
-                    .header(http::header::LOCATION, "/sign_in")
+                    .header(http::header::LOCATION, SIGIN_PAGE)
                     .finish()
                     .into_body(),
             )))

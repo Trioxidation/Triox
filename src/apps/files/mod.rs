@@ -59,7 +59,7 @@ fn read_only_guard() -> ServiceResult<()> {
 }
 
 // Configure files app services
-pub fn service_config(cfg: &mut web::ServiceConfig) {
+pub fn services(cfg: &mut web::ServiceConfig) {
     cfg
         // read only file app API
         .service(get::get)

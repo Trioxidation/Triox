@@ -1,119 +1,55 @@
 use actix_web::http::StatusCode;
-use actix_web::web;
-use actix_web::{test, App};
+use actix_web::test;
+use tokio::fs;
 
 use crate::app_state::AppState;
-use crate::apps::files::get::get;
-use crate::tests::util;
-
-fn get_jwt(app_state: &web::Data<AppState>) -> String {
-    use crate::jwt;
-    use std::time::{SystemTime, UNIX_EPOCH};
-
-    let time_now = SystemTime::now();
-    let timestamp = time_now
-        .duration_since(UNIX_EPOCH)
-        .expect("Time went backwards")
-        .as_secs() as usize;
-
-    let claims = jwt::Claims {
-        sub: "someusername".to_owned(),
-        id: 0,
-        role: 1,
-        exp: timestamp + 7200, // now + two hours
-    };
-
-    let res_token =
-        jwt::encode_claims(&claims, &app_state.config.server.secret).unwrap();
-
-    res_token
-}
+use crate::tests::*;
+use crate::*;
 
 #[actix_rt::test]
-async fn verification_fails() {
-    let app_state: web::Data<AppState> = web::Data::new(util::default_app_state());
+async fn file_works() {
+    const NAME: &str = "fileuser";
+    const PASSWORD: &str = "randompassword";
 
-    let app = App::new()
-        .app_data(app_state)
-        .configure(|i: &mut web::ServiceConfig| {
-            i.service(get);
-        });
+    {
+        let data = AppState::new().await;
+        delete_user(NAME, &data).await;
+    }
 
-    let mut app = test::init_service(app).await;
+    let (data, _, signin_resp) = register_and_signin(NAME, None, PASSWORD).await;
+    let cookies = get_cookie!(signin_resp);
+    let mut app = get_app!(data).await;
 
-    let request = test::TestRequest::get()
-        .uri("http://127.0.0.1:8080/app/files/get?path=fakefile.txt")
-        .header("Authorization", "Bearerinvalidjwt");
+    let response = test::call_service(
+        &mut app,
+        get_req!("/app/files/get?path=fakefile.txt")
+            .cookie(cookies.clone())
+            .to_request(),
+    )
+    .await;
 
-    let response = test::call_service(&mut app, request.to_request()).await;
-    assert_eq!(response.status(), StatusCode::UNAUTHORIZED);
-}
-
-#[actix_rt::test]
-async fn file_doesnt_exist() {
-    let app_state: web::Data<AppState> = web::Data::new(util::default_app_state());
-    let jwt = get_jwt(&app_state);
-
-    let app = App::new().app_data(app_state.clone()).configure(
-        |i: &mut web::ServiceConfig| {
-            i.service(get);
-        },
-    );
-
-    let mut app = test::init_service(app).await;
-
-    let request = test::TestRequest::get()
-        .uri("http://127.0.0.1:8080/app/files/get?path=fakefile.txt")
-        .header("Authorization", format!("Bearer{}", jwt));
-
-    let response = test::call_service(&mut app, request.to_request()).await;
     assert_eq!(response.status(), StatusCode::NOT_FOUND);
-}
 
-#[actix_rt::test]
-async fn move_up_directory() {
-    let app_state: web::Data<AppState> = web::Data::new(util::default_app_state());
-    let jwt = get_jwt(&app_state);
+    // move up a dir
+    let response = test::call_service(
+        &mut app,
+        get_req!("/app/files/get?path=../fakefile.txt")
+            .cookie(cookies.clone())
+            .to_request(),
+    )
+    .await;
 
-    let app = App::new().app_data(app_state.clone()).configure(
-        |i: &mut web::ServiceConfig| {
-            i.service(get);
-        },
-    );
-
-    let mut app = test::init_service(app).await;
-
-    let request = test::TestRequest::get()
-        .uri("http://127.0.0.1:8080/app/files/get?path=../fakefile.txt")
-        .header("Authorization", format!("Bearer{}", jwt));
-
-    let response = test::call_service(&mut app, request.to_request()).await;
     assert_eq!(response.status(), StatusCode::UNAUTHORIZED);
-}
 
-#[actix_rt::test]
-async fn ok_case() {
-    use tokio::fs;
-    let app_state = util::default_app_state();
-    let user = util::test_user(app_state.clone());
-    fs::File::create(format!("./data/users/{}/files/test_file", user.id))
-        .await
-        .unwrap();
-
-    let app_state: web::Data<AppState> = web::Data::new(app_state);
-
-    let app = App::new().app_data(app_state.clone()).configure(
-        |i: &mut web::ServiceConfig| {
-            i.service(get);
-        },
-    );
-
-    let mut app = test::init_service(app).await;
-
-    let request = test::TestRequest::get()
-        .uri("http://127.0.0.1:8080/app/files/get?path=test_file")
-        .header("Authorization", format!("Bearer{}", user.jwt));
-
-    let response = test::call_service(&mut app, request.to_request()).await;
+    let file_name = format!("./data/users/{}/files/test_file", NAME);
+    fs::File::create(&file_name).await.unwrap();
+    let response = test::call_service(
+        &mut app,
+        get_req!("/app/files/get?path=test_file")
+            .cookie(cookies)
+            .to_request(),
+    )
+    .await;
     assert_eq!(response.status(), StatusCode::OK);
+    fs::remove_file(file_name).await.unwrap();
 }

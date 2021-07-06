@@ -1,3 +1,5 @@
+use std::sync::Arc;
+
 use sqlx::postgres::PgPoolOptions;
 use sqlx::PgPool;
 
@@ -13,7 +15,7 @@ pub struct AppState {
 }
 
 impl AppState {
-    pub async fn new() -> Self {
+    pub async fn new() -> Arc<Self> {
         let creds = argon2_creds::ConfigBuilder::default()
             .username_case_mapped(true)
             .profanity(true)
@@ -36,6 +38,6 @@ impl AppState {
             .await
             .expect("Unable to form database pool");
         init.join().unwrap();
-        AppState { creds, db }
+        Arc::new(AppState { creds, db })
     }
 }

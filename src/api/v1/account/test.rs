@@ -22,7 +22,7 @@ use super::email::*;
 use super::*;
 use crate::api::v1::auth::runners::Password;
 use crate::api::v1::ROUTES;
-use crate::data::Data;
+use crate::app_state::AppState;
 use crate::*;
 
 use crate::tests::*;
@@ -34,35 +34,14 @@ async fn uname_email_exists_works() {
     const EMAIL: &str = "testuserexists@a.com2";
 
     {
-        let data = Data::new().await;
+        let data = AppState::new().await;
         delete_user(NAME, &data).await;
     }
 
-    let (data, _, signin_resp) = register_and_signin(NAME, EMAIL, PASSWORD).await;
+    let (data, _, signin_resp) =
+        register_and_signin(NAME, Some(EMAIL.into()), PASSWORD).await;
     let cookies = get_cookie!(signin_resp);
     let mut app = get_app!(data).await;
-
-    // chech if get user secret works
-    let resp = test::call_service(
-        &mut app,
-        test::TestRequest::get()
-            .cookie(cookies.clone())
-            .uri(ROUTES.account.get_secret)
-            .to_request(),
-    )
-    .await;
-    assert_eq!(resp.status(), StatusCode::OK);
-
-    // chech if get user secret works
-    let resp = test::call_service(
-        &mut app,
-        test::TestRequest::post()
-            .cookie(cookies.clone())
-            .uri(ROUTES.account.update_secret)
-            .to_request(),
-    )
-    .await;
-    assert_eq!(resp.status(), StatusCode::OK);
 
     let mut payload = AccountCheckPayload { val: NAME.into() };
 
@@ -122,11 +101,12 @@ async fn email_udpate_password_validation_del_userworks() {
     const EMAIL: &str = "testuser1@a.com2";
 
     {
-        let data = Data::new().await;
+        let data = AppState::new().await;
         delete_user(NAME, &data).await;
     }
 
-    let (data, creds, signin_resp) = register_and_signin(NAME, EMAIL, PASSWORD).await;
+    let (data, creds, signin_resp) =
+        register_and_signin(NAME, Some(EMAIL.into()), PASSWORD).await;
     let cookies = get_cookie!(signin_resp);
     let mut app = get_app!(data).await;
 
