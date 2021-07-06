@@ -12,13 +12,9 @@
 //!
 //!🔬 **Modern Technologies** - Authentication with [JWT](https://jwt.io) and a front-end based on [WebAssembly](https://webassembly.org).
 
-#[macro_use]
-extern crate diesel;
-
-#[macro_use]
-extern crate log;
-
 mod api;
+mod middleware;
+pub use crate::middleware::auth::CheckLogin;
 
 /// "Apps" in this module take care of certain parts of the API. For example the files app will provide services for uploading and downloading files.
 mod apps;
@@ -35,12 +31,6 @@ mod auth;
 ///// Database structures and helper functions for loading, setting and updating the database.
 //mod database;
 
-/// Helper functions for hashing and comparing passwords.
-mod hash;
-
-/// Structures and extractors for JWT authentication.
-mod jwt;
-
 /// Services for handling http errors.
 mod error_handler;
 
@@ -56,7 +46,7 @@ mod cli;
 use actix_files::NamedFile;
 use actix_identity::{CookieIdentityPolicy, IdentityService};
 use actix_web::middleware::errhandlers::ErrorHandlers;
-use actix_web::{http, middleware, web, App, HttpRequest, HttpResponse, HttpServer};
+use actix_web::{http, web, App, HttpRequest, HttpResponse, HttpServer};
 use env_logger::Env;
 use lazy_static::lazy_static;
 
@@ -80,21 +70,12 @@ async fn index(_req: HttpRequest) -> actix_web::Result<NamedFile> {
     Ok(NamedFile::open("static/index.html")?.set_content_type(mime::TEXT_HTML_UTF_8))
 }
 
+#[actix_web::get("/", wrap = "crate::CheckLogin")]
 async fn redirect(
-    optional_jwt: Option<jwt::JWT>,
-    app_state: web::Data<app_state::AppState>,
 ) -> HttpResponse {
-    if let Some(jwt) = optional_jwt {
-        if jwt::extract_claims(&jwt.0, &app_state.config.server.secret).is_ok() {
-            return HttpResponse::Found()
+            HttpResponse::Found()
                 .header(http::header::LOCATION, "/static/files.html")
-                .finish();
-        }
-    }
-
-    HttpResponse::Found()
-        .header(http::header::LOCATION, "/sign_in")
-        .finish()
+                .finish()
 }
 
 /// For AGPL compliance Triox needs to allow users to download the source code over the network
@@ -122,9 +103,6 @@ async fn main() -> std::io::Result<()> {
 
     let app_state = app_state::AppState::new(cli_options.config_dir.as_ref()).await;
 
-    // clone config before it is moved into the closure
-    let config = app_state.config.clone();
-
     // setup HTTP server
     let mut server = HttpServer::new(move || {
         App::new()
@@ -133,15 +111,15 @@ async fn main() -> std::io::Result<()> {
                 ErrorHandlers::new()
                     .handler(http::StatusCode::NOT_FOUND, error_handler::render_404),
             )
-            .wrap(middleware::Compress::default())
+            .wrap(actix_web::middleware::Compress::default())
             .wrap(get_identity_service())
             .wrap(actix_web::middleware::NormalizePath::new(
                 actix_web::middleware::normalize::TrailingSlash::Trim,
             ))
             // setup application state extractor
             .data(app_state.clone())
-            .wrap(middleware::Logger::default())
-            .route("/", web::get().to(redirect))
+            .wrap(actix_web::middleware::Logger::default())
+            .service(redirect)
             .route("/source", web::get().to(source_code))
             // static pages
             .route("/index", web::get().to(index))
@@ -155,28 +133,28 @@ async fn main() -> std::io::Result<()> {
             .configure(api::v1::auth::services)
     });
 
-    let listen_address = config.server.listen_address();
+    let listen_address = SETTINGS.server.listen_address();
 
-    server = if config.tls.enabled {
+    server = if SETTINGS.tls.enabled {
         let mut ssl_acceptor_builder =
             SslAcceptor::mozilla_intermediate(SslMethod::tls())
                 .expect("Couldn't create SslAcceptor");
         ssl_acceptor_builder
-            .set_private_key_file(config.tls.key_path.unwrap(), SslFiletype::PEM)
+            .set_private_key_file(SETTINGS.tls.key_path.as_ref().unwrap(), SslFiletype::PEM)
             .expect("Couldn't set private key");
         ssl_acceptor_builder
-            .set_certificate_chain_file(config.tls.certificate_path.unwrap())
+            .set_certificate_chain_file(SETTINGS.tls.certificate_path.as_ref().unwrap())
             .expect("Couldn't set certificate chain file");
         server.bind_openssl(listen_address, ssl_acceptor_builder)?
     } else {
         server.bind(listen_address)?
     };
 
-    if config.server.workers != 0 {
-        server = server.workers(config.server.workers);
+    if SETTINGS.server.workers != 0 {
+        server = server.workers(SETTINGS.server.workers);
     }
 
-    server.server_hostname(config.server.host).run().await
+    server.server_hostname(&SETTINGS.server.host).run().await
 }
 
 #[cfg(not(tarpaulin_include))]

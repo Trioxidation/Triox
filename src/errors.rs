@@ -10,7 +10,6 @@ use actix_web::{
 
 use argon2_creds::errors::CredsError;
 use derive_more::{Display, Error};
-use jsonwebtoken::errors::{Error as JwtError, ErrorKind as JwtErrorKind};
 use serde::Serialize;
 // use validator::ValidationErrors;
 
@@ -27,10 +26,6 @@ pub enum ServiceError {
     BadRequest,
     #[display(fmt = "Unknown MIME type")]
     UnknownMIME,
-    #[display(fmt = "Expired token")]
-    TokenExpired,
-    #[display(fmt = "Invalid token")]
-    InvalidToken,
     #[display(fmt = "File not found")]
     FileNotFound,
     #[display(fmt = "File exists")]
@@ -78,8 +73,6 @@ impl ResponseError for ServiceError {
             ServiceError::NotAnEmail => StatusCode::BAD_REQUEST,
             ServiceError::PasswordsDontMatch => StatusCode::BAD_REQUEST,
             ServiceError::UnknownMIME => StatusCode::BAD_REQUEST,
-            ServiceError::TokenExpired => StatusCode::UNAUTHORIZED,
-            ServiceError::InvalidToken => StatusCode::UNAUTHORIZED,
             ServiceError::UsernameTaken => StatusCode::BAD_REQUEST,
             ServiceError::EmailTaken => StatusCode::BAD_REQUEST,
             ServiceError::FileNotFound => StatusCode::NOT_FOUND,
@@ -88,16 +81,6 @@ impl ResponseError for ServiceError {
             ServiceError::FSReadOnly => StatusCode::METHOD_NOT_ALLOWED,
             ServiceError::InvalidCredentials => StatusCode::UNAUTHORIZED,
             ServiceError::CredentialError(_e) => StatusCode::BAD_REQUEST,
-        }
-    }
-}
-
-impl From<JwtError> for ServiceError {
-    fn from(e: JwtError) -> ServiceError {
-        match e.kind() {
-            JwtErrorKind::ExpiredSignature => ServiceError::TokenExpired,
-            JwtErrorKind::InvalidSignature => ServiceError::InvalidToken,
-            _ => ServiceError::InvalidCredentials,
         }
     }
 }

@@ -2,8 +2,6 @@ use dashmap::DashMap;
 use sqlx::postgres::PgPoolOptions;
 use sqlx::PgPool;
 
-use crate::config::AppConfig;
-//use crate::database;
 use crate::SETTINGS;
 
 /// Storing the state of the application
@@ -11,7 +9,6 @@ use crate::SETTINGS;
 #[derive(Clone)]
 pub struct AppState {
     //  pub db_pool: database::DbPool,
-    pub config: AppConfig,
     pub login_count: DashMap<u32, u8>,
     pub creds: argon2_creds::Config,
     // sqlx
@@ -36,13 +33,6 @@ impl AppState {
             log::info!("Initialized credential manager");
         });
 
-        // generate struct from config HashMap
-        let config = AppConfig::new(&config_path).unwrap();
-
-        //     // create database pool
-        //     let db_pool = database::connect(&config.database.url())
-        //         .expect("Failed to create database pool.");
-
         let db = PgPoolOptions::new()
             .max_connections(SETTINGS.database.pool)
             .connect(&SETTINGS.database.url())
@@ -50,7 +40,6 @@ impl AppState {
             .expect("Unable to form database pool");
         init.join().unwrap();
         AppState {
-            config,
             login_count: DashMap::new(),
             //db_pool,
             creds,

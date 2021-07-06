@@ -8,7 +8,6 @@ use tokio::prelude::*;
 
 use crate::app_state::AppState;
 use crate::errors::*;
-use crate::jwt;
 
 #[derive(serde::Serialize)]
 struct Response {
@@ -18,18 +17,17 @@ struct Response {
 }
 
 /// Service for listing files
-#[post("/app/files/upload")]
+#[post("/app/files/upload", wrap = "crate::CheckLogin")]
 pub async fn upload(
-    app_state: web::Data<AppState>,
-    jwt: jwt::JWT,
+    id: actix_identity::Identity,
     web::Query(query_path): web::Query<super::QueryPath>,
     mut payload: Multipart,
 ) -> ServiceResult<HttpResponse> {
-    super::read_only_guard(&app_state.config)?;
+    super::read_only_guard()?;
 
-    let claims = jwt::extract_claims(&jwt.0, &app_state.config.server.secret)?;
+    let username = id.identity().unwrap();
 
-    let base_path = super::resolve_path(claims.id, &query_path.path)?;
+    let base_path = super::resolve_path(&username, &query_path.path)?;
 
     // iterate over multipart stream
     while let Ok(Some(mut field)) = payload.try_next().await {

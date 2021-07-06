@@ -14,13 +14,6 @@ license = "AGPL-3.0-or-later"
 # config
 config = "*"
 
-# database
-diesel = { version = "1", features = ["mysql", "r2d2"] }
-r2d2 = "0.8"
-
-# hash
-rust-argon2 = "0.8"
-
 # random
 rand = "0.8"
 
@@ -34,9 +27,6 @@ env_logger = "0.8"
 # serde
 serde = { version = "1", features = ["derive"] }
 
-# JWT
-jsonwebtoken = "7"
-
 # actix
 mime = "0.3"
 actix-rt = "1"
@@ -45,6 +35,7 @@ actix-multipart = "0.3"
 actix-governor = "0.2"
 actix-web = { version = "3", features = ["openssl"] }
 actix-identity = "0.3"
+actix-service = "1.0.6"
 openssl = "0.10"
 
 sqlx = { version = "0.4.0", features = [ "runtime-actix-rustls", "postgres", "time", "offline" ] }

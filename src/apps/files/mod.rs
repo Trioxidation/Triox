@@ -38,20 +38,20 @@ pub struct SourceAndDest {
 }
 
 /// Helper function to translate paths from requests into absolute path
-fn resolve_path(user_id: u32, query_path: &str) -> ServiceResult<std::path::PathBuf> {
+fn resolve_path(username: &str, query_path: &str) -> ServiceResult<std::path::PathBuf> {
     if query_path.contains("..") {
         Err(ServiceError::PermissionDenied)
     } else {
         Ok(std::path::PathBuf::from(format!(
             "data/users/{}/files/{}",
-            user_id, query_path
+            username, query_path
         )))
     }
 }
 
 /// Helper function to
-fn read_only_guard(config: &crate::config::AppConfig) -> ServiceResult<()> {
-    if config.files.read_only {
+fn read_only_guard() -> ServiceResult<()> {
+    if crate::SETTINGS.files.read_only {
         Err(ServiceError::FSReadOnly)
     } else {
         Ok(())

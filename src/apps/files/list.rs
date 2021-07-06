@@ -9,7 +9,6 @@ use std::time::SystemTime;
 use super::QueryPath;
 use crate::app_state::AppState;
 use crate::errors::*;
-use crate::jwt;
 
 #[derive(serde::Serialize)]
 struct File {
@@ -32,15 +31,15 @@ struct Response {
 }
 
 /// Service for listing files via an API
-#[get("/app/files/list")]
+#[get("/app/files/list", wrap = "crate::CheckLogin")]
 pub async fn list(
     app_state: web::Data<AppState>,
-    jwt: jwt::JWT,
+    id: actix_identity::Identity,
     web::Query(query_path): web::Query<QueryPath>,
 ) -> ServiceResult<HttpResponse> {
-    let claims = jwt::extract_claims(&jwt.0, &app_state.config.server.secret)?;
+    let username = id.identity().unwrap();
 
-    let full_path = super::resolve_path(claims.id, &query_path.path)?;
+    let full_path = super::resolve_path(&username, &query_path.path)?;
 
     let mut dir: ReadDir = fs::read_dir(&full_path).await?;
     // .map_err(ErrorInternalServerError)?;
