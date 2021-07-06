@@ -8,6 +8,7 @@ use actix_web::{
     HttpResponse,
 };
 
+use argon2_creds::errors::CredsError;
 use derive_more::{Display, Error};
 use jsonwebtoken::errors::{Error as JwtError, ErrorKind as JwtErrorKind};
 use serde::Serialize;
@@ -40,6 +41,18 @@ pub enum ServiceError {
     FSReadOnly,
     #[display(fmt = "Invalid credentials")]
     InvalidCredentials,
+    #[display(fmt = "{}", _0)]
+    CredentialError(CredsError),
+    /// when the a username is already taken
+    #[display(fmt = "Username not available")]
+    UsernameTaken,
+    #[display(fmt = "Email not available")]
+    EmailTaken,
+
+    #[display(fmt = "Account not found")]
+    AccountNotFound,
+    #[display(fmt = "Passwords don't match")]
+    PasswordsDontMatch,
 }
 
 #[derive(Serialize)]
@@ -58,18 +71,23 @@ impl ResponseError for ServiceError {
     }
 
     fn status_code(&self) -> StatusCode {
-        match *self {
+        match self {
             ServiceError::InternalServerError => StatusCode::INTERNAL_SERVER_ERROR,
+            ServiceError::AccountNotFound => StatusCode::NOT_FOUND,
             ServiceError::BadRequest => StatusCode::BAD_REQUEST,
             ServiceError::NotAnEmail => StatusCode::BAD_REQUEST,
+            ServiceError::PasswordsDontMatch => StatusCode::BAD_REQUEST,
             ServiceError::UnknownMIME => StatusCode::BAD_REQUEST,
             ServiceError::TokenExpired => StatusCode::UNAUTHORIZED,
             ServiceError::InvalidToken => StatusCode::UNAUTHORIZED,
+            ServiceError::UsernameTaken => StatusCode::BAD_REQUEST,
+            ServiceError::EmailTaken => StatusCode::BAD_REQUEST,
             ServiceError::FileNotFound => StatusCode::NOT_FOUND,
             ServiceError::FileExists => StatusCode::METHOD_NOT_ALLOWED,
             ServiceError::PermissionDenied => StatusCode::UNAUTHORIZED,
             ServiceError::FSReadOnly => StatusCode::METHOD_NOT_ALLOWED,
             ServiceError::InvalidCredentials => StatusCode::UNAUTHORIZED,
+            ServiceError::CredentialError(_e) => StatusCode::BAD_REQUEST,
         }
     }
 }
@@ -101,24 +119,36 @@ impl From<MultipartError> for ServiceError {
     }
 }
 
+impl From<CredsError> for ServiceError {
+    #[cfg(not(tarpaulin_include))]
+    fn from(e: CredsError) -> ServiceError {
+        match e {
+            CredsError::NotAnEmail => ServiceError::NotAnEmail,
+            CredsError::Argon2Error(_) => ServiceError::InternalServerError,
+            _ => ServiceError::CredentialError(e),
+        }
+    }
+}
+
 // impl From<ValidationErrors> for ServiceError {
 //     fn from(_: ValidationErrors) -> ServiceError {
 //         ServiceError::NotAnEmail
 //     }
 // }
-//
-// impl From<sqlx::Error> for ServiceError {
-//     fn from(e: sqlx::Error) -> Self {
-//         use sqlx::error::Error;
-//         use std::borrow::Cow;
-//         if let Error::Database(err) = e {
-//             if err.code() == Some(Cow::from("23505")) {
-//                 return ServiceError::DuplicateResponse;
-//             }
-//         }
-//
-//         ServiceError::InternalServerError
-//     }
-// }
+
+#[cfg(not(tarpaulin_include))]
+impl From<sqlx::Error> for ServiceError {
+    #[cfg(not(tarpaulin_include))]
+    fn from(e: sqlx::Error) -> Self {
+        use sqlx::error::Error;
+        use std::borrow::Cow;
+        if let Error::Database(err) = e {
+            if err.code() == Some(Cow::from("23505")) {
+                return ServiceError::UsernameTaken;
+            }
+        }
+        ServiceError::InternalServerError
+    }
+}
 
 pub type ServiceResult<V> = std::result::Result<V, ServiceError>;

@@ -7,3 +7,4 @@ data/users/*
 .vscode/
 .env
 tarpaulin-report.html
+tmp

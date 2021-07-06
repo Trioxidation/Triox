@@ -44,7 +44,13 @@ actix-files = "0.5"
 actix-multipart = "0.3"
 actix-governor = "0.2"
 actix-web = { version = "3", features = ["openssl"] }
+actix-identity = "0.3"
 openssl = "0.10"
+
+sqlx = { version = "0.4.0", features = [ "runtime-actix-rustls", "postgres", "time", "offline" ] }
+argon2-creds = { branch = "master", git = "https://github.com/realaravinth/argon2-creds"}
+lazy_static = "1.4"
+my-codegen = {package = "actix-web-codegen", git ="https://github.com/realaravinth/actix-web"}
 
 # futures
 futures = "0.3"

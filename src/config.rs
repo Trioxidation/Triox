@@ -23,6 +23,7 @@ pub struct Server {
     pub workers: usize,
     pub registration: bool,
     pub secret: String,
+    pub domain: String,
 }
 
 #[derive(Debug, Clone, Deserialize)]
@@ -40,6 +41,7 @@ pub struct Database {
     pub password: String,
     pub host: String,
     pub name: String,
+    pub pool: u32,
 }
 
 /// Configurations for tls.
