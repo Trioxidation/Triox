@@ -91,15 +91,14 @@ pub mod runners {
                 password: String,
             }
 
-            let email_fut = sqlx::query_as!(
+            match sqlx::query_as!(
                 EmailLogin,
                 r#"SELECT name, password  FROM triox_users WHERE email = ($1)"#,
                 &payload.login,
             )
             .fetch_one(&data.db)
-            .await;
+            .await {
 
-            match email_fut {
                 Ok(s) => {
                     verify(&s.password, &payload.password)?;
                     Ok(s.name)
@@ -109,15 +108,14 @@ pub mod runners {
                 Err(_) => Err(ServiceError::InternalServerError),
             }
         } else {
-            let username_fut = sqlx::query_as!(
+            match sqlx::query_as!(
                 Password,
                 r#"SELECT password  FROM triox_users WHERE name = ($1)"#,
                 &payload.login,
             )
             .fetch_one(&data.db)
-            .await;
+            .await {
 
-            match username_fut {
                 Ok(s) => {
                     verify(&s.password, &payload.password)?;
                     Ok(payload.login)
