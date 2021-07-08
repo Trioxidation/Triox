@@ -52,7 +52,7 @@ server runs in read-only mode.
 
 **[triox-demo.aaron-erhardt.de](https://triox-demo.aaron-erhardt.de)**
 
-## Self-hosted:
+### Self-hosted:
 
 1. Clone the repository
 
@@ -80,27 +80,6 @@ can find a list of good first issues
 
 ## Setup
 
-There are two ways to run Triox:
+See [DEPLOYMENT.md](./docs/DEPLOYMENT.md) for instructions
 
-- With Docker
-- Bare metal:
-
-### Docker
-
-1. Clone the repository
-
-```bash
-git clone https://github.com/Trioxidation/triox && cd triox
-```
-
-2. Build docker image
-
-```bash 
-docker build -t triox/triox:latest .
-```
-
-3. Run build docker image
-
-```bash
-docker run triox/triox:latest
-```
+The API is documented in [`API.md`](./API.md).
