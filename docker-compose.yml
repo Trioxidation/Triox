@@ -1,0 +1,22 @@
+version: '3.9'
+
+services:
+  triox:
+    build: .
+    ports:
+      - 3000:8080
+    environment:
+      DATABASE_URL: postgres://postgres:password@postgres:5432/postgres # set password at placeholder
+      TRIOX_SERVER_SECRET: "superlongsecretakl;sdjfa;lsdfja;lksdfad;flj" # change this
+      RUST_LOG: debug
+
+  postgres:
+    image: postgres:13.2
+    volumes:
+      - triox-data:/var/lib/postgresql/
+    environment:
+      POSTGRES_PASSWORD: password # change password
+      PGDATA: /var/lib/postgresql/data/triox/
+
+volumes:
+  triox-data:

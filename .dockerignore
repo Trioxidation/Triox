@@ -1,0 +1,5 @@
+/target
+tarpaulin-report.html
+.env
+cobertura.xml
+node_modules/
