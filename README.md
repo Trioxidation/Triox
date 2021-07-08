@@ -57,7 +57,7 @@ server runs in read-only mode.
 1. Clone the repository
 
 ```bash
-git clone https://github.com/Trioxidation/triox cd triox
+git clone https://github.com/Trioxidation/triox && cd triox
 ```
 
 2. Build and start Triox
