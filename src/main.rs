@@ -28,12 +28,6 @@ mod app_state;
 /// API for authentication. Including sign in, sign out and user information.
 mod auth;
 
-///// Database structures and helper functions for loading, setting and updating the database.
-//mod database;
-
-/// Services for handling http errors.
-mod error_handler;
-
 /// Tests.
 #[cfg(test)]
 #[macro_use]
@@ -49,7 +43,6 @@ use std::sync::Arc;
 
 use actix_files::NamedFile;
 use actix_identity::{CookieIdentityPolicy, IdentityService};
-use actix_web::middleware::errhandlers::ErrorHandlers;
 use actix_web::{http, web, App, HttpRequest, HttpResponse, HttpServer};
 use env_logger::Env;
 use lazy_static::lazy_static;
@@ -77,7 +70,7 @@ async fn index(_req: HttpRequest) -> actix_web::Result<NamedFile> {
 #[actix_web::get("/", wrap = "crate::CheckLogin")]
 async fn redirect() -> HttpResponse {
     HttpResponse::Found()
-        .header(http::header::LOCATION, "/static/files.html")
+        .append_header((http::header::LOCATION, "/static/files.html"))
         .finish()
 }
 
@@ -87,10 +80,10 @@ async fn source_code(_req: HttpRequest) -> HttpResponse {
     // you need to update this link to point to a copy of your modified version
     // More info: https://www.gnu.org/licenses/why-affero-gpl.html
     HttpResponse::SeeOther()
-        .header(
+        .append_header((
             http::header::LOCATION,
-            "https://github.com/AaronErhardt/Triox",
-        )
+            "https://github.com/Trioxidation/Triox",
+        ))
         .finish()
 }
 
@@ -111,21 +104,22 @@ async fn main() -> std::io::Result<()> {
         .await
         .unwrap();
 
+    let app_state = actix_web::web::Data::new(app_state);
+
     // setup HTTP server
     let mut server = HttpServer::new(move || {
         App::new()
-            // setup error handlers
-            .wrap(
-                ErrorHandlers::new()
-                    .handler(http::StatusCode::NOT_FOUND, error_handler::render_404),
-            )
             .wrap(actix_web::middleware::Compress::default())
             .wrap(get_identity_service())
+            .wrap(
+                actix_web::middleware::ErrorHandlers::new()
+                    .handler(http::StatusCode::NOT_FOUND, errors::render_404),
+            )
             .wrap(actix_web::middleware::NormalizePath::new(
-                actix_web::middleware::normalize::TrailingSlash::Trim,
+                actix_web::middleware::TrailingSlash::Trim,
             ))
             // setup application state extractor
-            .data(app_state.clone())
+            .app_data(app_state.clone())
             .wrap(actix_web::middleware::Logger::default())
             .service(redirect)
             .route("/source", web::get().to(source_code))
@@ -175,7 +169,7 @@ pub fn get_identity_service() -> IdentityService<CookieIdentityPolicy> {
         CookieIdentityPolicy::new(cookie_secret.as_bytes())
             .name("Authorization")
             //TODO change cookie age
-            .max_age(216000)
+            .max_age_secs(216000)
             .domain(&SETTINGS.server.domain)
             .secure(false),
     )
