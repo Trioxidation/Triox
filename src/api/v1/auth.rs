@@ -194,7 +194,10 @@ pub fn services(cfg: &mut web::ServiceConfig) {
     cfg.service(login);
     cfg.service(signout);
 }
-#[my_codegen::post(path = "crate::V1_API_ROUTES.auth.register")]
+#[my_codegen::post(
+    path = "crate::V1_API_ROUTES.auth.register",
+    wrap = "crate::middleware::rate_limit::auth_rate_limiter()"
+)]
 async fn register(
     payload: web::Json<runners::Register>,
     data: AppData,
@@ -203,7 +206,10 @@ async fn register(
     Ok(HttpResponse::Ok())
 }
 
-#[my_codegen::post(path = "crate::V1_API_ROUTES.auth.login")]
+#[my_codegen::post(
+    path = "crate::V1_API_ROUTES.auth.login",
+    wrap = "crate::middleware::rate_limit::auth_rate_limiter()"
+)]
 async fn login(
     id: Identity,
     payload: web::Json<runners::Login>,
@@ -214,7 +220,10 @@ async fn login(
     Ok(HttpResponse::Ok())
 }
 
-#[my_codegen::get(path = "crate::V1_API_ROUTES.auth.logout")] // wrap = "crate::CheckLogin")]
+#[my_codegen::get(
+    path = "crate::V1_API_ROUTES.auth.logout",
+    wrap = "crate::middleware::rate_limit::auth_rate_limiter()"
+)] // wrap = "crate::CheckLogin")]
 async fn signout(id: Identity) -> impl Responder {
     if id.identity().is_some() {
         id.forget();
