@@ -61,7 +61,7 @@ sudo apt install postgresql
 ### 2. Create new user for running `Triox`:
 
 ```bash
- sudo useradd -b /srv -m -s /usr/bin/zsh triox
+ sudo useradd -b /srv -m -s /usr/bin/bash triox
 ```
 
 ### 3. Create new user in Postgres
@@ -74,7 +74,7 @@ sudo apt install postgresql
 Postgres shell:
 
 ```psql
- postgres=#  CREATE USER triox WITH PASSWORD 'my super long password and yes you need single quote`;
+ postgres=#  CREATE USER triox WITH PASSWORD 'my super long password and yes you need single quote';
  postgres=#  exit;
 ```
 
