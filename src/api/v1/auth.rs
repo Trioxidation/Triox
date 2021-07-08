@@ -19,7 +19,6 @@ use actix_identity::Identity;
 use actix_web::http::header;
 use actix_web::{web, HttpResponse, Responder};
 use serde::{Deserialize, Serialize};
-//use futures::{future::TryFutureExt, join};
 
 use crate::errors::*;
 use crate::AppData;
@@ -221,7 +220,6 @@ async fn signout(id: Identity) -> impl Responder {
         id.forget();
     }
     HttpResponse::Found()
-        //        .append_header((header::LOCATION, "/login"))
-        .header(header::LOCATION, crate::middleware::auth::SIGIN_PAGE)
+        .append_header((header::LOCATION, crate::middleware::auth::SIGIN_PAGE))
         .finish()
 }

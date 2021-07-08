@@ -4,7 +4,7 @@ use futures::{StreamExt, TryStreamExt};
 use actix_web::{post, web, HttpResponse};
 
 use tokio::fs;
-use tokio::prelude::*;
+use tokio::io::AsyncWriteExt;
 
 use crate::errors::*;
 

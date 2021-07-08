@@ -2,7 +2,7 @@ use std::io::{Error as IOError, ErrorKind as IOErrorKind};
 
 use actix_multipart::MultipartError;
 use actix_web::{
-    dev::HttpResponseBuilder,
+    dev::BaseHttpResponseBuilder as HttpResponseBuilder,
     error::ResponseError,
     http::{header, StatusCode},
     HttpResponse,
@@ -59,10 +59,14 @@ struct ErrorToResponse {
 impl ResponseError for ServiceError {
     fn error_response(&self) -> HttpResponse {
         HttpResponseBuilder::new(self.status_code())
-            .set_header(header::CONTENT_TYPE, "application/json; charset=UTF-8")
-            .json(ErrorToResponse {
-                error: self.to_string(),
-            })
+            .append_header((header::CONTENT_TYPE, "application/json; charset=UTF-8"))
+            .body(
+                serde_json::to_string(&ErrorToResponse {
+                    error: self.to_string(),
+                })
+                .unwrap(),
+            )
+            .into()
     }
 
     fn status_code(&self) -> StatusCode {
@@ -112,12 +116,6 @@ impl From<CredsError> for ServiceError {
         }
     }
 }
-
-// impl From<ValidationErrors> for ServiceError {
-//     fn from(_: ValidationErrors) -> ServiceError {
-//         ServiceError::NotAnEmail
-//     }
-// }
 
 #[cfg(not(tarpaulin_include))]
 impl From<sqlx::Error> for ServiceError {

@@ -43,8 +43,7 @@ macro_rules! post_request {
     ($serializable:expr, $uri:expr) => {
         test::TestRequest::post()
             .uri($uri)
-            //.insert_header((header::CONTENT_TYPE, "application/json"))
-            .header(header::CONTENT_TYPE, "application/json")
+            .insert_header((header::CONTENT_TYPE, "application/json"))
             .set_payload(serde_json::to_string($serializable).unwrap())
     };
 }
@@ -86,12 +85,11 @@ macro_rules! get_app {
             actix_web::App::new()
                 .wrap(crate::get_identity_service())
                 .wrap(actix_web::middleware::NormalizePath::new(
-                    actix_web::middleware::normalize::TrailingSlash::Trim,
+                    actix_web::middleware::TrailingSlash::Trim,
                 ))
                 .configure(crate::api::v1::services)
                 .configure(crate::apps::files::services)
-                .data($data.clone())
-                //.app_data(actix_web::web::Data::new($data.clone())),
+                .app_data(actix_web::web::Data::new($data.clone()))
         )
     };
 }

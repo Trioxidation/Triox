@@ -2,7 +2,8 @@ use actix_web::{get, web, HttpResponse};
 
 use futures::Stream;
 use tokio::fs;
-use tokio::fs::{DirEntry, ReadDir};
+use tokio::fs::{DirEntry};
+use tokio_stream::wrappers::ReadDirStream;
 
 use std::time::SystemTime;
 
@@ -39,8 +40,7 @@ pub async fn list(
 
     let full_path = super::resolve_path(&username, &query_path.path)?;
 
-    let mut dir: ReadDir = fs::read_dir(&full_path).await?;
-    // .map_err(ErrorInternalServerError)?;
+    let dir = ReadDirStream::new(fs::read_dir(&full_path).await?);
 
     let (lower_bound, upper_bound) = dir.size_hint();
 
@@ -50,6 +50,8 @@ pub async fn list(
     };
 
     let dir_size = upper_bound - lower_bound;
+
+    let mut dir = dir.into_inner();
 
     let mut entries: Vec<DirEntry> = Vec::with_capacity(dir_size);
 
