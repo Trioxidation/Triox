@@ -1,6 +1,4 @@
-# Deployment instructions:
-
-See [CONFIGURATION.md](./CONFIGURATION.md) for configuration instructions
+# Deployment Instructions
 
 There are three ways to deploy Triox:
 
@@ -18,7 +16,7 @@ NOTE: We'll publish pre-built images once we reach `alpha`.
  cd Triox && docker build -t triox/triox:latest .
 ```
 
-2. Set configuration in [configuration file](../config/default.toml)
+2. Set configuration in [configuration file](../config/local.toml)
 
 3. Run image:
 
