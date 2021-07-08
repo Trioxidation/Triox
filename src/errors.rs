@@ -1,19 +1,17 @@
+use std::convert::From;
 use std::io::{Error as IOError, ErrorKind as IOErrorKind};
 
 use actix_multipart::MultipartError;
 use actix_web::{
-    dev::BaseHttpResponseBuilder as HttpResponseBuilder,
+    dev::{self, BaseHttpResponseBuilder as HttpResponseBuilder},
     error::ResponseError,
-    http::{header, StatusCode},
-    HttpResponse,
+    http::{self, header, StatusCode},
+    middleware::ErrorHandlerResponse,
+    HttpResponse, Result,
 };
-
 use argon2_creds::errors::CredsError;
 use derive_more::{Display, Error};
 use serde::Serialize;
-// use validator::ValidationErrors;
-
-use std::convert::From;
 
 #[derive(Debug, Display, Clone, PartialEq, Error)]
 #[cfg(not(tarpaulin_include))]
@@ -130,6 +128,16 @@ impl From<sqlx::Error> for ServiceError {
         }
         ServiceError::InternalServerError
     }
+}
+
+pub fn render_404<B>(
+    mut res: dev::ServiceResponse<B>,
+) -> Result<ErrorHandlerResponse<B>> {
+    res.response_mut().headers_mut().insert(
+        http::header::CONTENT_TYPE,
+        http::HeaderValue::from_static("Error"),
+    );
+    Ok(ErrorHandlerResponse::Response(res))
 }
 
 pub type ServiceResult<V> = std::result::Result<V, ServiceError>;

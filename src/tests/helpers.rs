@@ -77,7 +77,7 @@ macro_rules! get_app {
                     actix_middleware::TrailingSlash::Trim,
                 ))
                 .configure(crate::api::v1::services)
-                .configure(crate::app::files::services)
+                .configure(crate::app::files::services),
         )
     };
     ($data:expr) => {
@@ -89,7 +89,7 @@ macro_rules! get_app {
                 ))
                 .configure(crate::api::v1::services)
                 .configure(crate::apps::files::services)
-                .app_data(actix_web::web::Data::new($data.clone()))
+                .app_data(actix_web::web::Data::new($data.clone())),
         )
     };
 }

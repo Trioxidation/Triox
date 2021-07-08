@@ -2,7 +2,7 @@ use actix_web::{get, web, HttpResponse};
 
 use futures::Stream;
 use tokio::fs;
-use tokio::fs::{DirEntry};
+use tokio::fs::DirEntry;
 use tokio_stream::wrappers::ReadDirStream;
 
 use std::time::SystemTime;

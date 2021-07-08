@@ -111,6 +111,10 @@ async fn main() -> std::io::Result<()> {
         App::new()
             .wrap(actix_web::middleware::Compress::default())
             .wrap(get_identity_service())
+            .wrap(
+                actix_web::middleware::ErrorHandlers::new()
+                    .handler(http::StatusCode::NOT_FOUND, errors::render_404),
+            )
             .wrap(actix_web::middleware::NormalizePath::new(
                 actix_web::middleware::TrailingSlash::Trim,
             ))
