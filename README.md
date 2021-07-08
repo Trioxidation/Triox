@@ -3,7 +3,7 @@
   <h1>Triox</h1>
   <p>
     <strong>
-		Next Generation cloud server that is fast, reliable and secure.
+		Next Generation cloud storage server that is secure, fast, and reliable.
 	</strong>
   </p>
 
@@ -153,5 +153,5 @@ Then update `config/local.toml`:
 </strike> # API Documentation
 
 The API is documented in
-[`API.md`](https://github.com/AaronErhardt/Triox/blob/master/API.md).
+[`API.md`](./API.md).
 ````
