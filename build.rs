@@ -15,37 +15,13 @@
 * along with this program.  If not, see <https://www.gnu.org/licenses/>.
 */
 
-// TODO setup governor
-pub mod account;
-pub mod auth;
-pub mod meta;
-#[cfg(test)]
-mod tests;
+use std::process::Command;
 
-use account::routes::Account;
-use auth::routes::Auth;
-use meta::routes::Meta;
-
-pub const ROUTES: Routes = Routes::new();
-
-pub struct Routes {
-    pub auth: Auth,
-    pub account: Account,
-    pub meta: Meta,
-}
-
-impl Routes {
-    const fn new() -> Routes {
-        Routes {
-            auth: Auth::new(),
-            account: Account::new(),
-            meta: Meta::new(),
-        }
-    }
-}
-
-pub fn services(cfg: &mut actix_web::web::ServiceConfig) {
-    auth::services(cfg);
-    account::services(cfg);
-    meta::services(cfg);
+fn main() {
+    let output = Command::new("git")
+        .args(&["rev-parse", "HEAD"])
+        .output()
+        .unwrap();
+    let git_hash = String::from_utf8(output.stdout).unwrap();
+    println!("cargo:rustc-env=GIT_HASH={}", git_hash);
 }

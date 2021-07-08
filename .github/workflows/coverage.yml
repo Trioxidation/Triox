@@ -69,6 +69,7 @@ jobs:
           args: '-t 1200'
         env:
           DATABASE_URL: postgres://postgres:password@localhost:5432/postgres
+          GIT_HASH: 8e77345f1597e40c2e266cb4e6dee74888918a61
           TRIOX_SERVER_SECRET: 'aslkfda;lksdfaksdjf;alsdjfqo3piwrq3n4r2kl3r'
 
       - name: Upload to Codecov

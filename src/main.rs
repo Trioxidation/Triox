@@ -55,6 +55,12 @@ use crate::config::AppConfig;
 pub use crate::app_state::AppState;
 pub type AppData = actix_web::web::Data<Arc<AppState>>;
 
+pub const GIT_COMMIT_HASH: &str = env!("GIT_HASH");
+pub const VERSION: &str = env!("CARGO_PKG_VERSION");
+pub const PKG_NAME: &str = env!("CARGO_PKG_NAME");
+pub const PKG_DESCRIPTION: &str = env!("CARGO_PKG_DESCRIPTION");
+pub const PKG_HOMEPAGE: &str = env!("CARGO_PKG_HOMEPAGE");
+
 lazy_static! {
     pub static ref SETTINGS: AppConfig = {
         let cli_options = cli::Options::new();
