@@ -24,6 +24,8 @@ pub struct Server {
     pub registration: bool,
     pub secret: String,
     pub domain: String,
+    pub rate_limit_period: Option<u64>,
+    pub rate_limit_burst_size: Option<u32>,
 }
 
 #[derive(Debug, Clone, Deserialize)]
@@ -111,6 +113,11 @@ impl AppConfig {
         config
             .get::<String>("server.secret")
             .expect("Please set a secret in configuration file");
+
+        // When running test we don't want the rate limiting enabled
+        if cfg!(test) {
+            config.set("server.rate_limit_period", "0")?;
+        }
 
         config.try_into()
     }
