@@ -18,10 +18,10 @@ async fn file_works() {
 
     let (data, _, signin_resp) = register_and_signin(NAME, None, PASSWORD).await;
     let cookies = get_cookie!(signin_resp);
-    let mut app = get_app!(data).await;
+    let app = get_app!(data).await;
 
     let response = test::call_service(
-        &mut app,
+        &app,
         get_req!("/app/files/get?path=fakefile.txt")
             .cookie(cookies.clone())
             .to_request(),
@@ -32,7 +32,7 @@ async fn file_works() {
 
     // move up a dir
     let response = test::call_service(
-        &mut app,
+        &app,
         get_req!("/app/files/get?path=../fakefile.txt")
             .cookie(cookies.clone())
             .to_request(),
@@ -44,7 +44,7 @@ async fn file_works() {
     let file_name = format!("./data/users/{}/files/test_file", NAME);
     fs::File::create(&file_name).await.unwrap();
     let response = test::call_service(
-        &mut app,
+        &app,
         get_req!("/app/files/get?path=test_file")
             .cookie(cookies)
             .to_request(),
