@@ -1,62 +1,111 @@
 <!DOCTYPE html>
 <html>
+  <head>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta charset="UTF-8" />
+    <title>Sign Up</title>
+    <link rel="stylesheet" type="text/css" href="main.css" />
+    <script src="/static/JS/main.js"></script>
+    <link
+      rel="stylesheet"
+      href="https://cdn.jsdelivr.net/gh/AaronErhardt/Triox-Theme@0.1.0/css/triox-theme.css"
+    />
+  </head>
 
-<head>
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <meta charset="UTF-8">
-  <title>Sign Up</title>
-  <link rel="stylesheet" type="text/css" href="main.css">
-  <script src="/static/JS/main.js"></script>
-  <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/AaronErhardt/Triox-Theme@0.1.0/css/triox-theme.css">
-</head>
-
-<body>
-  <section class="hero is-link is-fullheight">
-        <div class="hero-body">
-            <div class="container has-text-centered">
-                <div class="column is-4 is-offset-4">
-                    <h1 class="title">Sign Up</h1>
-                    <div class="box">
-                        <form id="form">
-                            <div class="field">
-                                <div class="control">
-                                    <input class="input is-large" type='text' id='username' name='username' required="required" minlength="8" placeholder="Username" autofocus="">
-                                </div>
-                            </div>
-                            <div class="field">
-                                <div class="control">
-                                    <input class="input is-large" type='email' id='email' name='email' required="required" minlength="8" placeholder="Email">
-                                </div>
-                            </div>
-                            <div class="field">
-                                <div class="control">
-                                    <input class="input is-large" type='password' id='password' name='password' required="required" minlength="8" placeholder="Password">
-                                </div>
-                            </div>
-                            <input type="button" value="Sign Up" class="button is-block is-success is-large is-fullwidth" onclick='submitform(event)'>
-                            <p class="mt-4">
-                                <a href="/sign_in">Sign In</a>
-                            </p>
-                        </form>
-                    </div>
+  <body>
+    <section class="hero is-link is-fullheight">
+      <div class="hero-body">
+        <div class="container has-text-centered">
+          <div class="column is-4 is-offset-4">
+            <h1 class="title">Sign Up</h1>
+            <div class="box">
+              <form id="form">
+                <div class="field">
+                  <div class="control">
+                    <input
+                      class="input is-large"
+                      type="text"
+                      id="username"
+                      name="username"
+                      required="required"
+                      minlength="8"
+                      placeholder="Username"
+                      autofocus=""
+                    />
+                  </div>
                 </div>
+                <div class="field">
+                  <div class="control">
+                    <input
+                      class="input is-large"
+                      type="email"
+                      id="email"
+                      name="email"
+                      required="required"
+                      minlength="8"
+                      placeholder="Email"
+                    />
+                  </div>
+                </div>
+                <div class="field">
+                  <div class="control">
+                    <input
+                      class="input is-large"
+                      type="password"
+                      id="password"
+                      name="password"
+                      required="required"
+                      minlength="8"
+                      placeholder="Password"
+                    />
+                  </div>
+                </div>
+                <button
+                  type="button"
+                  class="button is-block is-success is-large is-fullwidth"
+                  id="submit-btn"
+                >
+                  Sign Up
+                </button>
+                <p class="mt-4">
+                  <a href="/sign_in">Sign In</a>
+                </p>
+              </form>
             </div>
+          </div>
         </div>
+      </div>
     </section>
-  <script type='text/javascript'>
-    function submitform() {
-      data = JSON.stringify({
-        'username': document.getElementById('username').value,
-        'password': document.getElementById('password').value,
-        'email': document.getElementById('email').value,
-      })
-      send_json(data, '/sign_up', (text) => {
-        window.location.href = "/sign_in";
-      }, (text) => {
-        insert_notification_on_top(document.getElementById('form'), text);
-      });
-    }
-  </script>
-</body>
+    <script type="text/javascript">
+      const btn = document.querySelector('#submit-btn');
+      btn.addEventListener('click', e => submitform(e));
+      function submitform(e) {
+        e.preventDefault();
 
+        const emailElement = document.getElementById('email');
+        let email = emailElement.value;
+        if (!email.replace(/\s/g, '').length) {
+          email = null;
+        }
+
+        data = JSON.stringify({
+          username: document.getElementById('username').value,
+          password: document.getElementById('password').value,
+          // TODO create configm password input element and get val from it
+          confirm_password: document.getElementById('password').value,
+          email,
+        });
+        send_json(
+          data,
+          '/api/v1/signup',
+          text => {
+            window.location.href = '/sign_in';
+          },
+          text => {
+            insert_notification_on_top(document.getElementById('form'), text);
+          },
+        );
+      }
+    </script>
+  </body>
 </html>

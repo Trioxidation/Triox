@@ -13,6 +13,8 @@ port = 8080
 # Amount of worker threads
 # If set to zero Triox will use one worker per physical CPU core
 workers = 0
+# Domain at which the server will be available
+domain = "localhost"
 # REQUIRED:
 # provide a random string for the following field
 # secret = ""
@@ -39,6 +41,8 @@ host = "localhost"
 port = "3306"
 # Name of the database
 name = "triox"
+# databse pool size
+pool = 4
 
 
 [tls]

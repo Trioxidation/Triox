@@ -12,11 +12,9 @@
 //!
 //!🔬 **Modern Technologies** - Authentication with [JWT](https://jwt.io) and a front-end based on [WebAssembly](https://webassembly.org).
 
-#[macro_use]
-extern crate diesel;
-
-#[macro_use]
-extern crate log;
+mod api;
+mod middleware;
+pub use crate::middleware::auth::CheckLogin;
 
 /// "Apps" in this module take care of certain parts of the API. For example the files app will provide services for uploading and downloading files.
 mod apps;
@@ -30,19 +28,15 @@ mod app_state;
 /// API for authentication. Including sign in, sign out and user information.
 mod auth;
 
-/// Database structures and helper functions for loading, setting and updating the database.
-mod database;
-
-/// Helper functions for hashing and comparing passwords.
-mod hash;
-
-/// Structures and extractors for JWT authentication.
-mod jwt;
+///// Database structures and helper functions for loading, setting and updating the database.
+//mod database;
 
 /// Services for handling http errors.
 mod error_handler;
 
 /// Tests.
+#[cfg(test)]
+#[macro_use]
 mod tests;
 
 /// errors.
@@ -51,32 +45,39 @@ mod errors;
 // Cli options
 mod cli;
 
+use std::sync::Arc;
+
 use actix_files::NamedFile;
+use actix_identity::{CookieIdentityPolicy, IdentityService};
 use actix_web::middleware::errhandlers::ErrorHandlers;
-use actix_web::{http, middleware, web, App, HttpRequest, HttpResponse, HttpServer};
+use actix_web::{http, web, App, HttpRequest, HttpResponse, HttpServer};
 use env_logger::Env;
+use lazy_static::lazy_static;
 
 use openssl::ssl::{SslAcceptor, SslFiletype, SslMethod};
+
+use crate::api::v1::ROUTES as V1_API_ROUTES;
+use crate::config::AppConfig;
+
+pub use crate::app_state::AppState;
+pub type AppData = actix_web::web::Data<Arc<AppState>>;
+
+lazy_static! {
+    pub static ref SETTINGS: AppConfig = {
+        let cli_options = cli::Options::new();
+        AppConfig::new(cli_options.config_dir.as_ref()).unwrap()
+    };
+}
 
 /// index page
 async fn index(_req: HttpRequest) -> actix_web::Result<NamedFile> {
     Ok(NamedFile::open("static/index.html")?.set_content_type(mime::TEXT_HTML_UTF_8))
 }
 
-async fn redirect(
-    optional_jwt: Option<jwt::JWT>,
-    app_state: web::Data<app_state::AppState>,
-) -> HttpResponse {
-    if let Some(jwt) = optional_jwt {
-        if jwt::extract_claims(&jwt.0, &app_state.config.server.secret).is_ok() {
-            return HttpResponse::Found()
-                .header(http::header::LOCATION, "/static/files.html")
-                .finish();
-        }
-    }
-
+#[actix_web::get("/", wrap = "crate::CheckLogin")]
+async fn redirect() -> HttpResponse {
     HttpResponse::Found()
-        .header(http::header::LOCATION, "/sign_in")
+        .header(http::header::LOCATION, "/static/files.html")
         .finish()
 }
 
@@ -103,10 +104,12 @@ async fn main() -> std::io::Result<()> {
     )
     .init();
 
-    let app_state = app_state::AppState::new(cli_options.config_dir.as_ref());
+    let app_state = app_state::AppState::new().await;
 
-    // clone config before it is moved into the closure
-    let config = app_state.config.clone();
+    sqlx::migrate!("./migrations/")
+        .run(&app_state.db)
+        .await
+        .unwrap();
 
     // setup HTTP server
     let mut server = HttpServer::new(move || {
@@ -116,11 +119,15 @@ async fn main() -> std::io::Result<()> {
                 ErrorHandlers::new()
                     .handler(http::StatusCode::NOT_FOUND, error_handler::render_404),
             )
-            .wrap(middleware::Compress::default())
+            .wrap(actix_web::middleware::Compress::default())
+            .wrap(get_identity_service())
+            .wrap(actix_web::middleware::NormalizePath::new(
+                actix_web::middleware::normalize::TrailingSlash::Trim,
+            ))
             // setup application state extractor
             .data(app_state.clone())
-            .wrap(middleware::Logger::default())
-            .route("/", web::get().to(redirect))
+            .wrap(actix_web::middleware::Logger::default())
+            .service(redirect)
             .route("/source", web::get().to(source_code))
             // static pages
             .route("/index", web::get().to(index))
@@ -129,31 +136,47 @@ async fn main() -> std::io::Result<()> {
             // serve static files from ./static/ to /static/
             .service(actix_files::Files::new("/static", "static"))
             // setup files API
-            .configure(apps::files::service_config)
+            .configure(apps::files::services)
             // setup auth API
-            .configure(auth::service_config)
+            .configure(api::v1::services)
     });
 
-    let listen_address = config.server.listen_address();
+    let listen_address = SETTINGS.server.listen_address();
 
-    server = if config.tls.enabled {
+    server = if SETTINGS.tls.enabled {
         let mut ssl_acceptor_builder =
             SslAcceptor::mozilla_intermediate(SslMethod::tls())
                 .expect("Couldn't create SslAcceptor");
         ssl_acceptor_builder
-            .set_private_key_file(config.tls.key_path.unwrap(), SslFiletype::PEM)
+            .set_private_key_file(
+                SETTINGS.tls.key_path.as_ref().unwrap(),
+                SslFiletype::PEM,
+            )
             .expect("Couldn't set private key");
         ssl_acceptor_builder
-            .set_certificate_chain_file(config.tls.certificate_path.unwrap())
+            .set_certificate_chain_file(SETTINGS.tls.certificate_path.as_ref().unwrap())
             .expect("Couldn't set certificate chain file");
         server.bind_openssl(listen_address, ssl_acceptor_builder)?
     } else {
         server.bind(listen_address)?
     };
 
-    if config.server.workers != 0 {
-        server = server.workers(config.server.workers);
+    if SETTINGS.server.workers != 0 {
+        server = server.workers(SETTINGS.server.workers);
     }
 
-    server.server_hostname(config.server.host).run().await
+    server.server_hostname(&SETTINGS.server.host).run().await
+}
+
+#[cfg(not(tarpaulin_include))]
+pub fn get_identity_service() -> IdentityService<CookieIdentityPolicy> {
+    let cookie_secret = &SETTINGS.server.secret;
+    IdentityService::new(
+        CookieIdentityPolicy::new(cookie_secret.as_bytes())
+            .name("Authorization")
+            //TODO change cookie age
+            .max_age(216000)
+            .domain(&SETTINGS.server.domain)
+            .secure(false),
+    )
 }

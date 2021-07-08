@@ -23,6 +23,7 @@ pub struct Server {
     pub workers: usize,
     pub registration: bool,
     pub secret: String,
+    pub domain: String,
 }
 
 #[derive(Debug, Clone, Deserialize)]
@@ -40,6 +41,7 @@ pub struct Database {
     pub password: String,
     pub host: String,
     pub name: String,
+    pub pool: u32,
 }
 
 /// Configurations for tls.
@@ -106,10 +108,6 @@ impl AppConfig {
             config.set("server.port", val).unwrap();
         };
 
-        if let Ok(val) = env::var("DATABASE_URL") {
-            config.set("database.port", val).unwrap();
-        };
-
         config
             .get::<String>("server.secret")
             .expect("Please set a secret in configuration file");
@@ -128,16 +126,20 @@ impl Server {
 impl Database {
     /// Builds database url from config parameters.
     pub fn url(&self) -> String {
-        format!(
-            "{}://{}:{}@{}/{}",
-            self.db,
-            //            match self.server_type {
-            //                DbServerType::Mysql => "mysql",
-            //            },
-            self.user,
-            self.password,
-            self.host,
-            self.name
-        )
+        if let Ok(val) = std::env::var("DATABASE_URL") {
+            val
+        } else {
+            format!(
+                "{}://{}:{}@{}/{}",
+                self.db,
+                //            match self.server_type {
+                //                DbServerType::Mysql => "mysql",
+                //            },
+                self.user,
+                self.password,
+                self.host,
+                self.name
+            )
+        }
     }
 }

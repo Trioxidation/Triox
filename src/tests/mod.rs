@@ -1,7 +1,3 @@
-#[cfg(test)]
-mod util;
-
-#[cfg(test)]
-mod auth_test;
-
 mod files;
+mod helpers;
+pub use helpers::*;

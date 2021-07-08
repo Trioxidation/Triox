@@ -1,0 +1,141 @@
+{
+  "db": "PostgreSQL",
+  "0c920bdf543f1052e9a9bf9997834091da0d8176b15ba08a72392d1cd7a84447": {
+    "query": "SELECT EXISTS (SELECT 1 from triox_users WHERE name = $1)",
+    "describe": {
+      "columns": [
+        {
+          "ordinal": 0,
+          "name": "exists",
+          "type_info": "Bool"
+        }
+      ],
+      "parameters": {
+        "Left": [
+          "Text"
+        ]
+      },
+      "nullable": [
+        null
+      ]
+    }
+  },
+  "4a1e3e00be82dbedee496b71173b968eb2388432bb782db81155d41abf1d9e78": {
+    "query": "SELECT password  FROM triox_users WHERE name = ($1)",
+    "describe": {
+      "columns": [
+        {
+          "ordinal": 0,
+          "name": "password",
+          "type_info": "Text"
+        }
+      ],
+      "parameters": {
+        "Left": [
+          "Text"
+        ]
+      },
+      "nullable": [
+        false
+      ]
+    }
+  },
+  "4adfb8323eb4efa117ae913d8ff7065039970f660cbf8c270b1dcef4ec619075": {
+    "query": "UPDATE triox_users set email = $1\n        WHERE name = $2",
+    "describe": {
+      "columns": [],
+      "parameters": {
+        "Left": [
+          "Varchar",
+          "Text"
+        ]
+      },
+      "nullable": []
+    }
+  },
+  "59f400abfceae6248cdc474bea91f36a62fa2e88b94c2d9633608e27617b4dfd": {
+    "query": "INSERT INTO triox_users \n        (name , password) VALUES ($1, $2)",
+    "describe": {
+      "columns": [],
+      "parameters": {
+        "Left": [
+          "Varchar",
+          "Text"
+        ]
+      },
+      "nullable": []
+    }
+  },
+  "5f81191450fbf195ba9805382855f8a74c4ac892c2ae67bc052cff518b99a70e": {
+    "query": "SELECT EXISTS (SELECT 1 from triox_users WHERE email = $1)",
+    "describe": {
+      "columns": [
+        {
+          "ordinal": 0,
+          "name": "exists",
+          "type_info": "Bool"
+        }
+      ],
+      "parameters": {
+        "Left": [
+          "Text"
+        ]
+      },
+      "nullable": [
+        null
+      ]
+    }
+  },
+  "80fe972e11340923972a8797da61b6b805286fddb455c1b5237f3e2ade525b45": {
+    "query": "INSERT INTO triox_users \n        (name , password, email) VALUES ($1, $2, $3)",
+    "describe": {
+      "columns": [],
+      "parameters": {
+        "Left": [
+          "Varchar",
+          "Text",
+          "Varchar"
+        ]
+      },
+      "nullable": []
+    }
+  },
+  "d6e69cd1c4c4ef9ce29498358d4ea740f590b0862ca011203ed5d81afba8ee53": {
+    "query": "DELETE FROM triox_users WHERE name = ($1)",
+    "describe": {
+      "columns": [],
+      "parameters": {
+        "Left": [
+          "Text"
+        ]
+      },
+      "nullable": []
+    }
+  },
+  "f6984ff7cbe83ebb050b7302736b8bf9343f0351ba42cbaf915914bbb3980397": {
+    "query": "SELECT name, password  FROM triox_users WHERE email = ($1)",
+    "describe": {
+      "columns": [
+        {
+          "ordinal": 0,
+          "name": "name",
+          "type_info": "Varchar"
+        },
+        {
+          "ordinal": 1,
+          "name": "password",
+          "type_info": "Text"
+        }
+      ],
+      "parameters": {
+        "Left": [
+          "Text"
+        ]
+      },
+      "nullable": [
+        false,
+        false
+      ]
+    }
+  }
+}

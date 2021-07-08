@@ -7,19 +7,22 @@ description = "An open source cloud server that focuses on speed, reliability an
 repository = "https://github.com/AaronErhardt/Triox"
 readme = "README.md"
 license = "AGPL-3.0-or-later"
+default-run = "triox"
 
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+
+
+[[bin]]
+name = "triox"
+path = "./src/main.rs"
+
+[[bin]]
+name = "tests-migrate"
+path = "./src/tests-migrate.rs"
 
 [dependencies]
 # config
 config = "*"
-
-# database
-diesel = { version = "1", features = ["mysql", "r2d2"] }
-r2d2 = "0.8"
-
-# hash
-rust-argon2 = "0.8"
 
 # random
 rand = "0.8"
@@ -33,9 +36,7 @@ env_logger = "0.8"
 
 # serde
 serde = { version = "1", features = ["derive"] }
-
-# JWT
-jsonwebtoken = "7"
+serde_json = "1"
 
 # actix
 mime = "0.3"
@@ -44,7 +45,14 @@ actix-files = "0.5"
 actix-multipart = "0.3"
 actix-governor = "0.2"
 actix-web = { version = "3", features = ["openssl"] }
-openssl = "0.10"
+actix-identity = "0.3"
+actix-service = "1.0.6"
+openssl = { version = "0.10.29", features = ["vendored"] }
+
+sqlx = { version = "0.4.0", features = [ "runtime-actix-rustls", "postgres", "time", "offline" ] }
+argon2-creds = { branch = "master", git = "https://github.com/realaravinth/argon2-creds"}
+lazy_static = "1.4"
+my-codegen = {package = "actix-web-codegen", git ="https://github.com/realaravinth/actix-web"}
 
 # futures
 futures = "0.3"
