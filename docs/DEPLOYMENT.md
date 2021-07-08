@@ -74,7 +74,7 @@ sudo apt install postgresql
 Postgres shell:
 
 ```psql
- postgres=#  CREATE USER triox WITH PASSWORD 'my super long password and yes you need single quote';
+ postgres=#  CREATE USER triox WITH PASSWORD 'my super long password and yes you need single quotes';
  postgres=#  exit;
 ```
 
