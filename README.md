@@ -56,11 +56,15 @@ server runs in read-only mode.
 
 1. Clone the repository
 
-`bash git clone https://github.com/Trioxidation/triox cd triox`
+```bash
+git clone https://github.com/Trioxidation/triox cd triox
+```
 
 2. Build and start Triox
 
-`bash docker-compose up -d --build`
+```bash
+docker-compose up -d --build
+```
 
 Triox should be accessible at http://localhost:3000
 
@@ -85,73 +89,18 @@ There are two ways to run Triox:
 
 1. Clone the repository
 
-`bash git clone https://github.com/Trioxidation/triox cd triox`
+```bash
+git clone https://github.com/Trioxidation/triox && cd triox
+```
 
 2. Build docker image
 
-`bash docker build -t triox/triox:latest .`
+```bash 
+docker build -t triox/triox:latest .
+```
 
 3. Run build docker image
 
-`bash docker run triox/triox:latest`
-
-### Bare metal
-
-**This information is outdated** <strike>
-
-1. Install Rust using [rustup](https://rustup.rs).
-2. Install dependencies:
-
-- pkg-config, common package name: `pkg-config`
-- OpenSSL, common package name: `libssl-dev` or `openssl-devel`
-- MySQL-client, common package name: `libmysqlclient-dev`,
-  `libmariadb-dev-compat` or `mysql-devel`
-
-3. Install a MySQL-server such as mariadb, common package name:
-   `mariadb-server`
-
-- Setup database (more below)
-- [optional] setup SSL certificate for HTTPS
-
-Now you should be ready to go! Use `cargo run` to compile and start the
-server.
-
-## Database setup
-
-### Creating database user
-
-````sql CREATE DATABASE triox; CREATE USER 'triox'@localhost IDENTIFIED
-BY 'password'; GRANT ALL PRIVILEGES ON triox.* TO 'triox'@localhost;
-FLUSH PRIVILEGES; ```
-
-### Install diesel client
-
-```bash cargo install diesel_cli --no-default-features --features mysql
-````
-
-### Add .env for diesel client
-
-```bash echo DATABASE_URL=mysql://triox:password@localhost/triox > .env
-
+```bash
+docker run triox/triox:latest
 ```
-
-### Run migrations
-
-`bash diesel migration run`
-
-## SSL setup
-
-### Generating SSL key and certificate
-
-````bash cd ssl openssl req -x509 -nodes -newkey rsa:4096 -keyout key.pem
--out cert.pem -days 365 cd .. ```
-
-Then update `config/local.toml`:
-
-```toml [ssl] enabled = true ```
-
-</strike> # API Documentation
-
-The API is documented in
-[`API.md`](./API.md).
-````
