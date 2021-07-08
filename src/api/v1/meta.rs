@@ -16,10 +16,10 @@
 */
 use std::time::Duration;
 
-use sqlx::Connection;
-use tokio::time::timeout;
 use actix_web::{web, HttpResponse, Responder};
 use serde::{Deserialize, Serialize};
+use sqlx::Connection;
+use tokio::time::timeout;
 
 use crate::AppData;
 use crate::{GIT_COMMIT_HASH, VERSION};
@@ -66,11 +66,13 @@ pub struct Health {
 /// checks all components of the system
 #[my_codegen::get(path = "crate::V1_API_ROUTES.meta.health")]
 async fn health(data: AppData) -> impl Responder {
-
     let mut db = false;
 
     if let Ok(mut con) = data.db.acquire().await {
-        if timeout(Duration::from_millis(100), con.ping()).await.is_ok() {
+        if timeout(Duration::from_millis(100), con.ping())
+            .await
+            .is_ok()
+        {
             db = true;
         }
     };
