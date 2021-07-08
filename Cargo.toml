@@ -1,10 +1,10 @@
 [package]
 name = "triox"
 version = "0.1.0"
-authors = ["Aaron Erhardt <aaron.erhardt@t-online.de>"]
+authors = ["Aaron Erhardt <aaron.erhardt@t-online.de>", "Aravinth Manivannan <realaravinth@batsense.net>"]
 edition = "2018"
 description = "An open source cloud server that focuses on speed, reliability and security"
-repository = "https://github.com/AaronErhardt/Triox"
+repository = "https://github.com/Trioxidation/Triox"
 readme = "README.md"
 license = "AGPL-3.0-or-later"
 default-run = "triox"
