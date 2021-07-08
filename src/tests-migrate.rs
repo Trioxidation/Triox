@@ -16,9 +16,9 @@
 */
 use lazy_static::lazy_static;
 
-mod config;
 mod app_state;
 mod cli;
+mod config;
 
 pub use app_state::AppState as Data;
 
@@ -28,7 +28,6 @@ lazy_static! {
         config::AppConfig::new(cli_options.config_dir.as_ref()).unwrap()
     };
 }
-
 
 #[cfg(not(tarpaulin_include))]
 #[actix_rt::main]

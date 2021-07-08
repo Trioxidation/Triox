@@ -106,8 +106,10 @@ async fn main() -> std::io::Result<()> {
 
     let app_state = app_state::AppState::new().await;
 
-
-    sqlx::migrate!("./migrations/").run(&app_state.db).await.unwrap();
+    sqlx::migrate!("./migrations/")
+        .run(&app_state.db)
+        .await
+        .unwrap();
 
     // setup HTTP server
     let mut server = HttpServer::new(move || {

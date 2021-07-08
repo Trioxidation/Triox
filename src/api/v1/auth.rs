@@ -97,8 +97,8 @@ pub mod runners {
                 &payload.login,
             )
             .fetch_one(&data.db)
-            .await {
-
+            .await
+            {
                 Ok(s) => {
                     verify(&s.password, &payload.password)?;
                     Ok(s.name)
@@ -114,8 +114,8 @@ pub mod runners {
                 &payload.login,
             )
             .fetch_one(&data.db)
-            .await {
-
+            .await
+            {
                 Ok(s) => {
                     verify(&s.password, &payload.password)?;
                     Ok(payload.login)
