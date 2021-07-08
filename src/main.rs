@@ -9,8 +9,6 @@
 //!⛓️ **Reliability** - Built on top of the strong guarantees of the [Rust programming language](https://rust-lang.org).
 //!
 //!🛫 **Easy Setup** - Triox comes with batteries included and is easy to configure.
-//!
-//!🔬 **Modern Technologies** - Authentication with [JWT](https://jwt.io) and a front-end based on [WebAssembly](https://webassembly.org).
 
 mod api;
 mod middleware;
