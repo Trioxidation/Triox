@@ -52,6 +52,15 @@ jobs:
           profile: minimal
           override: true
 
+      - name: Run migrations
+        uses: actions-rs/cargo@v1
+        with:
+          command: run
+          args: --bin tests-migrate
+        env:
+          DATABASE_URL: postgres://postgres:password@localhost:5432/postgres
+          TRIOX_SERVER_SECRET: 'aslkfda;lksdfaksdjf;alsdjfqo3piwrq3n4r2kl3r'
+
       - name: Generate coverage file
         if: matrix.version == '1.51.0' && (github.ref == 'refs/heads/master' || github.event_name == 'pull_request')
         uses: actions-rs/tarpaulin@v0.1
