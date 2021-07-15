@@ -107,18 +107,20 @@ pub async fn register_and_signin(
 /// register utility
 pub async fn register(name: &str, email: Option<String>, password: &str) {
     let data = AppState::new().await;
-    let app = get_app!(data).await;
+    let mut app = get_app!(data).await;
 
     // 1. Register
     let msg = Register {
         username: name.into(),
         password: password.into(),
         confirm_password: password.into(),
-        email,
+        email: email.into(),
     };
-    let resp =
-        test::call_service(&app, post_request!(&msg, ROUTES.auth.register).to_request())
-            .await;
+    let resp = test::call_service(
+        &mut app,
+        post_request!(&msg, ROUTES.auth.register).to_request(),
+    )
+    .await;
     assert_eq!(resp.status(), StatusCode::OK);
 }
 
@@ -128,16 +130,18 @@ pub async fn signin(
     password: &str,
 ) -> (Arc<AppState>, Login, ServiceResponse) {
     let data = AppState::new().await;
-    let app = get_app!(data.clone()).await;
+    let mut app = get_app!(data.clone()).await;
 
     // 2. signin
     let creds = Login {
         login: name.into(),
         password: password.into(),
     };
-    let signin_resp =
-        test::call_service(&app, post_request!(&creds, ROUTES.auth.login).to_request())
-            .await;
+    let signin_resp = test::call_service(
+        &mut app,
+        post_request!(&creds, ROUTES.auth.login).to_request(),
+    )
+    .await;
     assert_eq!(signin_resp.status(), StatusCode::OK);
     (data, creds, signin_resp)
 }

@@ -24,8 +24,6 @@ pub struct Server {
     pub registration: bool,
     pub secret: String,
     pub domain: String,
-    pub rate_limit_period: Option<u64>,
-    pub rate_limit_burst_size: Option<u32>,
 }
 
 #[derive(Debug, Clone, Deserialize)]
@@ -110,14 +108,9 @@ impl AppConfig {
             config.set("server.port", val).unwrap();
         };
 
-        if config
+        config
             .get::<String>("server.secret")
-            .expect("Please set a secret in configuration file")
-            .len()
-            < 32
-        {
-            panic!("Please set a secret that's at least 32 bytes long");
-        }
+            .expect("Please set a secret in configuration file");
 
         config.try_into()
     }

@@ -45,8 +45,7 @@ actix-rt = "2"
 actix-files = "0.6.0-beta.6"
 actix-multipart = "0.4.0-beta.5"
 actix-http = "3.0.0-beta.8"
-actix-governor = { git = "https://github.com/AaronErhardt/actix-governor", branch = "main" , features = ["log"] }
-actix-optional-middleware = { version = "0.1", git = "https://github.com/realaravinth/actix-optional-middleware" }
+actix-governor = "0.2"
 actix-web = { version = "4.0.0-beta.8", features = ["openssl"] }
 actix-identity = "0.4.0-beta.2"
 actix-service = "2.0"
