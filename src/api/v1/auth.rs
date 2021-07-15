@@ -21,32 +21,8 @@ use actix_web::{web, HttpResponse, Responder};
 use serde::{Deserialize, Serialize};
 
 use crate::errors::*;
+use crate::middleware::rate_limit::get_rate_limit_middleware;
 use crate::AppData;
-
-lazy_static::lazy_static! {
-    static ref RATE_LIMITER_CONFIG: Option<actix_governor::GovernorConfig> =
-    if let (Some(period), Some(burst_size)) =
-        (crate::SETTINGS.server.rate_limit_period,
-         crate::SETTINGS.server.rate_limit_burst_size)
-    {
-        let gov_cfg = actix_governor::GovernorConfigBuilder::default()
-            .per_millisecond(period)
-            .burst_size(burst_size)
-            .finish();
-        if gov_cfg.is_none() {
-            log::warn!(
-                "Invalid rate limiter configuration. Period: {}, burst size: {}",
-                period,
-                burst_size
-            );
-        } else {
-            log::info!("Rate limiter initialized")
-        }
-        gov_cfg
-    } else {
-        None
-    };
-}
 
 pub mod routes {
     pub struct Auth {
@@ -216,21 +192,14 @@ pub mod runners {
 
 pub fn services(cfg: &mut web::ServiceConfig) {
     cfg.service(signout);
-    // if a valid rate limiter config is set, add rate limiter middleware otherwise don't
-    if let Some(gov_cfg) = &*RATE_LIMITER_CONFIG {
-        cfg.service(
-            web::scope("")
-                .wrap(actix_governor::Governor::new(&gov_cfg))
-                .service(register)
-                .service(login),
-        );
-    } else {
-        cfg.service(register);
-        cfg.service(login);
-    }
+    cfg.service(register);
+    cfg.service(login);
 }
 
-#[my_codegen::post(path = "crate::V1_API_ROUTES.auth.register")]
+#[my_codegen::post(
+    path = "crate::V1_API_ROUTES.auth.register",
+    wrap = "get_rate_limit_middleware()"
+)]
 async fn register(
     payload: web::Json<runners::Register>,
     data: AppData,
@@ -239,7 +208,10 @@ async fn register(
     Ok(HttpResponse::Ok())
 }
 
-#[my_codegen::post(path = "crate::V1_API_ROUTES.auth.login")]
+#[my_codegen::post(
+    path = "crate::V1_API_ROUTES.auth.login",
+    wrap = "get_rate_limit_middleware()"
+)]
 async fn login(
     id: Identity,
     payload: web::Json<runners::Login>,

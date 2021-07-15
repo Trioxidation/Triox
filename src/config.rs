@@ -114,11 +114,6 @@ impl AppConfig {
             .get::<String>("server.secret")
             .expect("Please set a secret in configuration file");
 
-        // When running test we don't want the rate limiting enabled
-        if cfg!(test) {
-            config.set("server.rate_limit_period", "0")?;
-        }
-
         config.try_into()
     }
 }
