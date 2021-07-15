@@ -20,6 +20,13 @@ workers = 0
 # Disable sign_up service to prevent creation of new accounts through the API
 registration = true
 
+# Rate limiter parameters for limiting auth requests (login and signup).
+# If at least one of these two fields is empty the rate limiter remains turned off.
+# Time in milliseconds before one quota is replenished.
+rate_limit_period = 4000
+# Maximum amount of request that are allowed in a short interval.
+rate_limit_burst_size = 2
+
 
 [files]
 # Disable file system modification like uploading or moving files
