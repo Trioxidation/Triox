@@ -5,7 +5,7 @@ use actix_web::Error;
 use std::rc::Rc;
 
 lazy_static::lazy_static! {
-    static ref RATE_LIMIT_CONFIG: Option<GovernorConfig> =
+    pub static ref RATE_LIMIT_CONFIG: Option<GovernorConfig> =
     if let (Some(period), Some(burst_size)) =
         (crate::SETTINGS.server.rate_limit_period,
          crate::SETTINGS.server.rate_limit_burst_size)
@@ -16,17 +16,10 @@ lazy_static::lazy_static! {
         let gov_cfg = GovernorConfigBuilder::default()
             .per_millisecond(period)
             .burst_size(burst_size)
-            .finish();
-        if gov_cfg.is_none() {
-            log::warn!(
-                "Invalid rate limiter configuration. Period: {}, burst size: {}",
-                period,
-                burst_size
-            );
-        } else {
-            log::info!("Rate limiter initialized")
-        }
-        gov_cfg
+            .finish()
+            .expect("Invalid rate limiter configuration.");
+        log::info!("Rate limiter initialized");
+        Some(gov_cfg)
     } else {
         None
     };

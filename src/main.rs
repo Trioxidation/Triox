@@ -101,6 +101,10 @@ async fn main() -> std::io::Result<()> {
     )
     .init();
 
+    // initialize static variables to prevent panicking later
+    lazy_static::initialize(&SETTINGS);
+    lazy_static::initialize(&middleware::rate_limit::RATE_LIMIT_CONFIG);
+
     let app_state = app_state::AppState::new().await;
 
     sqlx::migrate!("./migrations/")
