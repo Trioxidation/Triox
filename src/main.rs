@@ -9,8 +9,6 @@
 //!⛓️ **Reliability** - Built on top of the strong guarantees of the [Rust programming language](https://rust-lang.org).
 //!
 //!🛫 **Easy Setup** - Triox comes with batteries included and is easy to configure.
-//!
-//!🔬 **Modern Technologies** - Authentication with [JWT](https://jwt.io) and a front-end based on [WebAssembly](https://webassembly.org).
 
 mod api;
 mod middleware;
@@ -104,6 +102,10 @@ async fn main() -> std::io::Result<()> {
         Env::default().default_filter_or(cli_options.log_level),
     )
     .init();
+
+    // initialize static variables to prevent panicking later
+    lazy_static::initialize(&SETTINGS);
+    lazy_static::initialize(&middleware::rate_limit::RATE_LIMIT_CONFIG);
 
     let app_state = app_state::AppState::new().await;
 

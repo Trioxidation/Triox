@@ -21,6 +21,7 @@ use actix_web::{web, HttpResponse, Responder};
 use serde::{Deserialize, Serialize};
 
 use crate::errors::*;
+use crate::middleware::rate_limit::get_rate_limit_middleware;
 use crate::AppData;
 
 pub mod routes {
@@ -190,11 +191,15 @@ pub mod runners {
 }
 
 pub fn services(cfg: &mut web::ServiceConfig) {
+    cfg.service(signout);
     cfg.service(register);
     cfg.service(login);
-    cfg.service(signout);
 }
-#[my_codegen::post(path = "crate::V1_API_ROUTES.auth.register")]
+
+#[my_codegen::post(
+    path = "crate::V1_API_ROUTES.auth.register",
+    wrap = "get_rate_limit_middleware()"
+)]
 async fn register(
     payload: web::Json<runners::Register>,
     data: AppData,
@@ -203,7 +208,10 @@ async fn register(
     Ok(HttpResponse::Ok())
 }
 
-#[my_codegen::post(path = "crate::V1_API_ROUTES.auth.login")]
+#[my_codegen::post(
+    path = "crate::V1_API_ROUTES.auth.login",
+    wrap = "get_rate_limit_middleware()"
+)]
 async fn login(
     id: Identity,
     payload: web::Json<runners::Login>,
@@ -214,7 +222,7 @@ async fn login(
     Ok(HttpResponse::Ok())
 }
 
-#[my_codegen::get(path = "crate::V1_API_ROUTES.auth.logout")] // wrap = "crate::CheckLogin")]
+#[my_codegen::get(path = "crate::V1_API_ROUTES.auth.logout", wrap = "crate::CheckLogin")]
 async fn signout(id: Identity) -> impl Responder {
     if id.identity().is_some() {
         id.forget();
