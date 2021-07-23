@@ -96,10 +96,10 @@ mod tests {
 
     #[actix_rt::test]
     async fn build_details_works() {
-        let mut app = test::init_service(App::new().configure(services)).await;
+        let app = test::init_service(App::new().configure(services)).await;
 
         let resp = test::call_service(
-            &mut app,
+            &app,
             test::TestRequest::get()
                 .uri(V1_API_ROUTES.meta.build_details)
                 .to_request(),
@@ -112,10 +112,10 @@ mod tests {
     async fn health_works() {
         println!("{}", V1_API_ROUTES.meta.health);
         let data = crate::app_state::AppState::new().await;
-        let mut app = get_app!(data).await;
+        let app = get_app!(data).await;
 
         let resp = test::call_service(
-            &mut app,
+            &app,
             test::TestRequest::get()
                 .uri(V1_API_ROUTES.meta.health)
                 .to_request(),

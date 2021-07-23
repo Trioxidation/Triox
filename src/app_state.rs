@@ -37,6 +37,7 @@ impl AppState {
             .connect(&SETTINGS.database.url())
             .await
             .expect("Unable to form database pool");
+        #[cfg(not(debug_assertions))]
         init.join().unwrap();
         Arc::new(AppState { creds, db })
     }

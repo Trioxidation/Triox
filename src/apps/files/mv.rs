@@ -1,10 +1,10 @@
-use actix_web::{post, web, HttpResponse};
+use actix_web::{web, HttpResponse};
 
 use crate::errors::*;
 
 /// Service for deleting files or directories
-#[post("/app/files/move", wrap = "crate::CheckLogin")]
-pub async fn r#move(
+#[my_codegen::post(path = "crate::FILE_ROUTES.mv", wrap = "crate::CheckLogin")]
+pub async fn mv(
     id: actix_identity::Identity,
     params: web::Json<super::SourceAndDest>,
 ) -> ServiceResult<HttpResponse> {

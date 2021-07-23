@@ -1,37 +1,37 @@
-use actix_web::{get, web, HttpResponse};
+use std::time::SystemTime;
 
+use actix_web::{web, HttpResponse};
 use futures::Stream;
+use serde::{Deserialize, Serialize};
 use tokio::fs;
 use tokio::fs::DirEntry;
 use tokio_stream::wrappers::ReadDirStream;
 
-use std::time::SystemTime;
-
 use super::QueryPath;
 use crate::errors::*;
 
-#[derive(serde::Serialize)]
-struct File {
-    name: String,
-    size: u64,
-    last_modified: u64,
+#[derive(Deserialize, Serialize)]
+pub struct File {
+    pub name: String,
+    pub size: u64,
+    pub last_modified: u64,
 }
 
-#[derive(serde::Serialize)]
-struct Directory {
-    name: String,
-    last_modified: u64,
+#[derive(Deserialize, Serialize)]
+pub struct Directory {
+    pub name: String,
+    pub last_modified: u64,
 }
 
 /// File list returned by the `list` and `list_root` services as JSON
-#[derive(serde::Serialize)]
-struct Response {
-    files: Vec<File>,
-    directories: Vec<Directory>,
+#[derive(Deserialize, Serialize)]
+pub struct ListResponse {
+    pub files: Vec<File>,
+    pub directories: Vec<Directory>,
 }
 
 /// Service for listing files via an API
-#[get("/app/files/list", wrap = "crate::CheckLogin")]
+#[my_codegen::get(path = "crate::FILE_ROUTES.list", wrap = "crate::CheckLogin")]
 pub async fn list(
     id: actix_identity::Identity,
     web::Query(query_path): web::Query<QueryPath>,
@@ -95,5 +95,5 @@ pub async fn list(
         }
     }
 
-    Ok(HttpResponse::Ok().json(Response { files, directories }))
+    Ok(HttpResponse::Ok().json(ListResponse { files, directories }))
 }

@@ -1,7 +1,7 @@
 use actix_multipart::Multipart;
 use futures::{StreamExt, TryStreamExt};
 
-use actix_web::{post, web, HttpResponse};
+use actix_web::{web, HttpResponse};
 
 use tokio::fs;
 use tokio::io::AsyncWriteExt;
@@ -16,7 +16,7 @@ struct Response {
 }
 
 /// Service for listing files
-#[post("/app/files/upload", wrap = "crate::CheckLogin")]
+#[my_codegen::post(path = "crate::FILE_ROUTES.upload", wrap = "crate::CheckLogin")]
 pub async fn upload(
     id: actix_identity::Identity,
     web::Query(query_path): web::Query<super::QueryPath>,

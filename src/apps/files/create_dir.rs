@@ -1,9 +1,9 @@
-use actix_web::{get, web, HttpResponse};
+use actix_web::{web, HttpResponse};
 
 use crate::errors::*;
 
 /// Service for creating directories
-#[get("/app/files/create_dir", wrap = "crate::CheckLogin")]
+#[my_codegen::get(path = "crate::FILE_ROUTES.create_dir", wrap = "crate::CheckLogin")]
 pub async fn create_dir(
     web::Query(query_path): web::Query<super::QueryPath>,
     id: actix_identity::Identity,
