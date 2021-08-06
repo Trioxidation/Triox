@@ -1,7 +1,8 @@
 use actix_multipart::Multipart;
 use futures::{StreamExt, TryStreamExt};
+//use std::future::Future;
 
-use actix_web::{web, HttpResponse};
+use actix_web::{web, HttpResponse, Responder};
 
 use tokio::fs;
 use tokio::io::AsyncWriteExt;
@@ -21,37 +22,44 @@ pub async fn upload(
     id: actix_identity::Identity,
     web::Query(query_path): web::Query<super::QueryPath>,
     mut payload: Multipart,
-) -> ServiceResult<HttpResponse> {
+) -> ServiceResult<impl Responder> {
     super::read_only_guard()?;
 
     let username = id.identity().unwrap();
 
     let base_path = super::resolve_path(&username, &query_path.path)?;
 
-    // iterate over multipart stream
-    while let Ok(Some(mut field)) = payload.try_next().await {
-        if let Some(content_type) = field.content_disposition() {
-            if let Some(filename) = content_type.get_filename() {
-                if filename.contains("..") {
-                    return Err(ServiceError::PermissionDenied);
+    loop {
+        match payload.try_next().await {
+            Ok(Some(mut field)) => {
+                if let Some(content_type) = field.content_disposition() {
+                    if let Some(filename) = content_type.get_filename() {
+                        if filename.contains("..") {
+                            return Err(ServiceError::PermissionDenied);
+                        }
+
+                        let mut file_path = base_path.clone();
+                        file_path.push(filename);
+                        println!("uploading file: {} at {:?}", filename, file_path);
+
+                        let mut file = fs::File::create(file_path).await?;
+
+                        // Field in turn is stream of *Bytes* object
+                        while let Some(chunk) = field.next().await {
+                            file.write_all(&chunk?).await?;
+                        }
+                    } else {
+                        return Err(ServiceError::BadRequest);
+                    }
+                } else {
+                    return Err(ServiceError::UnknownMIME);
                 }
-
-                let mut file_path = base_path.clone();
-                file_path.push(filename);
-
-                let mut file = fs::File::create(file_path).await?;
-
-                // Field in turn is stream of *Bytes* object
-                while let Some(chunk) = field.next().await {
-                    file.write_all(&chunk?).await?;
-                }
-            } else {
-                return Err(ServiceError::BadRequest);
             }
-        } else {
-            return Err(ServiceError::UnknownMIME);
+            Ok(None) => {
+                return Ok(HttpResponse::Ok().body("Upload finished"));
+            }
+
+            Err(e) => return Err(e)?,
         }
     }
-
-    Ok(HttpResponse::Ok().body("Upload finished"))
 }

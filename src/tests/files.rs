@@ -1,3 +1,6 @@
+use std::sync::mpsc;
+
+use actix_web::dev::Server;
 use actix_web::http::StatusCode;
 use actix_web::test;
 use tokio::fs;
@@ -38,6 +41,12 @@ async fn file_works() {
 
     assert_eq!(response.status(), StatusCode::NOT_FOUND);
 
+    // upload file
+
+    let file_name = format!("./data/users/{}/files/test_file", NAME);
+    fs::File::create(&file_name).await.unwrap();
+    fs::write(&file_name, CONTENT).await.unwrap();
+
     // move up a dir
     let response = test::call_service(
         &app,
@@ -47,11 +56,6 @@ async fn file_works() {
     )
     .await;
     assert_eq!(response.status(), StatusCode::UNAUTHORIZED);
-
-    // fetch file
-    let file_name = format!("./data/users/{}/files/{}", NAME, FILE_NAME);
-    fs::File::create(&file_name).await.unwrap();
-    fs::write(&file_name, CONTENT).await.unwrap();
 
     let response = test::call_service(
         &app,
@@ -121,7 +125,6 @@ async fn file_works() {
     assert_eq!(response.status(), StatusCode::OK);
 
     // list contents
-
     let response = test::call_service(
         &app,
         get_req!(&path(FILE_ROUTES.list, ""))
@@ -146,6 +149,7 @@ async fn file_works() {
     let body: ListResponse = test::read_body_json(response).await;
     assert!(body.files.iter().any(|file| file.name == FILE_NAME));
 
+    // remove and list files
     let response = test::call_service(
         &app,
         get_req!(&path(FILE_ROUTES.remove, FILE_NAME))
@@ -164,4 +168,17 @@ async fn file_works() {
     assert_eq!(response.status(), StatusCode::OK);
     let body: ListResponse = test::read_body_json(response).await;
     assert!(!body.files.iter().any(|file| file.name == FILE_NAME));
+}
+
+async fn run_app(tx: mpsc::Sender<Server>) -> std::io::Result<()> {
+    let data = AppState::new().await;
+
+    let srv = HttpServer::new(move || get_app!(data, "app"))
+        .bind(SETTINGS.server.listen_address())?
+        .run();
+    // send server controller to main thread
+    let _ = tx.send(srv.clone());
+
+    // run future
+    srv.await
 }

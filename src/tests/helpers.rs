@@ -83,16 +83,18 @@ macro_rules! get_app {
         )
     };
     ($data:expr) => {
-        test::init_service(
-            actix_web::App::new()
-                .wrap(crate::get_identity_service())
-                .wrap(actix_web::middleware::NormalizePath::new(
-                    actix_web::middleware::TrailingSlash::Trim,
-                ))
-                .configure(crate::apps::files::services)
-                .configure(crate::api::v1::services)
-                .app_data(actix_web::web::Data::new($data.clone())),
-        )
+        test::init_service(get_app!($data, "app"))
+    };
+
+    ($data:expr, "app") => {
+        actix_web::App::new()
+            .wrap(crate::get_identity_service())
+            .wrap(actix_web::middleware::NormalizePath::new(
+                actix_web::middleware::TrailingSlash::Trim,
+            ))
+            .configure(crate::apps::files::services)
+            .configure(crate::api::v1::services)
+            .app_data(actix_web::web::Data::new($data.clone()))
     };
 }
 
@@ -170,6 +172,7 @@ pub async fn bad_post_req_test<T: Serialize>(
 }
 
 pub fn path(route: &str, param: &str) -> String {
+    let param = param.trim();
     if route.ends_with('/') {
         format!("{}?path={}", &route[0..route.len() - 1], param)
     } else {
