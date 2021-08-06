@@ -31,7 +31,7 @@ where
         + 'static,
 {
     if let Some(rate_limit_cfg) = &*RATE_LIMIT_CONFIG {
-        Group::Real(Rc::new(Governor::new(&rate_limit_cfg)))
+        Group::Real(Rc::new(Governor::new(rate_limit_cfg)))
     } else {
         Group::default()
     }

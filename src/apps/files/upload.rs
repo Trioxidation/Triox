@@ -59,7 +59,7 @@ pub async fn upload(
                 return Ok(HttpResponse::Ok().body("Upload finished"));
             }
 
-            Err(e) => return Err(e)?,
+            Err(e) => return Err(e.into()),
         }
     }
 }

@@ -27,7 +27,7 @@ pub async fn delete_user(name: &str, data: &AppState) {
         .await;
 
     // delete storage path of the user
-    let path: std::path::PathBuf = [".", "data", "users", &name].iter().collect();
+    let path: std::path::PathBuf = [".", "data", "users", name].iter().collect();
 
     let _ = tokio::fs::remove_dir_all(path);
     println!();

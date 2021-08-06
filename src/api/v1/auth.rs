@@ -77,7 +77,7 @@ pub mod runners {
         use sqlx::Error::RowNotFound;
 
         let verify = |stored: &str, received: &str| {
-            if Config::verify(&stored, &received)? {
+            if Config::verify(stored, received)? {
                 Ok(())
             } else {
                 Err(ServiceError::InvalidCredentials)
@@ -141,7 +141,7 @@ pub mod runners {
         let hash = data.creds.password(&payload.password)?;
 
         if let Some(email) = &payload.email {
-            data.creds.email(&email)?;
+            data.creds.email(email)?;
         }
 
         let res;
