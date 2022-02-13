@@ -17,6 +17,10 @@
 
 </div>
 
+## NOTE: Currently, Triox is not actively developed due to limited resources of the dev team.
+
+---
+
 ## Why Triox?
 
 ☘️ **Open Source** - We strongly believe in collaboration and
@@ -44,13 +48,13 @@ issue](https://github.com/Trioxidation/Triox/issues/17).
 
 ### Hosted server
 
-Sign in with username `demo_user` and password `demo_password`.
+~~Sign in with username `demo_user` and password `demo_password`.~~
 
-Sadly, we can't allow users to upload files due to legal restrictions.
+~~Sadly, we can't allow users to upload files due to legal restrictions.
 Since we can't guarantee that no illegal data will be uploaded the demo
-server runs in read-only mode.
+server runs in read-only mode.~~
 
-**[triox-demo.aaron-erhardt.de](https://triox-demo.aaron-erhardt.de)**
+~~triox-demo.aaron-erhardt.de~~
 
 ### Self-hosted:
 
