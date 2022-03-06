@@ -1,9 +1,9 @@
-use actix_web::{get, web, HttpResponse};
+use actix_web::{web, HttpResponse};
 
 use crate::errors::*;
 
 /// Service for deleting files or directories
-#[get("/app/files/remove", wrap = "crate::CheckLogin")]
+#[my_codegen::get(path = "crate::FILE_ROUTES.remove", wrap = "crate::CheckLogin")]
 pub async fn remove(
     id: actix_identity::Identity,
     web::Query(query_path): web::Query<super::QueryPath>,

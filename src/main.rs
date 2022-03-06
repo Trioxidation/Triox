@@ -12,7 +12,6 @@
 
 mod api;
 mod middleware;
-pub use crate::middleware::auth::CheckLogin;
 
 /// "Apps" in this module take care of certain parts of the API. For example the files app will provide services for uploading and downloading files.
 mod apps;
@@ -48,9 +47,12 @@ use lazy_static::lazy_static;
 use openssl::ssl::{SslAcceptor, SslFiletype, SslMethod};
 
 use crate::api::v1::ROUTES as V1_API_ROUTES;
+use crate::apps::files::FILE_ROUTES;
 use crate::config::AppConfig;
 
 pub use crate::app_state::AppState;
+pub use crate::middleware::auth::CheckLogin;
+
 pub type AppData = actix_web::web::Data<Arc<AppState>>;
 
 pub const GIT_COMMIT_HASH: &str = env!("GIT_HASH");

@@ -1,10 +1,7 @@
 use std::sync::Arc;
 
 use actix_web::test;
-use actix_web::{
-    dev::ServiceResponse,
-    http::{header, StatusCode},
-};
+use actix_web::{dev::ServiceResponse, http::StatusCode};
 use serde::{Deserialize, Serialize};
 
 use crate::api::v1::auth::runners::{Login, Register};
@@ -28,6 +25,11 @@ pub async fn delete_user(name: &str, data: &AppState) {
     let r = sqlx::query!("DELETE FROM triox_users WHERE name = ($1)", name,)
         .execute(&data.db)
         .await;
+
+    // delete storage path of the user
+    let path: std::path::PathBuf = [".", "data", "users", name].iter().collect();
+
+    let _ = tokio::fs::remove_dir_all(path);
     println!();
     println!();
     println!();
@@ -43,7 +45,7 @@ macro_rules! post_request {
     ($serializable:expr, $uri:expr) => {
         test::TestRequest::post()
             .uri($uri)
-            .insert_header((header::CONTENT_TYPE, "application/json"))
+            .insert_header((actix_web::http::header::CONTENT_TYPE, "application/json"))
             .set_payload(serde_json::to_string($serializable).unwrap())
     };
 }
@@ -81,16 +83,18 @@ macro_rules! get_app {
         )
     };
     ($data:expr) => {
-        test::init_service(
-            actix_web::App::new()
-                .wrap(crate::get_identity_service())
-                .wrap(actix_web::middleware::NormalizePath::new(
-                    actix_web::middleware::TrailingSlash::Trim,
-                ))
-                .configure(crate::api::v1::services)
-                .configure(crate::apps::files::services)
-                .app_data(actix_web::web::Data::new($data.clone())),
-        )
+        test::init_service(get_app!($data, "app"))
+    };
+
+    ($data:expr, "app") => {
+        actix_web::App::new()
+            .wrap(crate::get_identity_service())
+            .wrap(actix_web::middleware::NormalizePath::new(
+                actix_web::middleware::TrailingSlash::Trim,
+            ))
+            .configure(crate::apps::files::services)
+            .configure(crate::api::v1::services)
+            .app_data(actix_web::web::Data::new($data.clone()))
     };
 }
 
@@ -153,10 +157,10 @@ pub async fn bad_post_req_test<T: Serialize>(
 ) {
     let (data, _, signin_resp) = signin(name, password).await;
     let cookies = get_cookie!(signin_resp);
-    let mut app = get_app!(data).await;
+    let app = get_app!(data).await;
 
     let dup_token_resp = test::call_service(
-        &mut app,
+        &app,
         post_request!(&payload, url)
             .cookie(cookies.clone())
             .to_request(),
@@ -165,4 +169,13 @@ pub async fn bad_post_req_test<T: Serialize>(
     assert_eq!(dup_token_resp.status(), s);
     let txt: ErrorToResponse = test::read_body_json(dup_token_resp).await;
     assert_eq!(txt.error, format!("{}", dup_err));
+}
+
+pub fn path(route: &str, param: &str) -> String {
+    let param = param.trim();
+    if route.ends_with('/') {
+        format!("{}?path={}", &route[0..route.len() - 1], param)
+    } else {
+        format!("{}?path={}", route, param)
+    }
 }
