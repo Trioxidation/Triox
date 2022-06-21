@@ -16,7 +16,6 @@
 */
 
 #![allow(clippy::type_complexity)]
-use actix_http::body::AnyBody;
 use actix_identity::Identity;
 use actix_service::{Service, Transform};
 use actix_web::dev::{ServiceRequest, ServiceResponse};
@@ -30,10 +29,10 @@ pub struct CheckLogin;
 
 impl<S> Transform<S, ServiceRequest> for CheckLogin
 where
-    S: Service<ServiceRequest, Response = ServiceResponse<AnyBody>, Error = Error>,
+    S: Service<ServiceRequest, Response = ServiceResponse, Error = Error>,
     S::Future: 'static,
 {
-    type Response = ServiceResponse<AnyBody>;
+    type Response = ServiceResponse;
     type Error = Error;
     type Transform = CheckLoginMiddleware<S>;
     type InitError = ();
@@ -49,10 +48,10 @@ pub struct CheckLoginMiddleware<S> {
 
 impl<S> Service<ServiceRequest> for CheckLoginMiddleware<S>
 where
-    S: Service<ServiceRequest, Response = ServiceResponse<AnyBody>, Error = Error>,
+    S: Service<ServiceRequest, Response = ServiceResponse, Error = Error>,
     S::Future: 'static,
 {
-    type Response = ServiceResponse<AnyBody>;
+    type Response = ServiceResponse;
     type Error = Error;
     type Future = Either<S::Future, Ready<Result<Self::Response, Self::Error>>>;
 

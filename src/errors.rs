@@ -3,11 +3,11 @@ use std::io::{Error as IOError, ErrorKind as IOErrorKind};
 
 use actix_multipart::MultipartError;
 use actix_web::{
-    dev::{self, BaseHttpResponseBuilder as HttpResponseBuilder},
+    dev::ServiceResponse,
     error::ResponseError,
     http::{self, header, StatusCode},
     middleware::ErrorHandlerResponse,
-    HttpResponse, Result,
+    HttpResponse, HttpResponseBuilder, Result,
 };
 use argon2_creds::errors::CredsError;
 use derive_more::{Display, Error};
@@ -22,8 +22,6 @@ pub enum ServiceError {
     NotAnEmail,
     #[display(fmt = "Bad request")]
     BadRequest,
-    #[display(fmt = "Unknown MIME type")]
-    UnknownMIME,
     #[display(fmt = "File not found")]
     FileNotFound,
     #[display(fmt = "File exists")]
@@ -64,7 +62,6 @@ impl ResponseError for ServiceError {
                 })
                 .unwrap(),
             )
-            .into()
     }
 
     fn status_code(&self) -> StatusCode {
@@ -74,7 +71,6 @@ impl ResponseError for ServiceError {
             ServiceError::BadRequest => StatusCode::BAD_REQUEST,
             ServiceError::NotAnEmail => StatusCode::BAD_REQUEST,
             ServiceError::PasswordsDontMatch => StatusCode::BAD_REQUEST,
-            ServiceError::UnknownMIME => StatusCode::BAD_REQUEST,
             ServiceError::UsernameTaken => StatusCode::BAD_REQUEST,
             ServiceError::EmailTaken => StatusCode::BAD_REQUEST,
             ServiceError::FileNotFound => StatusCode::NOT_FOUND,
@@ -130,14 +126,12 @@ impl From<sqlx::Error> for ServiceError {
     }
 }
 
-pub fn render_404<B>(
-    mut res: dev::ServiceResponse<B>,
-) -> Result<ErrorHandlerResponse<B>> {
+pub fn render_404<B>(mut res: ServiceResponse<B>) -> Result<ErrorHandlerResponse<B>> {
     res.response_mut().headers_mut().insert(
         http::header::CONTENT_TYPE,
-        http::HeaderValue::from_static("Error"),
+        http::header::HeaderValue::from_static("Error"),
     );
-    Ok(ErrorHandlerResponse::Response(res))
+    Ok(ErrorHandlerResponse::Response(res.map_into_left_body()))
 }
 
 pub type ServiceResult<V> = std::result::Result<V, ServiceError>;

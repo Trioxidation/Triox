@@ -32,27 +32,24 @@ pub async fn upload(
     loop {
         match payload.try_next().await {
             Ok(Some(mut field)) => {
-                if let Some(content_type) = field.content_disposition() {
-                    if let Some(filename) = content_type.get_filename() {
-                        if filename.contains("..") {
-                            return Err(ServiceError::PermissionDenied);
-                        }
+                let content_type = field.content_disposition();
+                if let Some(filename) = content_type.get_filename() {
+                    if filename.contains("..") {
+                        return Err(ServiceError::PermissionDenied);
+                    }
 
-                        let mut file_path = base_path.clone();
-                        file_path.push(filename);
-                        println!("uploading file: {} at {:?}", filename, file_path);
+                    let mut file_path = base_path.clone();
+                    file_path.push(filename);
+                    println!("uploading file: {} at {:?}", filename, file_path);
 
-                        let mut file = fs::File::create(file_path).await?;
+                    let mut file = fs::File::create(file_path).await?;
 
-                        // Field in turn is stream of *Bytes* object
-                        while let Some(chunk) = field.next().await {
-                            file.write_all(&chunk?).await?;
-                        }
-                    } else {
-                        return Err(ServiceError::BadRequest);
+                    // Field in turn is stream of *Bytes* object
+                    while let Some(chunk) = field.next().await {
+                        file.write_all(&chunk?).await?;
                     }
                 } else {
-                    return Err(ServiceError::UnknownMIME);
+                    return Err(ServiceError::BadRequest);
                 }
             }
             Ok(None) => {

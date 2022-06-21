@@ -63,12 +63,6 @@ pub struct AppConfig {
     pub tls: Tls,
 }
 
-fn set_default(config: &mut Config, field: &str, val: &str) {
-    config
-        .set_default(field, val)
-        .expect("Couldn't set default workers");
-}
-
 impl AppConfig {
     /// pass in configuration dir
     pub fn new(dir: &str) -> Result<Self, config::ConfigError> {
@@ -80,35 +74,39 @@ impl AppConfig {
         use std::env;
         use std::path::PathBuf;
 
-        let mut config = Config::new();
-
-        set_default(&mut config, "server.workers", "1");
-        set_default(&mut config, "server.url", "127.0.0.1");
-        set_default(&mut config, "server.listen", "127.0.0.1");
-        set_default(&mut config, "server.port", "8080");
-        set_default(&mut config, "server.registration", "false");
-        set_default(&mut config, "files.read_only", "true");
-        set_default(&mut config, "tls.enabled", "false");
+        let config = Config::builder()
+            .set_default("server.workers", "1")
+            .unwrap()
+            .set_default("server.url", "127.0.0.1")
+            .unwrap()
+            .set_default("server.listen", "127.0.0.1")
+            .unwrap()
+            .set_default("server.port", "8080")
+            .unwrap()
+            .set_default("server.registration", "false")
+            .unwrap()
+            .set_default("files.read_only", "true")
+            .unwrap()
+            .set_default("tls.enabled", "false")
+            .unwrap();
 
         let default: PathBuf = [dir, "default"].iter().collect();
         let default_path = default.to_str().unwrap_or("config/default.toml");
-        config
-            .merge(File::with_name(default_path))
-            .unwrap_or_else(|_| panic!("couldn't read config from: {:?}", default));
+        let config = config.add_source(File::with_name(default_path));
 
         let local: PathBuf = [dir, "local"].iter().collect();
         let local_path = local.to_str().unwrap_or("config/local");
-        config
-            .merge(File::with_name(local_path))
-            .unwrap_or_else(|_| panic!("couldn't read config from: {:?}", local_path));
+        let config = config.add_source(File::with_name(local_path));
 
-        config
-            .merge(Environment::with_prefix("TRIOX").separator("_"))
-            .expect("Problem reading env vars");
+        let config = config.add_source(Environment::with_prefix("TRIOX").separator("_"));
 
-        if let Ok(val) = env::var("PORT") {
-            config.set("server.port", val).unwrap();
+        let config = if let Ok(val) = env::var("PORT") {
+            config.set_override("server.port", val).unwrap()
+        } else {
+            config
         };
+
+        let config = config.build().unwrap();
 
         if config
             .get::<String>("server.secret")
@@ -119,7 +117,7 @@ impl AppConfig {
             panic!("Please set a secret that's at least 32 bytes long");
         }
 
-        config.try_into()
+        config.try_deserialize()
     }
 }
 
