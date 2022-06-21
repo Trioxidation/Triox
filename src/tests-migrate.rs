@@ -30,7 +30,7 @@ lazy_static! {
 }
 
 #[cfg(not(tarpaulin_include))]
-#[actix_rt::main]
+#[actix_web::main]
 async fn main() {
     let data = Data::new().await;
 
