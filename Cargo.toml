@@ -2,7 +2,7 @@
 name = "triox"
 version = "0.1.0"
 authors = ["Aaron Erhardt <aaron.erhardt@t-online.de>", "Aravinth Manivannan <realaravinth@batsense.net>"]
-edition = "2018"
+edition = "2021"
 description = "An open source cloud server that focuses on speed, reliability and security"
 repository = "https://github.com/Trioxidation/Triox"
 readme = "README.md"
@@ -23,17 +23,17 @@ path = "./src/tests-migrate.rs"
 
 [dependencies]
 # config
-config = "*"
+config = "0.13"
 
 # random
 rand = "0.8"
 
 # concurrent map
-dashmap = "4"
+dashmap = "5.3"
 
 # log
 log = "0.4"
-env_logger = "0.8"
+env_logger = "0.9"
 
 # serde
 serde = { version = "1", features = ["derive"] }
@@ -42,28 +42,28 @@ serde_json = "1"
 # actix
 mime = "0.3"
 actix-rt = "2"
-actix-files = "0.6.0-beta.6"
-actix-multipart = "0.4.0-beta.5"
-actix-http = "3.0.0-beta.8"
-actix-governor = { git = "https://github.com/AaronErhardt/actix-governor", branch = "main" , features = ["log"] }
+actix-files = "0.6.0"
+actix-multipart = "0.4.0"
+actix-http = "3.0.0"
+actix-governor = "0.3"
 actix-optional-middleware = { version = "0.1", git = "https://github.com/realaravinth/actix-optional-middleware" }
-actix-web = { version = "4.0.0-beta.8", features = ["openssl"] }
+actix-web = { version = "4.0.0", features = ["openssl"] }
 actix-identity = "0.4.0-beta.2"
 actix-service = "2.0"
 openssl = { version = "0.10.29", features = ["vendored"] }
 
-sqlx = { version = "0.5.5", features = [ "runtime-actix-rustls", "postgres", "time", "offline" ] }
-argon2-creds = { branch = "master", git = "https://github.com/realaravinth/argon2-creds"}
+sqlx = { version = "0.6", features = [ "runtime-actix-rustls", "postgres", "time", "offline" ] }
+argon2-creds = { branch = "master", git = "https://github.com/realaravinth/argon2-creds" }
 lazy_static = "1.4"
-my-codegen = {package = "actix-web-codegen", git ="https://github.com/realaravinth/actix-web"}
+my-codegen = { package = "actix-web-codegen", git ="https://github.com/realaravinth/actix-web" }
 
 # futures
 futures = "0.3"
-tokio = { version = "1.3", features = ["fs", "time"] }
+tokio = { version = "1.19", features = ["fs", "time"] }
 tokio-stream = "0.1.7"
 
 # argument parsing
-clap = "2.33"
+clap = { version = "3.2", features = ["cargo"] }
 
 # derive macros
 derive_more = "0.99"

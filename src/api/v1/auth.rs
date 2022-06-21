@@ -144,9 +144,8 @@ pub mod runners {
             data.creds.email(email)?;
         }
 
-        let res;
-        if let Some(email) = &payload.email {
-            res = sqlx::query!(
+        let res = if let Some(email) = &payload.email {
+            sqlx::query!(
                 "INSERT INTO triox_users 
         (name , password, email) VALUES ($1, $2, $3)",
                 &username,
@@ -154,17 +153,18 @@ pub mod runners {
                 &email,
             )
             .execute(&data.db)
-            .await;
+            .await
         } else {
-            res = sqlx::query!(
+            sqlx::query!(
                 "INSERT INTO triox_users 
         (name , password) VALUES ($1, $2)",
                 &username,
                 &hash,
             )
             .execute(&data.db)
-            .await;
-        }
+            .await
+        };
+
         if let Err(sqlx::Error::Database(err)) = res {
             log::error!("{}", err);
             if err.code() == Some(Cow::from("23505")) {

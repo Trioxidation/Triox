@@ -1,6 +1,6 @@
 use std::sync::Arc;
 
-use actix_web::test;
+use actix_web::{body, test};
 use actix_web::{dev::ServiceResponse, http::StatusCode};
 use serde::{Deserialize, Serialize};
 
@@ -103,7 +103,11 @@ pub async fn register_and_signin(
     name: &str,
     email: Option<String>,
     password: &str,
-) -> (Arc<AppState>, Login, ServiceResponse) {
+) -> (
+    Arc<AppState>,
+    Login,
+    ServiceResponse<body::EitherBody<body::BoxBody>>,
+) {
     register(name, email, password).await;
     signin(name, password).await
 }
@@ -130,7 +134,11 @@ pub async fn register(name: &str, email: Option<String>, password: &str) {
 pub async fn signin(
     name: &str,
     password: &str,
-) -> (Arc<AppState>, Login, ServiceResponse) {
+) -> (
+    Arc<AppState>,
+    Login,
+    ServiceResponse<body::EitherBody<body::BoxBody>>,
+) {
     let data = AppState::new().await;
     let app = get_app!(data.clone()).await;
 

@@ -26,6 +26,7 @@ impl AppState {
 
         let c = creds.clone();
 
+        #[cfg_attr(debug_assertions, allow(unused_variables))]
         let init = std::thread::spawn(move || {
             log::info!("Initializing credential manager");
             c.init();

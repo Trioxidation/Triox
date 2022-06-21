@@ -1,6 +1,3 @@
-use std::sync::mpsc;
-
-use actix_web::dev::Server;
 use actix_web::http::StatusCode;
 use actix_web::test;
 use tokio::fs;
@@ -65,13 +62,7 @@ async fn file_works() {
     )
     .await;
     assert_eq!(response.status(), StatusCode::OK);
-    let content = String::from_utf8(
-        test::load_body(response.into_body())
-            .await
-            .unwrap()
-            .to_vec(),
-    )
-    .unwrap();
+    let content = String::from_utf8(test::read_body(response).await.to_vec()).unwrap();
     assert_eq!(CONTENT, content);
 
     // create dir
@@ -168,17 +159,4 @@ async fn file_works() {
     assert_eq!(response.status(), StatusCode::OK);
     let body: ListResponse = test::read_body_json(response).await;
     assert!(!body.files.iter().any(|file| file.name == FILE_NAME));
-}
-
-async fn run_app(tx: mpsc::Sender<Server>) -> std::io::Result<()> {
-    let data = AppState::new().await;
-
-    let srv = HttpServer::new(move || get_app!(data, "app"))
-        .bind(SETTINGS.server.listen_address())?
-        .run();
-    // send server controller to main thread
-    let _ = tx.send(srv.clone());
-
-    // run future
-    srv.await
 }

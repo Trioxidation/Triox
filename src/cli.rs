@@ -24,7 +24,7 @@ impl Options {
             .about(crate_description!())
             .arg(
                 Arg::with_name("config-dir")
-                    .short("c")
+                    .short('c')
                     .long("config-dir")
                     .takes_value(true)
                     .help("Path to configuration file directory."),
