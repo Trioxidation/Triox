@@ -50,7 +50,7 @@ actix-optional-middleware = { version = "0.1", git = "https://github.com/realara
 actix-web = { version = "4.0.0", features = ["openssl"] }
 actix-identity = "0.4.0-beta.2"
 actix-service = "2.0"
-openssl = { version = "0.10.55", features = ["vendored"] }
+openssl = { version = "0.10.60", features = ["vendored"] }
 
 sqlx = { version = "0.6", features = [ "runtime-actix-rustls", "postgres", "time", "offline" ] }
 argon2-creds = { branch = "master", git = "https://github.com/realaravinth/argon2-creds" }
